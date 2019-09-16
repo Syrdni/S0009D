@@ -32,6 +32,7 @@ public:
 	int getVertexLength();
 	bool loadFromOBJFile(const char * fileName);
 	void bindVBO();
+	void unbindVBO();
 
 
 private:

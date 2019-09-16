@@ -58,7 +58,6 @@ void MeshResource::setupVertexAttributePointers()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*3));
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 5));
-	glBindVertexArray(0);
 	unbindVAO();
 }
 
@@ -209,6 +208,11 @@ bool MeshResource::loadFromOBJFile(const char * fileName)
 void MeshResource::bindVBO()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+}
+
+void MeshResource::unbindVBO()
+{
+	glBindBuffer(0, 0);
 }
 
 //Combines the vertices, texture cordinates and normals to one buffer.

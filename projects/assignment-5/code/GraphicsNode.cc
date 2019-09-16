@@ -77,7 +77,6 @@ void GraphicsNode::setPosition(Matrix4D position)
 void GraphicsNode::draw()
 {
 	textureResource.get()->bind(0);
-	meshResource->setupVertexAttributePointers();
 	shaderObject->useProgram();
 	shaderObject->modifyMatrix4fvUniform("transform", transform);
 	shaderObject->modifyMatrix4fvUniform("modelMatrix", position);
@@ -85,8 +84,8 @@ void GraphicsNode::draw()
 	shaderObject->modifyVector4fvUniform("lightColor", lightingNode->getColorWithIntensity());
 	shaderObject->modifyVector4fvUniform("cameraPosition", cameraPosition);
 	meshResource->bindVAO();
+	//meshResource->bindVBO();
 	glDrawElements(GL_TRIANGLES, meshResource->getVertexLength() * sizeof(Vertex), GL_UNSIGNED_INT, NULL);
-	//glDrawArrays(GL_TRIANGLES, 0, meshResource->getVertexLength());
 	meshResource->unbindVAO();
 }
 
@@ -100,6 +99,7 @@ void GraphicsNode::preDrawSetup()
 	meshResource.get()->setup();
 	meshResource.get()->bufferVertexBuffer();
 	meshResource.get()->bufferIndexBuffer();
+	meshResource->setupVertexAttributePointers();
 	shaderObject.get()->loadFragmentShader("fragmentShader.txt");
 	shaderObject.get()->loadVertexShader("vertexShader.txt");
 	shaderObject->compileShader();
