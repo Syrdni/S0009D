@@ -4,7 +4,6 @@
 //------------------------------------------------------------------------------
 #include "config.h"
 #include "exampleapp.h"
-#include <cstring>
 #include <iostream>
 #include "core/app.h"
 #include <math.h>
@@ -190,6 +189,8 @@ ExampleApp::Open()
 
 	if (this->window->Open())
 	{
+		Joint rootJoint;
+		rootJoint.buildJointTreeWithXML("Unit_Footman.constants");
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 

@@ -9,9 +9,9 @@
 #include "core/app.h"
 #include "render/window.h"
 #include "GraphicsNode.h"
-#include <cstring>
 #include <iostream>
 #include "LightingNode.h"
+#include "joint.h"
 
 namespace Example
 {
