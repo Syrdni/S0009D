@@ -189,8 +189,6 @@ ExampleApp::Open()
 
 	if (this->window->Open())
 	{
-		Joint rootJoint;
-		rootJoint.buildJointTreeWithXML("Unit_Footman.constants");
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
@@ -210,6 +208,9 @@ ExampleApp::Open()
 			0, 0, -((f + n) / (f - n)), -((2 * f*n) / (f - n)),
 			0, 0, -1, 0
 		);
+
+		AnimatedModel* am = new AnimatedModel();
+		am->buildJointTreeWithXML("Unit_Footman.constants");
 
 		ShaderObject* so = new ShaderObject();
 
@@ -273,10 +274,10 @@ ExampleApp::Open()
 void
 ExampleApp::Run()
 {
-	// position[11] = -2.0f;
 	float rotation = 0.01f;
 	while (this->window->IsOpen())
 	{	
+		position[3] += -1.0f;
 		this->window->Update();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -287,13 +288,13 @@ ExampleApp::Run()
 		lookAt = Matrix4D::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 		GN.setTransform(perspectiveProjection*lookAt*rotY);
-		GN.setPosition(rotY);
+		//GN.setPosition(rotY);
 
 		GN2.setTransform(perspectiveProjection*lookAt*(position*rotY));
-		GN2.setPosition(position*rotY);
+		//GN2.setPosition(position*rotY);
 
 		GN3.setTransform(perspectiveProjection*lookAt*(position2*rotY));
-		GN3.setPosition(position2*rotY);
+		//GN3.setPosition(position2*rotY*2);
 
 		GN.draw();
 		GN2.draw();

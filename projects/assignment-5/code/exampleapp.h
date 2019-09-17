@@ -12,6 +12,7 @@
 #include <iostream>
 #include "LightingNode.h"
 #include "joint.h"
+#include "animatedModel.h"
 
 namespace Example
 {
