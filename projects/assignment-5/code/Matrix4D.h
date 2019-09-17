@@ -27,6 +27,7 @@ class Matrix4D
 		static Matrix4D rotVector(const Vector4D& inVector, const float rad);
 		float* getMatrix();
 		static Matrix4D getPositionMatrix(Vector4D& inVector);
+		static Matrix4D getScaleMatrix(Vector4D& invector);
 		static Matrix4D lookAt(Vector4D cameraPos, Vector4D target, Vector4D up);
 
 	private:
@@ -517,6 +518,33 @@ class Matrix4D
 		temparr[9] = 0;
 		temparr[10] = 1;
 		temparr[11] = inVector.getFloat(2);
+
+		temparr[12] = 0;
+		temparr[13] = 0;
+		temparr[14] = 0;
+		temparr[15] = 1;
+
+		return Matrix4D(temparr);
+	}
+
+	inline Matrix4D Matrix4D::getScaleMatrix(Vector4D& inVector)
+	{
+		float temparr[16];
+
+		temparr[0] = inVector.getFloat(0);
+		temparr[1] = 0;
+		temparr[2] = 0;
+		temparr[3] = 0;
+
+		temparr[4] = 0;
+		temparr[5] = inVector.getFloat(1);
+		temparr[6] = 0;
+		temparr[7] = 0;
+
+		temparr[8] = 0;
+		temparr[9] = 0;
+		temparr[10] = inVector.getFloat(2);
+		temparr[11] = 0;
 
 		temparr[12] = 0;
 		temparr[13] = 0;
