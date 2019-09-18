@@ -1,6 +1,3 @@
-#include "MeshResource.h"
-#include "TextureResource.h"
-#include "ShaderObject.h"
 #include "joint.h"
 #include "tinyxml.h"
 
@@ -9,6 +6,8 @@ class AnimatedModel
     public:
         AnimatedModel();
         void buildJointTreeWithXML(std::string filePath);
+        void jointDrawSetup(MeshResource* mr, TextureResource* tr, ShaderObject* so, LightingNode* ln, Vector4D cameraPos, std::string texture);
+        void draw(Matrix4D mat);
 
     private:
         MeshResource mesh;

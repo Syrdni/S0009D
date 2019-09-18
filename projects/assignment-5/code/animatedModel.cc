@@ -55,11 +55,13 @@ TiXmlDocument doc;
                                 positionVector = Vector4D(floatVector[0],floatVector[1],floatVector[2],floatVector[3]);
 
                                 //Parse out the position from the xml file    
+                                floatVector.clear();
                                 rotationString = joint->Attribute("rotation");
                                 splitStringIntoFloatVetor(rotationString, ',', floatVector);
                                 rotationVector = Vector4D(floatVector[0],floatVector[1],floatVector[2],floatVector[3]);
 
                                 //Parse out the position from the xml file    
+                                floatVector.clear();
                                 scaleString = joint->Attribute("scale");
                                 splitStringIntoFloatVetor(scaleString, ',', floatVector);
                                 scaleVector = Vector4D(floatVector[0],floatVector[1],floatVector[2],floatVector[3]);
@@ -86,4 +88,16 @@ void AnimatedModel::splitStringIntoFloatVetor(const std::string &s, char delim, 
         value = stof(item);
         elems.push_back(value);
     }
+}
+
+void AnimatedModel::jointDrawSetup(MeshResource* mr, TextureResource* tr, ShaderObject* so, LightingNode* ln, Vector4D cameraPos, std::string texturePath)
+{
+    rootJoint->calcInverseLocalPosition(Matrix4D());
+    rootJoint->calcWorldSpace(Matrix4D());
+    rootJoint->drawSetup(mr, tr, so, ln, cameraPos, texturePath);
+}
+
+void AnimatedModel::draw(Matrix4D mat)
+{
+    rootJoint->draw(mat);
 }

@@ -209,8 +209,8 @@ ExampleApp::Open()
 			0, 0, -1, 0
 		);
 
-		AnimatedModel* am = new AnimatedModel();
-		am->buildJointTreeWithXML("Unit_Footman.constants");
+		//AnimatedModel* am = new AnimatedModel();
+		am.buildJointTreeWithXML("Unit_Footman.constants");
 
 		ShaderObject* so = new ShaderObject();
 
@@ -247,8 +247,7 @@ ExampleApp::Open()
 		GN.loadTexture("texture.jpg");
 		GN.preDrawSetup();
 
-
-		GN2.setMeshResource(mr2);
+		/*GN2.setMeshResource(mr2);
 		GN2.setShaderObject(so);
 		GN2.setTextureResource(tr2);
 		GN2.setlightingNode(ln);
@@ -262,7 +261,10 @@ ExampleApp::Open()
 		GN3.setlightingNode(ln);
 		GN3.setCameraPosition(cameraPos);
 		GN3.loadTexture("texture2.jpg");
-		GN3.preDrawSetup();
+		GN3.preDrawSetup();*/
+
+		am.jointDrawSetup(mr2, tr, so, ln, cameraPos, "texture.jpg");
+
 		return true;
 	}
 	return false;
@@ -277,7 +279,7 @@ ExampleApp::Run()
 	float rotation = 0.01f;
 	while (this->window->IsOpen())
 	{	
-		position[3] += -1.0f;
+		//position[3] += -1.0f;
 		this->window->Update();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -287,18 +289,20 @@ ExampleApp::Run()
 
 		lookAt = Matrix4D::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-		GN.setTransform(perspectiveProjection*lookAt*rotY);
-		//GN.setPosition(rotY);
+		GN.setTransform(perspectiveProjection*lookAt*(position*rotY));
+		GN.setPosition(position*rotY);
 
-		GN2.setTransform(perspectiveProjection*lookAt*(position*rotY));
+		//GN2.setTransform(perspectiveProjection*lookAt*(position*rotY));
 		//GN2.setPosition(position*rotY);
 
-		GN3.setTransform(perspectiveProjection*lookAt*(position2*rotY));
+		//GN3.setTransform(perspectiveProjection*lookAt*(position2*rotY));
 		//GN3.setPosition(position2*rotY*2);
 
 		GN.draw();
-		GN2.draw();
-		GN3.draw();
+		//GN2.draw();
+		//GN3.draw();
+
+		am.draw(perspectiveProjection*lookAt);
 
 		glFlush();
 
