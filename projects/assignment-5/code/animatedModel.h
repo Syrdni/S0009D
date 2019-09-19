@@ -1,5 +1,6 @@
 #include "joint.h"
 #include "tinyxml.h"
+#include "quaternion.h"
 
 class AnimatedModel
 {
@@ -15,6 +16,7 @@ class AnimatedModel
         ShaderObject shader;
         Joint* rootJoint;
         void splitStringIntoFloatVetor(const std::string &s, char delim, std::vector<float> &elems);
+        void quaternionToEuler(std::vector<float> &quaternion);
         //Animator?
 
 };

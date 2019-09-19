@@ -42,7 +42,7 @@ void Joint::calcInverseLocalPosition(Matrix4D parentLocalTransform)
 
 void Joint::calcWorldSpace(Matrix4D parentTransform)
 {
-    worldPosition =  localPosition * parentTransform;
+    worldPosition =  parentTransform * localPosition;
 
     for (int i = 0; i < children.size(); i++)
     {
@@ -157,12 +157,9 @@ void Joint::draw(Matrix4D mat)
                                                 0, 0, 0, 1));
     JGN.setPosition(worldPosition);
     JGN.draw();
-    for (int i = 0; i < 1; i++)
-    {
-        if (children.size() > 0)
-        {
-            children[i]->draw(mat);
-        }
+    for (int i = 0; i < children.size(); i++)
+    {        
+        children[i]->draw(mat);
     }
     
 }

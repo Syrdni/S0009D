@@ -54,21 +54,23 @@ TiXmlDocument doc;
                                 splitStringIntoFloatVetor(positionString, ',', floatVector);
                                 positionVector = Vector4D(floatVector[0],floatVector[1],floatVector[2],floatVector[3]);
 
-                                //Parse out the position from the xml file    
+                                //Parse out the rotation from the xml file    
                                 floatVector.clear();
                                 rotationString = joint->Attribute("rotation");
                                 splitStringIntoFloatVetor(rotationString, ',', floatVector);
+                                Matrix4D rotationMatrix = Quaternion::createMatrix(floatVector[0],floatVector[1],floatVector[2],floatVector[3]);
                                 rotationVector = Vector4D(floatVector[0],floatVector[1],floatVector[2],floatVector[3]);
 
-                                //Parse out the position from the xml file    
+                                //Parse out the scale from the xml file    
                                 floatVector.clear();
                                 scaleString = joint->Attribute("scale");
                                 splitStringIntoFloatVetor(scaleString, ',', floatVector);
                                 scaleVector = Vector4D(floatVector[0],floatVector[1],floatVector[2],floatVector[3]);
 
                                 temp->addMatrixes(Matrix4D::getPositionMatrix(positionVector),
-                                                 Matrix4D::rotX(rotationVector.getFloat(0))*Matrix4D::rotY(rotationVector.getFloat(1))*Matrix4D::rotZ(rotationVector.getFloat(2)),
+                                                 rotationMatrix,
                                                  Matrix4D::getScaleMatrix(scaleVector));
+                                                 //rotate[0][0], rotate[1][0], rotate[2][0], rotate[3][0], rotate[0][1], rotate[1][1], rotate[2][1], rotate[3][1], rotate[0][2], rotate[1][2], rotate[2][2], rotate[3][2], rotate[0][3], rotate[1][3], rotate[2][3], rotate[3][3]
 
                             joint = joint->NextSiblingElement("Joint");
                         }
@@ -99,5 +101,30 @@ void AnimatedModel::jointDrawSetup(MeshResource* mr, TextureResource* tr, Shader
 
 void AnimatedModel::draw(Matrix4D mat)
 {
+    int depth = 100;
     rootJoint->draw(mat);
+}
+
+void AnimatedModel::quaternionToEuler(std::vector<float> &quaternion)
+{
+    float x, y, z , w;
+    quaternion.clear();
+
+    //calc roll rotation
+    x = quaternion[0]; y = quaternion[1]; z = quaternion[2]; w = quaternion[3];
+    double sinr_cosp = +2.0 * ((w * x) + (y * z));
+    double cosr_cosp = +1.0 - 2.0 * ((x * x) + (y * y));
+    quaternion.push_back(atan2(sinr_cosp, cosr_cosp));
+
+    //calc pitch rotation
+    double sinp = +2.0 * (w * y - z * x);
+    if (fabs(sinp) >= 1)
+        quaternion.push_back(copysign(M_PI / 2, sinp));
+    else
+        quaternion.push_back(asin(sinp));
+
+    //calc yaw
+    double siny_cosp = +2.0 * ((w*z) + (x*y));
+    double cosy_cosp = +1.0 - 2.0 * ((y*y) + (z*z));
+    quaternion.push_back(atan2(siny_cosp, cosy_cosp)); 
 }

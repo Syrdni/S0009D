@@ -24,10 +24,10 @@ class Joint
         //Joint* parent; //Pointer to the parent joint
         std::string name; //Name of the joint
         std::vector<Joint*> children = std::vector<Joint*>(); //List of all the joints children
+        Matrix4D worldPosition;
 
     private:
         void splitStringIntoFloatVetor(const std::string &s, char delim, std::vector<float> &elems);
-        Matrix4D worldPosition;
         Matrix4D localPosition;
         Matrix4D inverseLocalPosition;
         Matrix4D rotation;
