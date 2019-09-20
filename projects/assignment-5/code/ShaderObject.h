@@ -13,6 +13,7 @@ public:
 	bool loadVertexShader(const char* filename);
 	bool loadFragmentShader(const char* filename);
 	void useProgram();
+	void unbindProgram();
 	void modifyMatrix4fvUniform(std::string name, Matrix4D mat);
 	void modifyVector4fvUniform(std::string name, Vector4D vec);
 	void compileShader();

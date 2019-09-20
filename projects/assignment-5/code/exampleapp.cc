@@ -247,22 +247,6 @@ ExampleApp::Open()
 		GN.loadTexture("texture.jpg");
 		GN.preDrawSetup();
 
-		/*GN2.setMeshResource(mr2);
-		GN2.setShaderObject(so);
-		GN2.setTextureResource(tr2);
-		GN2.setlightingNode(ln);
-		GN2.setCameraPosition(cameraPos);
-		GN2.loadTexture("tex.jpg");
-		GN2.preDrawSetup();
-
-		GN3.setMeshResource(mr);
-		GN3.setShaderObject(so);
-		GN3.setTextureResource(tr3);
-		GN3.setlightingNode(ln);
-		GN3.setCameraPosition(cameraPos);
-		GN3.loadTexture("texture2.jpg");
-		GN3.preDrawSetup();*/
-
 		am.jointDrawSetup(mr2, tr, so, ln, cameraPos, "texture.jpg");
 
 		return true;
@@ -292,17 +276,10 @@ ExampleApp::Run()
 		GN.setTransform(perspectiveProjection*lookAt*(position*rotY));
 		GN.setPosition(position*rotY);
 
-		//GN2.setTransform(perspectiveProjection*lookAt*(position*rotY));
-		//GN2.setPosition(position*rotY);
-
-		//GN3.setTransform(perspectiveProjection*lookAt*(position2*rotY));
-		//GN3.setPosition(position2*rotY*2);
-
 		GN.draw();
-		//GN2.draw();
-		//GN3.draw();
 
 		am.draw(perspectiveProjection*lookAt);
+		am.drawLines(perspectiveProjection*lookAt);
 
 		glFlush();
 

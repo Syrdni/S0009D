@@ -101,8 +101,12 @@ void AnimatedModel::jointDrawSetup(MeshResource* mr, TextureResource* tr, Shader
 
 void AnimatedModel::draw(Matrix4D mat)
 {
-    int depth = 100;
     rootJoint->draw(mat);
+}
+
+void AnimatedModel::drawLines(Matrix4D mat)
+{
+    rootJoint->drawLines(Matrix4D::transpose(mat));
 }
 
 void AnimatedModel::quaternionToEuler(std::vector<float> &quaternion)

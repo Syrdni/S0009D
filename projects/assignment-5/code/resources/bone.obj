@@ -1,0 +1,16 @@
+mtllib bone.mtl
+
+v 0.0 0.0 0.0
+v -0.2f, 0.2f,-0.2f
+v 0.2f, 0.2f,-0.2f
+v 0.0f, getLength(), 0.0f
+v -0.2f, 0.2f,-0.2f
+v -0.2f, 0.2f, 0.2f
+v 0.0f, 0.0f, 0.0f
+v 0.2f, 0.2f,-0.2f
+v 0.2f, 0.2f, 0.2f
+v 0.0f, 0.0f, 0.0f
+v -0.2f, 0.2f, 0.2f
+v 0.0f, getLength(), 0.0f
+v 0.2f, 0.2f, 0.2f
+v -0.2f, 0.2f, 0.2f 

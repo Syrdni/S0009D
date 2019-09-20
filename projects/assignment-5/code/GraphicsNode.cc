@@ -84,9 +84,9 @@ void GraphicsNode::draw()
 	shaderObject->modifyVector4fvUniform("lightColor", lightingNode->getColorWithIntensity());
 	shaderObject->modifyVector4fvUniform("cameraPosition", cameraPosition);
 	meshResource->bindVAO();
-	//meshResource->bindVBO();
 	glDrawElements(GL_TRIANGLES, meshResource->getVertexLength() * sizeof(Vertex), GL_UNSIGNED_INT, NULL);
 	meshResource->unbindVAO();
+	shaderObject->unbindProgram();
 }
 
 void GraphicsNode::loadTexture(std::string textureFile)

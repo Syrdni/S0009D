@@ -59,6 +59,11 @@ void ShaderObject::useProgram()
 	glUseProgram(program);
 }
 
+void ShaderObject::unbindProgram()
+{
+	glUseProgram(0);
+}
+
 //Sends a Matrix4D to the shader for it to use.
 void ShaderObject::modifyMatrix4fvUniform(std::string name, Matrix4D matrix)
 {

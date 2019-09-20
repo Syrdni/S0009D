@@ -17,11 +17,10 @@ class Joint
         void addMatrixes(Matrix4D pos, Matrix4D rot, Matrix4D sca);
         void calcInverseLocalPosition(Matrix4D parentLocalTransform);
         void calcWorldSpace(Matrix4D parentLocalTransform);
-       // void buildJointTreeWithXML(std::string filePath);
         void drawSetup(MeshResource* mr, TextureResource* tr, ShaderObject* so, LightingNode* ln, Vector4D cameraPos, std::string texture);
         void draw(Matrix4D mat);
+        void drawLines(Matrix4D mat);
         int ID; //Id if the joint
-        //Joint* parent; //Pointer to the parent joint
         std::string name; //Name of the joint
         std::vector<Joint*> children = std::vector<Joint*>(); //List of all the joints children
         Matrix4D worldPosition;
