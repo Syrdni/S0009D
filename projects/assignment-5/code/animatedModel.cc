@@ -109,6 +109,12 @@ void AnimatedModel::drawLines(Matrix4D mat)
     rootJoint->drawLines(Matrix4D::transpose(mat));
 }
 
+void AnimatedModel::moveJointPosition(Matrix4D mat, std::string name)
+{
+    rootJoint->movePosition(mat, name);
+    rootJoint->calcWorldSpace(Matrix4D());
+}
+
 void AnimatedModel::quaternionToEuler(std::vector<float> &quaternion)
 {
     float x, y, z , w;

@@ -20,8 +20,8 @@ class Joint
         void drawSetup(MeshResource* mr, TextureResource* tr, ShaderObject* so, LightingNode* ln, Vector4D cameraPos, std::string texture);
         void draw(Matrix4D mat);
         void drawLines(Matrix4D mat);
+        int movePosition(Matrix4D mat, std::string name);
         int ID; //Id if the joint
-        std::string name; //Name of the joint
         std::vector<Joint*> children = std::vector<Joint*>(); //List of all the joints children
         Matrix4D worldPosition;
 
@@ -31,6 +31,8 @@ class Joint
         Matrix4D inverseLocalPosition;
         Matrix4D rotation;
         Matrix4D scale;
+        Matrix4D transform;
+        std::string name; //Name of the joint
         GraphicsNode JGN;
 
 };

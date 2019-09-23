@@ -6,7 +6,6 @@
 #include "exampleapp.h"
 #include <iostream>
 #include "core/app.h"
-#include <math.h>
 #define PI 3.14159265359
 
 const GLchar* vs =
@@ -263,11 +262,17 @@ ExampleApp::Run()
 	float rotation = 0.01f;
 	while (this->window->IsOpen())
 	{	
+		rotation += 0.1;
+		Vector4D temp = Vector4D(0, 0, cos(rotation)*0.05, 1);
+		Vector4D temp3 = Vector4D(0, cos(rotation)*0.1, 0, 1);
+		Matrix4D temp2 = Matrix4D::getPositionMatrix(temp);
+		Matrix4D temp4 = Matrix4D::getPositionMatrix(temp3);
+
 		//position[3] += -1.0f;
 		this->window->Update();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		rotation += 0.01;
+		//rotation += 0.01;
 
 		Matrix4D rotY = Matrix4D::rotY(rotation);
 
@@ -278,6 +283,8 @@ ExampleApp::Run()
 
 		GN.draw();
 
+		am.moveJointPosition(temp2, "Chest");
+		am.moveJointPosition(temp4, "Right_Elbow");
 		am.draw(perspectiveProjection*lookAt);
 		am.drawLines(perspectiveProjection*lookAt);
 

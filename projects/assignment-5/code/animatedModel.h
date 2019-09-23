@@ -10,6 +10,7 @@ class AnimatedModel
         void jointDrawSetup(MeshResource* mr, TextureResource* tr, ShaderObject* so, LightingNode* ln, Vector4D cameraPos, std::string texture);
         void draw(Matrix4D mat);
         void drawLines(Matrix4D mat);
+        void moveJointPosition(Matrix4D mat, std::string name);
 
     private:
         MeshResource mesh;

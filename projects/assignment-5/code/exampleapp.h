@@ -13,6 +13,7 @@
 #include "LightingNode.h"
 #include "joint.h"
 #include "animatedModel.h"
+#include <cmath>
 
 namespace Example
 {
