@@ -4,6 +4,11 @@ AnimatedModel::AnimatedModel()
 {
 }
 
+AnimatedModel::~AnimatedModel()
+{
+    delete rootJoint;
+}
+
 void AnimatedModel::buildJointTreeWithXML(std::string filePath)
 {
 TiXmlDocument doc;

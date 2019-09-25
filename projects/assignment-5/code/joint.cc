@@ -1,5 +1,10 @@
 #include "joint.h"
 
+Joint::Joint()
+{
+
+}
+
 Joint::Joint(int id, Joint* parent, std::string name)
 {
     this->ID = id;
@@ -10,12 +15,11 @@ Joint::Joint(int id, Joint* parent, std::string name)
 
 Joint::~Joint()
 {
-
-}
-
-Joint::Joint()
-{
-
+    for (int i = 0; i < children.size(); i++)
+    {
+        delete children[i];
+    }
+    
 }
 
 void Joint::addChild(Joint* child)

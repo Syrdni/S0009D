@@ -6,6 +6,7 @@ class AnimatedModel
 {
     public:
         AnimatedModel();
+        ~AnimatedModel();
         void buildJointTreeWithXML(std::string filePath);
         void jointDrawSetup(MeshResource* mr, TextureResource* tr, ShaderObject* so, LightingNode* ln, Vector4D cameraPos, std::string texture);
         void draw(Matrix4D mat);
