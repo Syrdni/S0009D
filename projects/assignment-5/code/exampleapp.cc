@@ -263,8 +263,8 @@ ExampleApp::Run()
 	while (this->window->IsOpen())
 	{	
 		rotation += 0.1;
-		Vector4D temp = Vector4D(0, 0, cos(rotation)*0.05, 1);
-		Vector4D temp3 = Vector4D(0, cos(rotation)*0.1, 0, 1);
+		Vector4D temp = Vector4D(0, 0, cosf(rotation)*0.05, 1);
+		Vector4D temp3 = Vector4D(0, cosf(rotation)*0.1, 0, 1);
 		Matrix4D temp2 = Matrix4D::getPositionMatrix(temp);
 		Matrix4D temp4 = Matrix4D::getPositionMatrix(temp3);
 
