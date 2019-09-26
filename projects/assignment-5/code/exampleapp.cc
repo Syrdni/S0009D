@@ -248,6 +248,9 @@ ExampleApp::Open()
 
 		am.jointDrawSetup(mr2, tr, so, ln, cameraPos, "texture.jpg");
 
+		Animator an;
+		an.readNax3File("Unit_Footman.nax3");
+
 		return true;
 	}
 	return false;
@@ -287,6 +290,8 @@ ExampleApp::Run()
 		am.moveJointPosition(temp4, "Right_Elbow");
 		am.draw(perspectiveProjection*lookAt);
 		am.drawLines(perspectiveProjection*lookAt);
+
+		//constexpr uint magic = 'NAX3';
 
 		glFlush();
 

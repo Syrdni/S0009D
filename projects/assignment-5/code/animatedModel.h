@@ -1,6 +1,7 @@
 #include "joint.h"
 #include "tinyxml.h"
 #include "quaternion.h"
+#include "animator.h"
 
 class AnimatedModel
 {
