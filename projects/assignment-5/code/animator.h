@@ -14,4 +14,8 @@ class Animator
         Animator();
         ~Animator();
         bool readNax3File(std::string fileLocation);
+
+    private:
+        AnimationResource* animResource;
+        void* memoryBlock;
 };

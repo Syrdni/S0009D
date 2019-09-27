@@ -73,12 +73,15 @@ bool Animator::readNax3File(std::string fileLocation)
                 animCurve.setFirstKeyIndex(naxCurve->firstKeyIndex);
                 animCurve.setActive(naxCurve->isActive != 0);
                 animCurve.setStatic(naxCurve->isStatic != 0);
-                //animCruve.setCurveType();
+                animCurve.setCurveType((CurveType::Type)naxCurve->curveType);
                 animCurve.setStaticKey(naxCurve->staticKeyX, naxCurve->staticKeyY, naxCurve->staticKeyZ, naxCurve->staticKeyW);
+                int lul = 0;
             }    
         }
 
         void* keyPtr[naxHeader->numKeys * sizeof(Vector4D)];
         memcpy(keyPtr, ptr, (naxHeader->numKeys * sizeof(Vector4D)));
+        memoryBlock = keyPtr;
+        animResource = anim;
     }
 }

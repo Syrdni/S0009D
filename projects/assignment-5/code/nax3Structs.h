@@ -1,5 +1,4 @@
 #pragma once
-#pragma pack(push, 1)
 
 #define NAX3_MAGICNUMBER 'NA01'
 

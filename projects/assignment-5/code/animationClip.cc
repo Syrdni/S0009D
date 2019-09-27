@@ -12,27 +12,27 @@ AnimationClip::~AnimationClip()
 
 void AnimationClip::setNumberOfCurves(short numberOfCurves)
 {
-    curves.clear();
+    this->curves.clear();
 
     for (int i = 0; i < numberOfCurves; i++)
     {
-        curves.push_back(AnimationCurve());
+        this->curves.push_back(AnimationCurve());
     }
 }
 
-void AnimationClip::setStartKeyIndex(short startkeyIndex)
+void AnimationClip::setStartKeyIndex(short index)
 {
-    this->startKeyIndex = startKeyIndex;
+    this->startKeyIndex = index;
 }
 
-void AnimationClip::setNumberOfKeys(short numberOfKeys)
+void AnimationClip::setNumberOfKeys(short keys)
 {
-    this->numberOfKeys = numberOfKeys;
+    this->numberOfKeys = keys;
 }
 
-void AnimationClip::setKeyStride(short keyStride)
+void AnimationClip::setKeyStride(short stride)
 {
-    this->keyStride = keyStride;
+    this->keyStride = stride;
 }
 
 void AnimationClip::setKeyDuration(short duration)
@@ -47,5 +47,5 @@ void AnimationClip::setName(char name[50])
 
 AnimationCurve& AnimationClip::curveByIndex(int index)
 {
-    return curves[index];
+    return this->curves[index];
 }
