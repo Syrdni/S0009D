@@ -1,3 +1,4 @@
+#pragma once
 #include "Matrix4D.h"
 
 class Quaternion

@@ -52,3 +52,8 @@ void AnimationCurve::setStaticKey(float x, float y, float z, float w)
     this->staticKeyZ = z;
     this->staticKeyW = w;
 }
+
+CurveType::Type AnimationCurve::getCurveType()
+{
+    return this->curveType;
+}

@@ -84,4 +84,50 @@ bool Animator::readNax3File(std::string fileLocation)
         memoryBlock = keyPtr;
         animResource = anim;
     }
+    createAnimation();
+}
+
+void Animator::createAnimation()
+{
+    //Create a new animation
+    std::vector<KeyFrame> animation;
+
+    //Get the animation clip
+    AnimationClip clip = animResource->getClip(0);
+
+    //Block of memory
+    char* ptr = (char*)memoryBlock;
+
+    for (int i = 0; i < clip.getNumberOfKeys(); i++)
+    {
+        //Create a new keyFrame
+        std::map<int, JointTransform> modelPose;
+
+        for (int j = 0; j < clip.getKeyStride()/4; j++)
+        {
+            JointTransform jointTrans;
+            for (int k = 0; k < 4; k++)
+            {            
+                //Get the information and put it into a Vector4D
+                Vector4D* vec4 = (Vector4D*)ptr;
+
+                //Move the pointer forward
+                ptr += sizeof(Vector4D);
+
+                switch(clip.curveByIndex(j+k).getCurveType())
+                {
+                    case CurveType::Translation:
+                        jointTrans.setTransform(Matrix4D(1,0,0, vec4->getFloat(0), 0,1,0, vec4->getFloat(1), 0,0,1, vec4->getFloat(2), 0,0,0,1));
+                    case CurveType::Rotation:      
+                        jointTrans.setRotation(Quaternion(vec4->getFloat(0), vec4->getFloat(1), vec4->getFloat(2), vec4->getFloat(3)));
+                }
+            }
+            modelPose.insert(std::pair<int, JointTransform>(j, jointTrans));
+        }
+        //insert keyFrame into the animation
+        KeyFrame keyFrame = KeyFrame(modelPose, 40*i);
+        animation.push_back(keyFrame);
+    } 
+
+    return ;   
 }

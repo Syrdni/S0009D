@@ -1,6 +1,6 @@
 #include "animation.h"
 
-Animation::Animation(float animationLength, KeyFrame* keyFrames)
+Animation::Animation(float animationLength, std::vector<KeyFrame> keyFrames)
 {
     this->length = animationLength;
     this->keyFrames = keyFrames;
@@ -16,7 +16,7 @@ float Animation::getAnimationLength()
     return this->length;
 }
 
-KeyFrame* Animation::getKeyFrames()
+std::vector<KeyFrame> Animation::getKeyFrames()
 {
     return this->keyFrames;
 }

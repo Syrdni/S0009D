@@ -1,15 +1,16 @@
 #pragma once
 #include "keyFrame.h"
+#include <vector>
 
 class Animation
 {
     public:
-        Animation(float animationLength, KeyFrame* keyFrames);
+        Animation(float animationLength, std::vector<KeyFrame> keyFrames);
         ~Animation();
         float getAnimationLength();
-        KeyFrame* getKeyFrames();
+        std::vector<KeyFrame> getKeyFrames();
 
     private:
-        float length;           //Length of the animation
-        KeyFrame* keyFrames;    //All the keyframes in the animation
+        float length;                       //Length of the animation
+        std::vector<KeyFrame> keyFrames;    //All the keyframes in the animation
 };

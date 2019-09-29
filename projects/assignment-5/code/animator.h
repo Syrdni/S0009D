@@ -7,6 +7,7 @@
 #include "nax3Structs.h"
 #include "animationResource.h"
 #include "Vector4D.h"
+#include "animation.h"
 
 class Animator
 {
@@ -14,6 +15,7 @@ class Animator
         Animator();
         ~Animator();
         bool readNax3File(std::string fileLocation);
+        void createAnimation();
 
     private:
         AnimationResource* animResource;

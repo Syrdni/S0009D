@@ -49,3 +49,13 @@ AnimationCurve& AnimationClip::curveByIndex(int index)
 {
     return this->curves[index];
 }
+
+short AnimationClip::getNumberOfKeys()
+{
+    return this->numberOfKeys;
+}
+
+short AnimationClip::getKeyStride()
+{
+    return this->keyStride;
+}
