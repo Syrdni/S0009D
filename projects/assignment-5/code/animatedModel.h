@@ -19,6 +19,7 @@ class AnimatedModel
         TextureResource texture;
         ShaderObject shader;
         Joint* rootJoint;
+        Animator animator;
         void splitStringIntoFloatVetor(const std::string &s, char delim, std::vector<float> &elems);
         void quaternionToEuler(std::vector<float> &quaternion);
 
