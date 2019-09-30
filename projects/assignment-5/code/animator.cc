@@ -1,5 +1,10 @@
 #include "animator.h"
 
+Animator::Animator(AnimatedModel* guy)
+{
+    this->entity = guy;
+}
+
 Animator::Animator()
 {
 
@@ -114,7 +119,7 @@ void Animator::createAnimation()
                 //Move the pointer forward
                 ptr += sizeof(Vector4D);
 
-                switch(clip.curveByIndex(j+k).getCurveType())
+                switch(clip.curveByIndex((4*j)+k).getCurveType())
                 {
                     case CurveType::Translation:
                         jointTrans.setTransform(Matrix4D(1,0,0, vec4->getFloat(0), 0,1,0, vec4->getFloat(1), 0,0,1, vec4->getFloat(2), 0,0,0,1));
@@ -127,7 +132,84 @@ void Animator::createAnimation()
         //insert keyFrame into the animation
         KeyFrame keyFrame = KeyFrame(modelPose, 40*i);
         animation.push_back(keyFrame);
-    } 
+    }
+    currentAnimation = Animation(clip.getNumberOfKeys()*clip.getKeyDuration(), animation);
+}
 
-    return ;   
+void Animator::setAnimationModel(AnimatedModel* am)
+{
+    this->entity = am;
+}
+
+void Animator::update()
+{
+    increaseAnimationTime();
+    std::map<int, Matrix4D> currentPos = calculateCurrentAnimationPose();
+    applyPose(currentPos, entity->getRootJoint(), Matrix4D());
+    
+}
+
+void Animator::increaseAnimationTime()
+{
+    animationTime += 1;
+    if (animationTime > currentAnimation.getAnimationLength())
+    {
+        animationTime = 0;
+    }
+}
+
+std::map<int, Matrix4D> Animator::calculateCurrentAnimationPose()
+{
+    std::vector<KeyFrame> frames = getReleventKeyFrames();
+    float progression = calculateProgression(frames[0], frames[1]);
+    return interpolatePoses(frames[0], frames[1], progression);
+}
+
+std::vector<KeyFrame> Animator::getReleventKeyFrames()
+{
+    std::vector<KeyFrame> frames = currentAnimation.getKeyFrames();
+    KeyFrame previousFrame, nextFrame;
+    for (int i = 0; i < frames.size(); i++)
+    {
+        nextFrame = frames[i];
+        if (nextFrame.getTimeStamp() > animationTime)
+            break;
+
+        previousFrame = frames[i]; 
+    }
+    std::vector<KeyFrame> v = {previousFrame, nextFrame};
+    return v;
+}
+
+float Animator::calculateProgression(KeyFrame previousFrame, KeyFrame nextFrame)
+{
+    float totalTime = nextFrame.getTimeStamp() - previousFrame.getTimeStamp();
+    float currentTime = animationTime - previousFrame.getTimeStamp();
+    return currentTime/totalTime;
+}
+
+std::map<int, Matrix4D> Animator::interpolatePoses(KeyFrame previousFrame, KeyFrame nextFrame, float progression)
+{
+    std::map<int, Matrix4D> currentPose;
+    for (int i = 0; i < nextFrame.getModelPose().size(); i++)
+    {
+        JointTransform previousTransfrom = previousFrame.getModelPose()[i];
+        JointTransform nextTransfrom = nextFrame.getModelPose()[i];
+        JointTransform currentTransform = JointTransform::interpolateJointTransform(previousTransfrom, nextTransfrom, progression);
+        currentPose.insert(std::pair<int, Matrix4D>(i, currentTransform.getCombinedMatrix()));
+    }
+    return currentPose;
+}
+
+void Animator::applyPose(std::map<int, Matrix4D> currentPose, Joint* joint, Matrix4D parentTransform)
+{
+    Matrix4D currentLocalTransform = currentPose[joint->ID];
+    Matrix4D currentTransform = parentTransform * currentLocalTransform;
+    for (int i = 0; i < joint->children.size(); i++)
+    {
+        applyPose(currentPose, joint->children[i], currentTransform);
+    }
+    currentTransform = currentTransform * joint->inverseLocalPosition;
+    joint->worldPosition = currentTransform;
+    
 }

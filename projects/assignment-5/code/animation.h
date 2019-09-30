@@ -6,6 +6,7 @@ class Animation
 {
     public:
         Animation(float animationLength, std::vector<KeyFrame> keyFrames);
+        Animation();
         ~Animation();
         float getAnimationLength();
         std::vector<KeyFrame> getKeyFrames();

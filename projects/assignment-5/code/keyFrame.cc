@@ -6,6 +6,11 @@ KeyFrame::KeyFrame(std::map<int, JointTransform> modelPose, float timeStamp)
     this->timeStamp = timeStamp;
 }
 
+KeyFrame::KeyFrame()
+{
+    
+}
+
 KeyFrame::~KeyFrame()
 {
 

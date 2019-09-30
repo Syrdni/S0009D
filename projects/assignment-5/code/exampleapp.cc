@@ -208,8 +208,8 @@ ExampleApp::Open()
 			0, 0, -1, 0
 		);
 
-		//AnimatedModel* am = new AnimatedModel();
-		am.buildJointTreeWithXML("Unit_Footman.constants");
+		am = new AnimatedModel();
+		am->buildJointTreeWithXML("Unit_Footman.constants");
 
 		ShaderObject* so = new ShaderObject();
 
@@ -246,9 +246,9 @@ ExampleApp::Open()
 		GN.loadTexture("texture.jpg");
 		GN.preDrawSetup();
 
-		am.jointDrawSetup(mr2, tr, so, ln, cameraPos, "texture.jpg");
+		am->jointDrawSetup(mr2, tr, so, ln, cameraPos, "texture.jpg");
 
-		Animator an;
+		an.setAnimationModel(am);
 		an.readNax3File("Unit_Footman.nax3");
 
 		return true;
@@ -286,10 +286,12 @@ ExampleApp::Run()
 
 		GN.draw();
 
-		am.moveJointPosition(temp2, "Chest");
-		am.moveJointPosition(temp4, "Right_Elbow");
-		am.draw(perspectiveProjection*lookAt);
-		am.drawLines(perspectiveProjection*lookAt);
+		//am->moveJointPosition(temp2, "Chest");
+		//am->moveJointPosition(temp4, "Right_Elbow");
+		am->reset();
+		an.update();
+		am->draw(perspectiveProjection*lookAt);
+		am->drawLines(perspectiveProjection*lookAt);
 
 		//constexpr uint magic = 'NAX3';
 

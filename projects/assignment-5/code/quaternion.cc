@@ -83,3 +83,48 @@ Quaternion Quaternion::operator*(const Quaternion &q)
 
     return r;
 }
+
+void Quaternion::normalize()
+{
+    float mag = (float)sqrt(w*w+x*x);
+}
+
+float Quaternion::getX()
+{
+    return x;
+}
+
+float Quaternion::getY()
+{
+    return y;
+}
+
+float Quaternion::getZ()
+{
+    return z;
+}
+
+float Quaternion::getW()
+{
+    return w;
+}
+
+void Quaternion::setX(float x)
+{
+    this->x = x;
+}
+
+void Quaternion::setY(float y)
+{
+    this->y = y;
+}
+
+void Quaternion::setZ(float z)
+{
+    this->z = z;
+}
+
+void Quaternion::setW(float w)
+{
+    this->w = w;
+}

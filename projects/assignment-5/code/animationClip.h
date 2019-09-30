@@ -17,6 +17,7 @@ class AnimationClip
         AnimationCurve& curveByIndex(int curveIndex);
         short getNumberOfKeys();
         short getKeyStride();
+        short getKeyDuration();
 
     private:
         std::string name;

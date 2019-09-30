@@ -21,14 +21,18 @@ class Joint
         void draw(Matrix4D mat);
         void drawLines(Matrix4D mat);
         int movePosition(Matrix4D mat, std::string name);
-        int ID; //Id if the joint
+        int ID; //Id of the joint
         std::vector<Joint*> children = std::vector<Joint*>(); //List of all the joints children
         Matrix4D worldPosition;
+        Joint* getJoint(int id);
+        void setWorldPosition(Matrix4D mat);
+        Matrix4D inverseLocalPosition;
+        void reset();
 
     private:
         void splitStringIntoFloatVetor(const std::string &s, char delim, std::vector<float> &elems);
         Matrix4D localPosition;
-        Matrix4D inverseLocalPosition;
+        Matrix4D defaultTransform;
         Matrix4D rotation;
         Matrix4D scale;
         Matrix4D transform;

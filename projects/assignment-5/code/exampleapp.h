@@ -14,6 +14,7 @@
 #include "joint.h"
 #include "animatedModel.h"
 #include <cmath>
+#include "animator.h"
 
 namespace Example
 {
@@ -37,7 +38,8 @@ private:
 	GraphicsNode GN;
 	GraphicsNode GN2;
 	GraphicsNode GN3;
-	AnimatedModel am;
+	AnimatedModel* am;
+	Animator an;
 	float cameraSpeed = 0.02f;
 
 	//things to make the camera move

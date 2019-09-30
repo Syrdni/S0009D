@@ -1,7 +1,7 @@
+#pragma once
 #include "joint.h"
 #include "tinyxml.h"
 #include "quaternion.h"
-#include "animator.h"
 
 class AnimatedModel
 {
@@ -13,13 +13,15 @@ class AnimatedModel
         void draw(Matrix4D mat);
         void drawLines(Matrix4D mat);
         void moveJointPosition(Matrix4D mat, std::string name);
+        Joint* getJointFromId(int id);
+        Joint* getRootJoint();
+        void reset();
 
     private:
         MeshResource mesh;
         TextureResource texture;
         ShaderObject shader;
         Joint* rootJoint;
-        Animator animator;
         void splitStringIntoFloatVetor(const std::string &s, char delim, std::vector<float> &elems);
         void quaternionToEuler(std::vector<float> &quaternion);
 

@@ -59,3 +59,8 @@ short AnimationClip::getKeyStride()
 {
     return this->keyStride;
 }
+
+short AnimationClip::getKeyDuration()
+{
+    return this->keyDuration;
+}

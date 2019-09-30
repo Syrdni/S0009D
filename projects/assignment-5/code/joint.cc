@@ -48,6 +48,7 @@ void Joint::calcInverseLocalPosition(Matrix4D parentLocalTransform)
 void Joint::calcWorldSpace(Matrix4D parentTransform)
 {
     worldPosition =  parentTransform * transform;
+    defaultTransform = worldPosition;
 
     for (int i = 0; i < children.size(); i++)
     {
@@ -130,4 +131,35 @@ int Joint::movePosition(Matrix4D mat, std::string jointName)
         }
     }
     return 0;    
+}
+
+Joint* Joint::getJoint(int id)
+{
+    if (this->ID == id)
+    {
+        return this;
+    }
+    else
+    {
+        for (int i = 0; i < children.size(); i++)
+        {
+            Joint* joint = children[i]->getJoint(id);
+            if (!joint){}
+            else
+            {
+                return joint;
+            }
+        }
+    }  
+    return NULL;
+}
+
+void Joint::setWorldPosition(Matrix4D mat)
+{
+
+}
+
+void Joint::reset()
+{
+    worldPosition = defaultTransform;
 }

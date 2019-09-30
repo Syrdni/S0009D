@@ -120,6 +120,11 @@ void AnimatedModel::moveJointPosition(Matrix4D mat, std::string name)
     rootJoint->calcWorldSpace(Matrix4D());
 }
 
+Joint* AnimatedModel::getJointFromId(int id)
+{
+    return rootJoint->getJoint(id);
+}
+
 void AnimatedModel::quaternionToEuler(std::vector<float> &quaternion)
 {
     float x, y, z , w;
@@ -142,4 +147,14 @@ void AnimatedModel::quaternionToEuler(std::vector<float> &quaternion)
     double siny_cosp = +2.0 * ((w*z) + (x*y));
     double cosy_cosp = +1.0 - 2.0 * ((y*y) + (z*z));
     quaternion.push_back(atan2(siny_cosp, cosy_cosp)); 
+}
+
+Joint* AnimatedModel::getRootJoint()
+{
+    return rootJoint;
+}
+
+void AnimatedModel::reset()
+{
+    rootJoint->reset();
 }

@@ -6,6 +6,7 @@ class KeyFrame
 {
     public:
         KeyFrame(std::map<int, JointTransform> modelPose, float timeStamp);
+        KeyFrame();
         ~KeyFrame();
         float getTimeStamp();
         std::map<int, JointTransform> getModelPose();

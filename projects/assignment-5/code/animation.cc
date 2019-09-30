@@ -6,6 +6,10 @@ Animation::Animation(float animationLength, std::vector<KeyFrame> keyFrames)
     this->keyFrames = keyFrames;
 }
 
+Animation::Animation()
+{
+}
+
 Animation::~Animation()
 {
 
