@@ -191,7 +191,7 @@ float Animator::calculateProgression(KeyFrame previousFrame, KeyFrame nextFrame)
 std::map<int, Matrix4D> Animator::interpolatePoses(KeyFrame previousFrame, KeyFrame nextFrame, float progression)
 {
     std::map<int, Matrix4D> currentPose;
-    for (int i = 0; i < nextFrame.getModelPose().size(); i++)
+    for (int i = 0; i < previousFrame.getModelPose().size(); i++)
     {
         JointTransform previousTransfrom = previousFrame.getModelPose()[i];
         JointTransform nextTransfrom = nextFrame.getModelPose()[i];
@@ -209,7 +209,7 @@ void Animator::applyPose(std::map<int, Matrix4D> currentPose, Joint* joint, Matr
     {
         applyPose(currentPose, joint->children[i], currentTransform);
     }
-    currentTransform = currentTransform * joint->inverseLocalPosition;
+    //currentTransform = currentTransform * joint->inverseLocalPosition;
     joint->worldPosition = currentTransform;
     
 }
