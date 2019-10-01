@@ -64,3 +64,8 @@ short AnimationClip::getKeyDuration()
 {
     return this->keyDuration;
 }
+
+short AnimationClip::getStartKeyIndex()
+{
+    return this->getStartKeyIndex();
+}

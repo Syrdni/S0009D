@@ -57,3 +57,8 @@ CurveType::Type AnimationCurve::getCurveType()
 {
     return this->curveType;
 }
+
+int AnimationCurve::getFirstKeyIndex()
+{
+    return this->firstKeyIndex;
+}

@@ -17,7 +17,7 @@ class Animator
         Animator();
         ~Animator();
         bool readNax3File(std::string fileLocation);
-        void createAnimation();
+        void loadAnimation(int index);
         void setAnimationModel(AnimatedModel* entity);
         void update();
 
@@ -33,4 +33,5 @@ class Animator
         float calculateProgression(KeyFrame previousFrame, KeyFrame nextFrame);
         std::map<int, Matrix4D> interpolatePoses(KeyFrame previousFrame, KeyFrame nextFrame, float progression);
         void applyPose(std::map<int, Matrix4D> currentPose, Joint* joint, Matrix4D parentTransform);
+        void resetTimer();
 };

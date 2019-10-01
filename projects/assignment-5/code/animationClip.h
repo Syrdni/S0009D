@@ -18,6 +18,7 @@ class AnimationClip
         short getNumberOfKeys();
         short getKeyStride();
         short getKeyDuration();
+        short getStartKeyIndex();
 
     private:
         std::string name;

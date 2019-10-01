@@ -31,6 +31,7 @@ class AnimationCurve
         void setCurveType(CurveType::Type curveType);
         void setStaticKey(float x, float y, float z, float w);
         CurveType::Type getCurveType();
+        int getFirstKeyIndex();
 
 
     private:

@@ -72,7 +72,7 @@ bool Animator::readNax3File(std::string fileLocation)
             for (int curveIndex = 0; curveIndex < naxClip->numCurves; curveIndex++)
             {
                 Nax3Curve* naxCurve = (Nax3Curve*)ptr;
-                ptr += sizeof(Nax3Curve);
+                ptr += sizeof(Nax3Curve);                
 
                 AnimationCurve& animCurve = clip.curveByIndex(curveIndex);
                 animCurve.setFirstKeyIndex(naxCurve->firstKeyIndex);
@@ -89,19 +89,34 @@ bool Animator::readNax3File(std::string fileLocation)
         memoryBlock = keyPtr;
         animResource = anim;
     }
-    createAnimation();
 }
 
-void Animator::createAnimation()
+void Animator::loadAnimation(int clipIndex)
 {
+    //Check if the index is vaild
+    if (clipIndex >= animResource->getAmountOfClips() || clipIndex < 0)
+        return;
+
+    //Reset animation timer even if it is the same animation
+    resetTimer();
+
+    if (clipIndex == currentAnimation.getClipIndex())
+        return;
+    
+    
+
     //Create a new animation
     std::vector<KeyFrame> animation;
 
     //Get the animation clip
-    AnimationClip clip = animResource->getClip(0);
+    AnimationClip clip = animResource->getClip(clipIndex);
 
     //Block of memory
     char* ptr = (char*)memoryBlock;
+
+    //Move pointer forward
+    ptr += clip.curveByIndex(0).getFirstKeyIndex() * sizeof(Vector4D);
+
 
     for (int i = 0; i < clip.getNumberOfKeys(); i++)
     {
@@ -133,7 +148,7 @@ void Animator::createAnimation()
         KeyFrame keyFrame = KeyFrame(modelPose, 40*i);
         animation.push_back(keyFrame);
     }
-    currentAnimation = Animation(clip.getNumberOfKeys()*clip.getKeyDuration(), animation);
+    currentAnimation = Animation((clip.getNumberOfKeys()-1)*clip.getKeyDuration(), animation, clipIndex);
 }
 
 void Animator::setAnimationModel(AnimatedModel* am)
@@ -151,7 +166,7 @@ void Animator::update()
 
 void Animator::increaseAnimationTime()
 {
-    animationTime += 1;
+    animationTime += 6;
     if (animationTime > currentAnimation.getAnimationLength())
     {
         animationTime = 0;
@@ -177,6 +192,7 @@ std::vector<KeyFrame> Animator::getReleventKeyFrames()
 
         previousFrame = frames[i]; 
     }
+       
     std::vector<KeyFrame> v = {previousFrame, nextFrame};
     return v;
 }
@@ -212,4 +228,9 @@ void Animator::applyPose(std::map<int, Matrix4D> currentPose, Joint* joint, Matr
     //currentTransform = currentTransform * joint->inverseLocalPosition;
     joint->worldPosition = currentTransform;
     
+}
+
+void Animator::resetTimer()
+{
+    this->animationTime = 0;
 }

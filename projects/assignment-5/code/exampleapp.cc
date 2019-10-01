@@ -116,7 +116,7 @@ ExampleApp::Open()
 {
 	App::Open();
 	this->window = new Display::Window;
-	window->SetKeyPressFunction([this](int32 key, int32, int32, int32)
+	window->SetKeyPressFunction([this](int32 key, int32, int32 action, int32)
 	{
 		if (key == GLFW_KEY_ESCAPE) {
 			this->window->Close();
@@ -133,6 +133,27 @@ ExampleApp::Open()
 		if (key == GLFW_KEY_A) {
 			cameraPos = cameraPos - (cameraFront.crossProduct(cameraUp).normalize()) * cameraSpeed;
 		}
+		
+		//Animations
+		if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+			an.loadAnimation(0);
+		if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+			an.loadAnimation(1);
+		if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+			an.loadAnimation(2);
+		if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+			an.loadAnimation(3);
+		if (key == GLFW_KEY_5 && action == GLFW_PRESS)
+			an.loadAnimation(4);
+		if (key == GLFW_KEY_6 && action == GLFW_PRESS)
+			an.loadAnimation(5);
+		if (key == GLFW_KEY_7 && action == GLFW_PRESS)
+			an.loadAnimation(6);
+		if (key == GLFW_KEY_8 && action == GLFW_PRESS)
+			an.loadAnimation(7);
+		if (key == GLFW_KEY_9 && action == GLFW_PRESS)
+			an.loadAnimation(8);
+		
 	});
 	window->SetMousePressFunction([this](int32 key, int32 action, int32) {
 		if (key == GLFW_MOUSE_BUTTON_LEFT, action == GLFW_PRESS) {
@@ -265,11 +286,6 @@ ExampleApp::Run()
 	float rotation = 0.01f;
 	while (this->window->IsOpen())
 	{	
-		rotation += 0.1;
-		Vector4D temp = Vector4D(0, 0, cosf(rotation)*0.05, 1);
-		Vector4D temp3 = Vector4D(0, cosf(rotation)*0.1, 0, 1);
-		Matrix4D temp2 = Matrix4D::getPositionMatrix(temp);
-		Matrix4D temp4 = Matrix4D::getPositionMatrix(temp3);
 
 		//position[3] += -1.0f;
 		this->window->Update();
@@ -277,23 +293,18 @@ ExampleApp::Run()
 
 		//rotation += 0.01;
 
-		Matrix4D rotY = Matrix4D::rotY(rotation);
+		//Matrix4D rotY = Matrix4D::rotY(rotation);
 
 		lookAt = Matrix4D::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-		GN.setTransform(perspectiveProjection*lookAt*(position*rotY));
-		GN.setPosition(position*rotY);
+		//GN.setTransform(perspectiveProjection*lookAt*(position*rotY));
+		//GN.setPosition(position*rotY);
+		//GN.draw();
 
-		GN.draw();
-
-		//am->moveJointPosition(temp2, "Chest");
-		//am->moveJointPosition(temp4, "Right_Elbow");
 		am->reset();
 		an.update();
 		am->draw(perspectiveProjection*lookAt);
 		am->drawLines(perspectiveProjection*lookAt);
-
-		//constexpr uint magic = 'NAX3';
 
 		glFlush();
 
