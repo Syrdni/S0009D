@@ -13,7 +13,7 @@
 class Animator
 {
     public:
-        Animator(AnimatedModel* guy);
+        Animator(AnimatedModel* model);
         Animator();
         ~Animator();
         bool readNax3File(std::string fileLocation);

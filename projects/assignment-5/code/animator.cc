@@ -17,6 +17,7 @@ Animator::~Animator()
 
 bool Animator::readNax3File(std::string fileLocation)
 {
+    //Open the Nax3 File
     std::ifstream infile(fileLocation.c_str(), std::ifstream::binary);
 
     //Check if the file exists
@@ -100,10 +101,9 @@ void Animator::loadAnimation(int clipIndex)
     //Reset animation timer even if it is the same animation
     resetTimer();
 
+    //Check if the new animation is the same animation already playing
     if (clipIndex == currentAnimation.getClipIndex())
         return;
-    
-    
 
     //Create a new animation
     std::vector<KeyFrame> animation;

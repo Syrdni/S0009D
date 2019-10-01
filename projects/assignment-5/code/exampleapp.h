@@ -40,7 +40,7 @@ private:
 	GraphicsNode GN3;
 	AnimatedModel* am;
 	Animator an;
-	float cameraSpeed = 0.02f;
+	float cameraSpeed = 0.05f;
 
 	//things to make the camera move
 	Vector4D cameraPos = Vector4D(-0.06f, 1.0f, 3.0f, 1.0f);
