@@ -24,32 +24,44 @@ bool Animator::readNax3File(std::string fileLocation)
     if (!infile)
         return false;
     
+    //Get the pointer to the buffer object
     std::filebuf* pbuf = infile.rdbuf();
+
+    //Get the file size
     std::size_t size = pbuf->pubseekoff(0, infile.end, infile.in);
     pbuf->pubseekpos(0, infile.in);
+
+    //Allocate memory to contain the data
     char* ptr = new char[size];
+
+    //Get the file data
     pbuf->sgetn(ptr,size);
     infile.close();
 
-    //Cast to naxHeader
+    //Cast to the Nax3Header struct
     Nax3Header* naxHeader = (Nax3Header*) ptr;
+
     //Move pointer forward
     ptr += sizeof(Nax3Header);
 
     AnimationResource* anim = new AnimationResource();
 
+    //Check if the file we just read was a Nax3 file
     if (naxHeader->magic != NAX3_MAGICNUMBER)
         return false;
 
+    //Check if the file contains any clips
     if (naxHeader->numClips > 0)
     {
-        //setup animation clips
+        //Create x amounts of empty clips
         anim->setupClips(naxHeader->numClips);
         int clipIndex;
         int numClips = naxHeader->numClips;
         for (clipIndex = 0; clipIndex < numClips; clipIndex++)
         {
+            //Cast to Nax3Clip
             Nax3Clip* naxClip = (Nax3Clip*)ptr;
+            //Move pointer forward
             ptr += sizeof(Nax3Clip);
 
             //Setup animation clip object
@@ -61,7 +73,7 @@ bool Animator::readNax3File(std::string fileLocation)
             clip.setKeyDuration(naxClip->keyDuration);
             clip.setName(naxClip->name);
 
-            //Skip these
+            //We dont use these, skip them
             int eventIndex;
             for (int eventIndex = 0; eventIndex < naxClip->numEvents; eventIndex++)
             {
@@ -72,22 +84,28 @@ bool Animator::readNax3File(std::string fileLocation)
             int curveIndex;
             for (int curveIndex = 0; curveIndex < naxClip->numCurves; curveIndex++)
             {
+                //Cast to Nax3Curve
                 Nax3Curve* naxCurve = (Nax3Curve*)ptr;
+
+                //Move pointer forward
                 ptr += sizeof(Nax3Curve);                
 
+                //Setup animation curve
                 AnimationCurve& animCurve = clip.curveByIndex(curveIndex);
                 animCurve.setFirstKeyIndex(naxCurve->firstKeyIndex);
                 animCurve.setActive(naxCurve->isActive != 0);
                 animCurve.setStatic(naxCurve->isStatic != 0);
                 animCurve.setCurveType((CurveType::Type)naxCurve->curveType);
                 animCurve.setStaticKey(naxCurve->staticKeyX, naxCurve->staticKeyY, naxCurve->staticKeyZ, naxCurve->staticKeyW);
-                int lul = 0;
             }    
         }
 
+        //Save the rest of the data
         void* keyPtr[naxHeader->numKeys * sizeof(Vector4D)];
         memcpy(keyPtr, ptr, (naxHeader->numKeys * sizeof(Vector4D)));
         memoryBlock = keyPtr;
+
+        //Save the animationResource for later use
         animResource = anim;
     }
 }
@@ -134,6 +152,7 @@ void Animator::loadAnimation(int clipIndex)
                 //Move the pointer forward
                 ptr += sizeof(Vector4D);
 
+                //Check which kind of curve it is
                 switch(clip.curveByIndex((4*j)+k).getCurveType())
                 {
                     case CurveType::Translation:
@@ -144,7 +163,7 @@ void Animator::loadAnimation(int clipIndex)
             }
             modelPose.insert(std::pair<int, JointTransform>(j, jointTrans));
         }
-        //insert keyFrame into the animation
+        //Insert keyFrame into the animation
         KeyFrame keyFrame = KeyFrame(modelPose, 40*i);
         animation.push_back(keyFrame);
     }
@@ -184,9 +203,12 @@ std::vector<KeyFrame> Animator::getReleventKeyFrames()
 {
     std::vector<KeyFrame> frames = currentAnimation.getKeyFrames();
     KeyFrame previousFrame, nextFrame;
+
     for (int i = 0; i < frames.size(); i++)
     {
         nextFrame = frames[i];
+
+        //If the keyframes timestamp is bigger than the current animation time then we have found our next frame
         if (nextFrame.getTimeStamp() > animationTime)
             break;
 
@@ -225,7 +247,6 @@ void Animator::applyPose(std::map<int, Matrix4D> currentPose, Joint* joint, Matr
     {
         applyPose(currentPose, joint->children[i], currentTransform);
     }
-    //currentTransform = currentTransform * joint->inverseLocalPosition;
     joint->worldPosition = currentTransform;
     
 }
