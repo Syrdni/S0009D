@@ -188,7 +188,7 @@ void Animator::update()
 }
 
 void Animator::increaseAnimationTime()
-{
+{    
     animationTime += 6;
     if (animationTime > currentAnimation.getAnimationLength())
     {

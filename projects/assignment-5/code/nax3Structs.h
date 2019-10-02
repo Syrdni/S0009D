@@ -1,6 +1,7 @@
 #pragma once
 
 #define NAX3_MAGICNUMBER 'NA01'
+#define NAX2_MAGICNUMBER 'NVX2'
 
 struct Nax3Header
 {
@@ -40,4 +41,25 @@ struct Nax3Curve
     float staticKeyY;
     float staticKeyZ;
     float staticKeyW;
+};
+
+struct Nvx2Header
+{
+	uint magic;
+	uint numGroups;
+	uint numVertices;
+	uint vertexWidth;
+	uint numIndices;
+	uint numEdges;
+	uint vertexComponentMask;
+};
+
+struct Nvx2Group
+{
+	uint firstVertex;
+	uint numVertices;
+	uint firstTriangle;
+	uint numTriangles;
+	uint firstEdge;
+	uint numEdges;
 };

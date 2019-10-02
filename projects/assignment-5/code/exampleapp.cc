@@ -231,6 +231,7 @@ ExampleApp::Open()
 
 		am = new AnimatedModel();
 		am->buildJointTreeWithXML("Unit_Footman.constants");
+		am->loadMeshDataFromNax2("Unit_Footman.nvx2");
 
 		ShaderObject* so = new ShaderObject();
 
@@ -301,7 +302,6 @@ ExampleApp::Run()
 		//GN.setPosition(position*rotY);
 		//GN.draw();
 
-		am->reset();
 		an.update();
 		am->draw(perspectiveProjection*lookAt);
 		am->drawLines(perspectiveProjection*lookAt);

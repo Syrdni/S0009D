@@ -2,6 +2,8 @@
 #include "joint.h"
 #include "tinyxml.h"
 #include "quaternion.h"
+#include "nax3Structs.h"
+#include "vertexComponent.h"
 
 class AnimatedModel
 {
@@ -32,10 +34,66 @@ class AnimatedModel
         //Resets the models pose to the original position. (Used in animator)
         void reset();
 
+        //Load mesh data from a nax2 file
+        bool loadMeshDataFromNax2(std::string filePath);
+
+        void setupModel();
+
     private:
+
+    enum N2VertexComponent
+    {
+        N2Coord        = (1<<0),      // 3 floats
+        N2Normal       = (1<<1),      // 3 floats
+        N2NormalB4N   = (1<<2),      // 4 unsigned bytes, normalized
+        N2Uv0          = (1<<3),      // 2 floats
+        N2Uv0S2        = (1<<4),      // 2 shorts, 4.12 fixed point
+        N2Uv1          = (1<<5),      // 2 floats
+        N2Uv1S2        = (1<<6),      // 2 shorts, 4.12 fixed point
+        N2Uv2          = (1<<7),      // 2 floats
+        N2Uv2S2        = (1<<8),      // 2 shorts, 4.12 fixed point
+        N2Uv3          = (1<<9),      // 2 floats
+        N2Uv3S2        = (1<<10),     // 2 shorts, 4.12 fixed point
+        N2Color        = (1<<11),     // 4 floats
+        N2ColorUB4N    = (1<<12),     // 4 unsigned bytes, normalized
+        N2Tangent      = (1<<13),     // 3 floats
+        N2TangentB4N  = (1<<14),     // 4 unsigned bytes, normalized
+        N2Binormal     = (1<<15),     // 3 floats
+        N2BinormalB4N = (1<<16),     // 4 unsigned bytes, normalized
+        N2Weights      = (1<<17),     // 4 floats
+        N2WeightsUB4N  = (1<<18),     // 4 unsigned bytes, normalized
+        N2JIndices     = (1<<19),     // 4 floats
+        N2JIndicesUB4  = (1<<20),     // 4 unsigned bytes
+
+        N2NumVertexComponents = 21,
+        N2AllComponents = ((1<<N2NumVertexComponents) - 1),
+    };
+
+        unsigned int VAO;
+        unsigned int EBO;
+        unsigned int VBO;
+        
+
         MeshResource mesh;
         TextureResource texture;
         ShaderObject shader;
+
+        void* groupDataPtr;
+        void* vertexDataPtr;
+        void* indexDataPtr;
+
+        uint groupDataSize;
+        uint vertexDataSize;
+        uint indexDataSize;
+
+        uint numGroups;
+        uint numVertices;
+        uint vertexWidth;
+        uint numIndices;
+        uint numEdges;
+        uint vertexComponentMask;
+
+        std::vector<VertexComponent> vertexComponents;
 
         //The rootjoin of the joint tree
         Joint* rootJoint;

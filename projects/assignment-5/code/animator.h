@@ -9,6 +9,7 @@
 #include "Vector4D.h"
 #include "animation.h"
 #include "animatedModel.h"
+#include <chrono>
 
 class Animator
 {
@@ -41,7 +42,7 @@ class Animator
         //The current animation playing
         Animation currentAnimation;
 
-        //The current time of the animation
+        //The current time of the animation. Measured in frames
         float animationTime = 0;
 
         //The model that is going to be animated
