@@ -177,6 +177,10 @@ void Animator::setAnimationModel(AnimatedModel* am)
 
 void Animator::update()
 {
+    //Check if an animation is running
+    if (currentAnimation.getClipIndex() == -1)
+        return;
+    
     increaseAnimationTime();
     std::map<int, Matrix4D> currentPos = calculateCurrentAnimationPose();
     applyPose(currentPos, entity->getRootJoint(), Matrix4D());
@@ -241,11 +245,11 @@ std::map<int, Matrix4D> Animator::interpolatePoses(KeyFrame previousFrame, KeyFr
 
 void Animator::applyPose(std::map<int, Matrix4D> currentPose, Joint* joint, Matrix4D parentTransform)
 {
-    Matrix4D currentLocalTransform = currentPose[joint->ID];
+    Matrix4D currentLocalTransform = currentPose[joint->getID()];
     Matrix4D currentTransform = parentTransform * currentLocalTransform;
-    for (int i = 0; i < joint->children.size(); i++)
+    for (int i = 0; i < joint->getChildren().size(); i++)
     {
-        applyPose(currentPose, joint->children[i], currentTransform);
+        applyPose(currentPose, joint->getChildren()[i], currentTransform);
     }
     joint->worldPosition = currentTransform;
     

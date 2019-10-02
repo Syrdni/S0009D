@@ -125,30 +125,6 @@ Joint* AnimatedModel::getJointFromId(int id)
     return rootJoint->getJoint(id);
 }
 
-void AnimatedModel::quaternionToEuler(std::vector<float> &quaternion)
-{
-    float x, y, z , w;
-    quaternion.clear();
-
-    //calc roll rotation
-    x = quaternion[0]; y = quaternion[1]; z = quaternion[2]; w = quaternion[3];
-    double sinr_cosp = +2.0 * ((w * x) + (y * z));
-    double cosr_cosp = +1.0 - 2.0 * ((x * x) + (y * y));
-    quaternion.push_back(atan2(sinr_cosp, cosr_cosp));
-
-    //calc pitch rotation
-    double sinp = +2.0 * (w * y - z * x);
-    if (fabs(sinp) >= 1)
-        quaternion.push_back(copysign(M_PI / 2, sinp));
-    else
-        quaternion.push_back(asin(sinp));
-
-    //calc yaw
-    double siny_cosp = +2.0 * ((w*z) + (x*y));
-    double cosy_cosp = +1.0 - 2.0 * ((y*y) + (z*z));
-    quaternion.push_back(atan2(siny_cosp, cosy_cosp)); 
-}
-
 Joint* AnimatedModel::getRootJoint()
 {
     return rootJoint;

@@ -163,3 +163,13 @@ void Joint::reset()
 {
     worldPosition = defaultTransform;
 }
+
+std::vector<Joint*> Joint::getChildren()
+{
+    return this->children;
+}
+
+int Joint::getID()
+{
+    return ID;
+}

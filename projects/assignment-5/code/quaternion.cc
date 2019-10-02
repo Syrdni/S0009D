@@ -86,7 +86,11 @@ Quaternion Quaternion::operator*(const Quaternion &q)
 
 void Quaternion::normalize()
 {
-    float mag = (float)sqrt(w*w+x*x);
+    float mag = (float)sqrt(w*w+x*x+y*y+z*z);
+    w /= mag;
+    x /= mag;
+    y /= mag;
+    z /= mag;
 }
 
 float Quaternion::getX()
