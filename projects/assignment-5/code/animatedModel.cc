@@ -217,11 +217,15 @@ bool AnimatedModel::loadMeshDataFromNax2(std::string filePath)
 
 void AnimatedModel::drawModel(Matrix4D mat)
 {
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, Diffuse);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, Normal);
+
     glUseProgram(program);
 
     unsigned int transformLoc = glGetUniformLocation(program, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_TRUE, mat.getMatrix());
-    glBindTexture(GL_TEXTURE_2D, TEX);
 
     unsigned int transformLoc2 = glGetUniformLocation(program, "cameraPosition");
 	glUniform4fv(transformLoc2, 1, Vector4D(-0.06f, 1.0f, 3.0f, 1.0f).getVector());
@@ -245,12 +249,6 @@ void AnimatedModel::setup()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexDataSize, indexDataPtr, GL_STATIC_DRAW);
 
-    //int totalsize;
-    //for (int i = 0; i < vertexComponents.size(); i++)
-    //{
-    //    glEnableVertexAttribArray(0);
-    //    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)* vertexWidth, NULL);
-    //}
     glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)* vertexWidth, NULL);
 	glEnableVertexAttribArray(1);
@@ -267,9 +265,11 @@ void AnimatedModel::setup()
 	//glVertexAttribPointer(2, 2, GL_BYTE, GL_FALSE, sizeof(float)* vertexWidth, (void*)(sizeof(GL_BYTE)*38));
 	glBindVertexArray(0);
 
-    glGenTextures(1, &TEX);
-    glBindTexture(GL_TEXTURE_2D, TEX);
+    //Handels for textures
+    glGenTextures(1, &Diffuse);
 
+    //Get diffuse Texutre
+    glBindTexture(GL_TEXTURE_2D, Diffuse);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -279,6 +279,21 @@ void AnimatedModel::setup()
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0 , GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+    //Get Normal Texutre
+    glGenTextures(1, &Normal);
+    glBindTexture(GL_TEXTURE_2D, Normal);
+    data = stbi_load("Footman_Normal.tga", &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0 , GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
@@ -348,4 +363,9 @@ void AnimatedModel::setup()
 	glAttachShader(program, vertexShader);
     glAttachShader(program, fragmentShader);
 	glLinkProgram(program);
+
+    glUseProgram(program);
+    glUniform1i(glGetUniformLocation(program, "diffuseTexture"), 0);
+    glUniform1i(glGetUniformLocation(program, "normalMap"), 1);
+    glUseProgram(0);
 }
