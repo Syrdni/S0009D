@@ -232,6 +232,7 @@ ExampleApp::Open()
 		am = new AnimatedModel();
 		am->buildJointTreeWithXML("Unit_Footman.constants");
 		am->loadMeshDataFromNax2("Unit_Footman.nvx2");
+		am->setup();
 
 		ShaderObject* so = new ShaderObject();
 
@@ -294,17 +295,18 @@ ExampleApp::Run()
 
 		//rotation += 0.01;
 
-		//Matrix4D rotY = Matrix4D::rotY(rotation);
+		Matrix4D rotY = Matrix4D::rotY(rotation);
 
 		lookAt = Matrix4D::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-		//GN.setTransform(perspectiveProjection*lookAt*(position*rotY));
-		//GN.setPosition(position*rotY);
-		//GN.draw();
+		GN.setTransform(perspectiveProjection*lookAt*(position*rotY));
+		GN.setPosition(position*rotY);
+		GN.draw();
 
 		an.update();
-		am->draw(perspectiveProjection*lookAt);
-		am->drawLines(perspectiveProjection*lookAt);
+		am->drawModel(perspectiveProjection*lookAt*Matrix4D());
+		//am->draw(perspectiveProjection*lookAt);
+		//am->drawLines(perspectiveProjection*lookAt);
 
 		glFlush();
 

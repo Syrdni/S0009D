@@ -26,10 +26,12 @@ enum Format
 class VertexComponent
 {
     public:
-        VertexComponent(VertexType vt, Format f);
+        VertexComponent(VertexType vt, Format f, int size, int isN);
         VertexComponent();
         ~VertexComponent();
-    private:
         VertexType vt;
         Format f;
+        int sizeInBytes;
+        int isNormalized;
+    private:
 };

@@ -183,47 +183,169 @@ bool AnimatedModel::loadMeshDataFromNax2(std::string filePath)
     {
         VertexType vertexType;
         Format format;
+        int sizeInBytes, isNormalized;
         if (vertexComponentMask & (1<<i))
         {
             switch (1<<i)
             {
-                case N2Coord:       vertexType = VertexType::Position; format = Format::Float3; break;
-                case N2Normal:      vertexType = VertexType::Normal; format = Format::Float3; break;
-                case N2NormalB4N:   vertexType = VertexType::Normal; format = Format::Byte4N; break;
-                case N2Uv0:         vertexType = VertexType::TexCoord1; format = Format::Float2; break;
-                case N2Uv0S2:       vertexType = VertexType::TexCoord1; format = Format::Short2; break;
-                case N2Uv1:         vertexType = VertexType::TexCoord2; format = Format::Float2; break;
-                case N2Uv1S2:       vertexType = VertexType::TexCoord2; format = Format::Short2; break;
-                case N2Color:       vertexType = VertexType::Color; format = Format::Float4; break;
-                case N2ColorUB4N:   vertexType = VertexType::Color; format = Format::UByte4N; break;
-                case N2Tangent:     vertexType = VertexType::Tangent; format = Format::Float3; break;
-                case N2TangentB4N:  vertexType = VertexType::Tangent; format = Format::Byte4N; break;
-                case N2Binormal:    vertexType = VertexType::Binormal; format = Format::Float3; break;
-                case N2BinormalB4N: vertexType = VertexType::Binormal; format = Format::Byte4N; break;
-                case N2Weights:     vertexType = VertexType::SkinWeights; format = Format::Float4; break;
-                case N2WeightsUB4N: vertexType = VertexType::SkinWeights; format = Format::UByte4N; break;
-                case N2JIndices:    vertexType = VertexType::SkinJIndices; format = Format::Float4; break;
-                case N2JIndicesUB4: vertexType = VertexType::SkinJIndices; format = Format::UByte4; break;
+                case N2Coord:       vertexType = VertexType::Position;      format = Format::Float3;    sizeInBytes = 12;   isNormalized = 0; break;
+                case N2Normal:      vertexType = VertexType::Normal;        format = Format::Float3;    sizeInBytes = 12;   isNormalized = 0; break;
+                case N2NormalB4N:   vertexType = VertexType::Normal;        format = Format::Byte4N;    sizeInBytes = 1;    isNormalized = 1; break;
+                case N2Uv0:         vertexType = VertexType::TexCoord1;     format = Format::Float2;    sizeInBytes = 8;    isNormalized = 0; break;
+                case N2Uv0S2:       vertexType = VertexType::TexCoord1;     format = Format::Short2;    sizeInBytes = 4;    isNormalized = 0; break;
+                case N2Uv1:         vertexType = VertexType::TexCoord2;     format = Format::Float2;    sizeInBytes = 8;    isNormalized = 0; break;
+                case N2Uv1S2:       vertexType = VertexType::TexCoord2;     format = Format::Short2;    sizeInBytes = 4;    isNormalized = 0; break;
+                case N2Color:       vertexType = VertexType::Color;         format = Format::Float4;    sizeInBytes = 16;   isNormalized = 0; break;
+                case N2ColorUB4N:   vertexType = VertexType::Color;         format = Format::UByte4N;   sizeInBytes = 1;    isNormalized = 1; break;
+                case N2Tangent:     vertexType = VertexType::Tangent;       format = Format::Float3;    sizeInBytes = 12;   isNormalized = 0; break;
+                case N2TangentB4N:  vertexType = VertexType::Tangent;       format = Format::Byte4N;    sizeInBytes = 1;    isNormalized = 1; break;
+                case N2Binormal:    vertexType = VertexType::Binormal;      format = Format::Float3;    sizeInBytes = 12;   isNormalized = 0; break;
+                case N2BinormalB4N: vertexType = VertexType::Binormal;      format = Format::Byte4N;    sizeInBytes = 1;    isNormalized = 1; break;
+                case N2Weights:     vertexType = VertexType::SkinWeights;   format = Format::Float4;    sizeInBytes = 16;   isNormalized = 0; break;
+                case N2WeightsUB4N: vertexType = VertexType::SkinWeights;   format = Format::UByte4N;   sizeInBytes = 1;    isNormalized = 1; break;
+                case N2JIndices:    vertexType = VertexType::SkinJIndices;  format = Format::Float4;    sizeInBytes = 16;   isNormalized = 0; break;
+                case N2JIndicesUB4: vertexType = VertexType::SkinJIndices;  format = Format::UByte4;    sizeInBytes = 1;    isNormalized = 0; break;
             
             default:
                 break;
             }
-            this->vertexComponents.push_back(VertexComponent(vertexType, format));
+            this->vertexComponents.push_back(VertexComponent(vertexType, format, sizeInBytes, isNormalized));
         }
     }
+    int i = 0;
+}
 
+void AnimatedModel::drawModel(Matrix4D mat)
+{
+    glUseProgram(program);
+
+    unsigned int transformLoc = glGetUniformLocation(program, "transform");
+	glUniformMatrix4fv(transformLoc, 1, GL_TRUE, mat.getMatrix());
+    glBindTexture(GL_TEXTURE_2D, TEX);
+
+    unsigned int transformLoc2 = glGetUniformLocation(program, "cameraPosition");
+	glUniform4fv(transformLoc2, 1, Vector4D(-0.06f, 1.0f, 3.0f, 1.0f).getVector());
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, vertexDataSize, GL_UNSIGNED_INT, NULL);
+    glBindVertexArray(0); 
+    glUseProgram(0);
+}
+
+void AnimatedModel::setup()
+{
     glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
 	glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertexDataSize, &vertexDataPtr, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertexDataSize, vertexDataPtr, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexDataSize, &indexDataPtr, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexDataSize, indexDataPtr, GL_STATIC_DRAW);
 
-    
-    
-    int i = 0;
+    //int totalsize;
+    //for (int i = 0; i < vertexComponents.size(); i++)
+    //{
+    //    glEnableVertexAttribArray(0);
+    //    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)* vertexWidth, NULL);
+    //}
+    glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)* vertexWidth, NULL);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*3));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*4));
+    //glEnableVertexAttribArray(3);
+	//glVertexAttribPointer(2, 3, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(GL_BYTE)*32));
+    //glEnableVertexAttribArray(4);
+	//glVertexAttribPointer(2, 3, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(GL_BYTE)*34));
+    //glEnableVertexAttribArray(5);
+	//glVertexAttribPointer(2, 3, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(GL_BYTE)*36));
+    //glEnableVertexAttribArray(6);
+	//glVertexAttribPointer(2, 2, GL_BYTE, GL_FALSE, sizeof(float)* vertexWidth, (void*)(sizeof(GL_BYTE)*38));
+	glBindVertexArray(0);
+
+    glGenTextures(1, &TEX);
+    glBindTexture(GL_TEXTURE_2D, TEX);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load("Footman_Diffuse.tga", &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0 , GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+    //Vertex Shader
+	std::ifstream file;
+	file.open("vertexShaderTest.txt");
+	if (file.fail()) {
+		std::cout << "Failed to load vertexShader" << std::endl;
+		return;
+	}
+	else {
+		std::stringstream tempstream;
+		tempstream << file.rdbuf();
+		std::string temp = tempstream.str();
+		vs = temp.c_str();
+
+        const GLint lengthOfVertexShader = strlen(vs);
+        vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertexShader, 1, &vs, &lengthOfVertexShader);
+        glCompileShader(vertexShader);
+
+        //ERROR LOG
+        int  success;
+        char infoLog[512];
+        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+            std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        }
+		file.close();
+	}
+
+	file.open("fragmentShaderTest.txt");
+	if (file.fail()) {
+		std::cout << "Failed to load fragmentShader" << std::endl;
+		return;
+	}
+
+	else {
+		std::stringstream tempstream;
+		tempstream << file.rdbuf();
+		std::string temp = tempstream.str();
+		fs = temp.c_str();
+		const GLint lengthOfPixelShader = strlen(fs);
+        fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragmentShader, 1, &fs, &lengthOfPixelShader);
+        glCompileShader(fragmentShader);
+
+        int  success;
+        char infoLog[512];
+        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+            std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        }
+		file.close();
+	}
+
+    program = glCreateProgram();
+	glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
+	glLinkProgram(program);
 }

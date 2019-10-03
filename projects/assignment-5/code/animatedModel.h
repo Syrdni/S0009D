@@ -37,7 +37,9 @@ class AnimatedModel
         //Load mesh data from a nax2 file
         bool loadMeshDataFromNax2(std::string filePath);
 
-        void setupModel();
+        void setup();
+
+        void drawModel(Matrix4D mat);
 
     private:
 
@@ -72,6 +74,14 @@ class AnimatedModel
         unsigned int VAO;
         unsigned int EBO;
         unsigned int VBO;
+        unsigned int TEX;
+        unsigned int Diffuse;
+        unsigned int Normal;
+        const char* vs;
+        const char* fs;
+        unsigned int vertexShader;
+        unsigned int fragmentShader;
+        unsigned int program;
         
 
         MeshResource mesh;
