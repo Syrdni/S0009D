@@ -252,17 +252,17 @@ void AnimatedModel::setup()
     glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)* vertexWidth, NULL);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*3));
+	glVertexAttribPointer(1, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*3));
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*4));
-    //glEnableVertexAttribArray(3);
-	//glVertexAttribPointer(2, 3, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(GL_BYTE)*32));
-    //glEnableVertexAttribArray(4);
-	//glVertexAttribPointer(2, 3, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(GL_BYTE)*34));
-    //glEnableVertexAttribArray(5);
-	//glVertexAttribPointer(2, 3, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(GL_BYTE)*36));
-    //glEnableVertexAttribArray(6);
-	//glVertexAttribPointer(2, 2, GL_BYTE, GL_FALSE, sizeof(float)* vertexWidth, (void*)(sizeof(GL_BYTE)*38));
+    glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*6));
+    glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*7));
+    glEnableVertexAttribArray(5);
+	glVertexAttribPointer(5, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*8));
+    glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_BYTE, GL_FALSE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*9));
 	glBindVertexArray(0);
 
     //Handels for textures
