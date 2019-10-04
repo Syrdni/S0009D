@@ -304,9 +304,9 @@ ExampleApp::Run()
 		GN.draw();
 
 		an.update();
+		am->draw(perspectiveProjection*lookAt);
+		am->drawLines(perspectiveProjection*lookAt);
 		am->drawModel(perspectiveProjection*lookAt*Matrix4D());
-		//am->draw(perspectiveProjection*lookAt);
-		//am->drawLines(perspectiveProjection*lookAt);
 
 		glFlush();
 

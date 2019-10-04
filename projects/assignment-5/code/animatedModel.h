@@ -111,4 +111,5 @@ class AnimatedModel
         //Splits a string into a float vector. Used to pares the values from the xml file
         void splitStringIntoFloatVetor(const std::string &s, char delim, std::vector<float> &elems);
 
+        std::vector<Joint*> jointArray;
 };

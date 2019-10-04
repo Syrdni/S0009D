@@ -12,7 +12,7 @@ AnimatedModel::~AnimatedModel()
 void AnimatedModel::buildJointTreeWithXML(std::string filePath)
 {
     TiXmlDocument doc;
-    std::vector<Joint*> tempList = std::vector<Joint*>();
+    jointArray = std::vector<Joint*>();
     const char *path = filePath.c_str();
     if (doc.LoadFile(path, TIXML_ENCODING_UTF8))
     {
@@ -41,13 +41,13 @@ void AnimatedModel::buildJointTreeWithXML(std::string filePath)
                             if (rootjoint)
                             {
                                 this->rootJoint = temp = new Joint(atoi(joint->Attribute("index")), nullptr, joint->Attribute("name"));
-                                tempList.push_back(this->rootJoint);
+                                jointArray.push_back(this->rootJoint);
                                 rootjoint = false;
                             }
                             else
                             {
-                                temp = new Joint(atoi(joint->Attribute("index")), tempList[atoi(joint->Attribute("parent"))], joint->Attribute("name"));
-                                tempList.push_back(temp);
+                                temp = new Joint(atoi(joint->Attribute("index")), jointArray[atoi(joint->Attribute("parent"))], joint->Attribute("name"));
+                                jointArray.push_back(temp);
                             }
                                 std::string positionString, rotationString, scaleString;
                                 Vector4D positionVector, rotationVector, scaleVector;
@@ -183,33 +183,33 @@ bool AnimatedModel::loadMeshDataFromNax2(std::string filePath)
     {
         VertexType vertexType;
         Format format;
-        int sizeInBytes, isNormalized;
+        int sizeInBytes, isNormalized, sizeA;
         if (vertexComponentMask & (1<<i))
         {
             switch (1<<i)
             {
-                case N2Coord:       vertexType = VertexType::Position;      format = Format::Float3;    sizeInBytes = 12;   isNormalized = 0; break;
-                case N2Normal:      vertexType = VertexType::Normal;        format = Format::Float3;    sizeInBytes = 12;   isNormalized = 0; break;
-                case N2NormalB4N:   vertexType = VertexType::Normal;        format = Format::Byte4N;    sizeInBytes = 1;    isNormalized = 1; break;
-                case N2Uv0:         vertexType = VertexType::TexCoord1;     format = Format::Float2;    sizeInBytes = 8;    isNormalized = 0; break;
-                case N2Uv0S2:       vertexType = VertexType::TexCoord1;     format = Format::Short2;    sizeInBytes = 4;    isNormalized = 0; break;
-                case N2Uv1:         vertexType = VertexType::TexCoord2;     format = Format::Float2;    sizeInBytes = 8;    isNormalized = 0; break;
-                case N2Uv1S2:       vertexType = VertexType::TexCoord2;     format = Format::Short2;    sizeInBytes = 4;    isNormalized = 0; break;
-                case N2Color:       vertexType = VertexType::Color;         format = Format::Float4;    sizeInBytes = 16;   isNormalized = 0; break;
-                case N2ColorUB4N:   vertexType = VertexType::Color;         format = Format::UByte4N;   sizeInBytes = 1;    isNormalized = 1; break;
-                case N2Tangent:     vertexType = VertexType::Tangent;       format = Format::Float3;    sizeInBytes = 12;   isNormalized = 0; break;
-                case N2TangentB4N:  vertexType = VertexType::Tangent;       format = Format::Byte4N;    sizeInBytes = 1;    isNormalized = 1; break;
-                case N2Binormal:    vertexType = VertexType::Binormal;      format = Format::Float3;    sizeInBytes = 12;   isNormalized = 0; break;
-                case N2BinormalB4N: vertexType = VertexType::Binormal;      format = Format::Byte4N;    sizeInBytes = 1;    isNormalized = 1; break;
-                case N2Weights:     vertexType = VertexType::SkinWeights;   format = Format::Float4;    sizeInBytes = 16;   isNormalized = 0; break;
-                case N2WeightsUB4N: vertexType = VertexType::SkinWeights;   format = Format::UByte4N;   sizeInBytes = 1;    isNormalized = 1; break;
-                case N2JIndices:    vertexType = VertexType::SkinJIndices;  format = Format::Float4;    sizeInBytes = 16;   isNormalized = 0; break;
-                case N2JIndicesUB4: vertexType = VertexType::SkinJIndices;  format = Format::UByte4;    sizeInBytes = 1;    isNormalized = 0; break;
+                case N2Coord:       vertexType = VertexType::Position;      format = Format::Float3;    sizeInBytes = 12;   isNormalized = 0; sizeA = 3; break;
+                case N2Normal:      vertexType = VertexType::Normal;        format = Format::Float3;    sizeInBytes = 12;   isNormalized = 0; sizeA = 3; break;
+                case N2NormalB4N:   vertexType = VertexType::Normal;        format = Format::Byte4N;    sizeInBytes = 4;    isNormalized = 1; sizeA = 4; break;
+                case N2Uv0:         vertexType = VertexType::TexCoord1;     format = Format::Float2;    sizeInBytes = 8;    isNormalized = 0; sizeA = 2; break;
+                case N2Uv0S2:       vertexType = VertexType::TexCoord1;     format = Format::Short2;    sizeInBytes = 4;    isNormalized = 0; sizeA = 2; break;
+                case N2Uv1:         vertexType = VertexType::TexCoord2;     format = Format::Float2;    sizeInBytes = 8;    isNormalized = 0; sizeA = 2; break;
+                case N2Uv1S2:       vertexType = VertexType::TexCoord2;     format = Format::Short2;    sizeInBytes = 4;    isNormalized = 0; sizeA = 2; break;
+                case N2Color:       vertexType = VertexType::Color;         format = Format::Float4;    sizeInBytes = 16;   isNormalized = 0; sizeA = 4; break;
+                case N2ColorUB4N:   vertexType = VertexType::Color;         format = Format::UByte4N;   sizeInBytes = 4;    isNormalized = 1; sizeA = 4; break;
+                case N2Tangent:     vertexType = VertexType::Tangent;       format = Format::Float3;    sizeInBytes = 12;   isNormalized = 0; sizeA = 3; break;
+                case N2TangentB4N:  vertexType = VertexType::Tangent;       format = Format::Byte4N;    sizeInBytes = 4;    isNormalized = 1; sizeA = 4; break;
+                case N2Binormal:    vertexType = VertexType::Binormal;      format = Format::Float3;    sizeInBytes = 12;   isNormalized = 0; sizeA = 3; break;
+                case N2BinormalB4N: vertexType = VertexType::Binormal;      format = Format::Byte4N;    sizeInBytes = 4;    isNormalized = 1; sizeA = 4; break;
+                case N2Weights:     vertexType = VertexType::SkinWeights;   format = Format::Float4;    sizeInBytes = 16;   isNormalized = 0; sizeA = 4; break;
+                case N2WeightsUB4N: vertexType = VertexType::SkinWeights;   format = Format::UByte4N;   sizeInBytes = 4;    isNormalized = 1; sizeA = 4; break;
+                case N2JIndices:    vertexType = VertexType::SkinJIndices;  format = Format::Float4;    sizeInBytes = 16;   isNormalized = 0; sizeA = 4; break;
+                case N2JIndicesUB4: vertexType = VertexType::SkinJIndices;  format = Format::UByte4;    sizeInBytes = 4;    isNormalized = 0; sizeA = 4; break;
             
             default:
                 break;
             }
-            this->vertexComponents.push_back(VertexComponent(vertexType, format, sizeInBytes, isNormalized));
+            this->vertexComponents.push_back(VertexComponent(vertexType, format, sizeInBytes, isNormalized, sizeA));
         }
     }
     int i = 0;
@@ -230,6 +230,15 @@ void AnimatedModel::drawModel(Matrix4D mat)
     unsigned int transformLoc2 = glGetUniformLocation(program, "cameraPosition");
 	glUniform4fv(transformLoc2, 1, Vector4D(-0.06f, 1.0f, 3.0f, 1.0f).getVector());
 
+    std::vector<Matrix4D> transformArray;
+    for (int i = 0; i < jointArray.size(); i++)
+    {
+        transformArray.push_back(jointArray[i]->worldPosition);
+    }
+    
+    unsigned int transformLoc3 = glGetUniformLocation(program, "jointTransforms");
+    glUniformMatrix4fv(transformLoc3, jointArray.size(), GL_TRUE, (float*)transformArray.data());
+
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, vertexDataSize, GL_UNSIGNED_INT, NULL);
     glBindVertexArray(0); 
@@ -248,6 +257,18 @@ void AnimatedModel::setup()
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexDataSize, indexDataPtr, GL_STATIC_DRAW);
+
+    //glEnableVertexAttribArray(0);
+    //glVertexAttribPointer(0, vertexComponents[0].sizeArray, vertexComponents[0].getType(), vertexComponents[0].isNormalized, sizeof(float)* vertexWidth, NULL);
+//
+    //int amountOfBytes = vertexComponents[0].sizeInBytes;
+    //for (int i = 1; i < vertexComponents.size(); i++)
+    //{
+    //    glEnableVertexAttribArray(i);
+    //    glVertexAttribPointer(i, vertexComponents[i].sizeArray, vertexComponents[i].getType(), vertexComponents[i].isNormalized, sizeof(float)* vertexWidth, (void*)(sizeof(char)*amountOfBytes));
+    //    amountOfBytes += vertexComponents[i].sizeInBytes;
+    //}
+	//glBindVertexArray(0);
 
     glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)* vertexWidth, NULL);

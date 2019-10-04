@@ -68,11 +68,11 @@ class Joint
         //Vector of all the children to the joint
         std::vector<Joint*> children = std::vector<Joint*>();
 
+        Matrix4D transform;
         Matrix4D localPosition;
         Matrix4D defaultTransform;
         Matrix4D rotation;
         Matrix4D scale;
-        Matrix4D transform;
         std::string name; //Name of the joint
         GraphicsNode JGN;
 

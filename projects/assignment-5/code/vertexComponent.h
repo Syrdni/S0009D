@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 enum VertexType
 {
     Position = 0,
@@ -26,12 +27,14 @@ enum Format
 class VertexComponent
 {
     public:
-        VertexComponent(VertexType vt, Format f, int size, int isN);
+        VertexComponent(VertexType vt, Format f, int size, unsigned int isN, int sizeA);
         VertexComponent();
         ~VertexComponent();
         VertexType vt;
         Format f;
         int sizeInBytes;
-        int isNormalized;
+        unsigned int isNormalized;
+        int sizeArray;
+        unsigned int getType();
     private:
 };
