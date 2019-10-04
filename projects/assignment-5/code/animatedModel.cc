@@ -251,18 +251,25 @@ void AnimatedModel::setup()
 
     glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)* vertexWidth, NULL);
+
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*3));
+	glVertexAttribPointer(1, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*12));
+
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*4));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*16));
+
     glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*6));
+	glVertexAttribPointer(3, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*24));
+
     glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*7));
+	glVertexAttribPointer(4, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*28));
+
     glEnableVertexAttribArray(5);
-	glVertexAttribPointer(5, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*8));
+	glVertexAttribPointer(5, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*32));
+
     glEnableVertexAttribArray(6);
-	glVertexAttribPointer(6, 4, GL_BYTE, GL_FALSE, sizeof(float)* vertexWidth, (void*)(sizeof(float)*9));
+	glVertexAttribPointer(6, 4, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*36));
+
 	glBindVertexArray(0);
 
     //Handels for textures
@@ -304,7 +311,7 @@ void AnimatedModel::setup()
 
     //Vertex Shader
 	std::ifstream file;
-	file.open("vertexShaderTest.txt");
+	file.open("vertexShaderTest.vert");
 	if (file.fail()) {
 		std::cout << "Failed to load vertexShader" << std::endl;
 		return;
@@ -332,7 +339,7 @@ void AnimatedModel::setup()
 		file.close();
 	}
 
-	file.open("fragmentShaderTest.txt");
+	file.open("fragmentShaderTest.frag");
 	if (file.fail()) {
 		std::cout << "Failed to load fragmentShader" << std::endl;
 		return;
