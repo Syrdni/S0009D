@@ -13,10 +13,11 @@ void AnimatedModel::buildJointTreeWithXML(std::string filePath)
 {
     TiXmlDocument doc;
     jointArray = std::vector<Joint*>();
+    std::vector<int> orderVector;
     const char *path = filePath.c_str();
     if (doc.LoadFile(path, TIXML_ENCODING_UTF8))
     {
-        TiXmlElement *nebula3, *model, *characterNodes, *characterNode, *skinList, *joint;
+        TiXmlElement *nebula3, *model, *characterNodes, *characterNode, *skins, *skin, *fragment, *joints, *skinList, *joint;
         nebula3 = doc.FirstChildElement("Nebula3");
         if (nebula3)
         {
@@ -81,15 +82,36 @@ void AnimatedModel::buildJointTreeWithXML(std::string filePath)
                         }
                     }      
                 }
+                skins = model->FirstChildElement("Skins");
+                if (skins)
+                {
+                    skin = skins->FirstChildElement("Skin");
+                    if (skin)
+                    {
+                        fragment = skin->FirstChildElement("Fragment");
+                        if (fragment)
+                        {
+                            joint = fragment->FirstChildElement("Joints");
+                            std::string order = joint->GetText();
+
+                            //Split the string and conver to ints
+                            std::stringstream ss(order);
+                            std::string token;
+                            while(std::getline(ss, token, ','))
+                            {
+                                orderVector.push_back(atoi(token.c_str()));
+                            }
+                        }
+                    }
+                }  
             } 
         }    
     }
     std::vector<Joint*> tempVector;
-    std::vector<int> hue {19, 18, 17, 0, 20, 15, 13, 1, 12, 9, 2, 10, 3, 11, 14, 16, 4, 5, 8, 6, 7};
 
-    for (int i = 0; i < hue.size(); i++)
+    for (int i = 0; i < orderVector.size(); i++)
     {
-        tempVector.push_back(jointArray[hue[i]]);
+        tempVector.push_back(jointArray[orderVector[i]]);
     }
     jointArray = tempVector;
 
