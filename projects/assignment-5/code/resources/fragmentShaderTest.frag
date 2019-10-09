@@ -24,7 +24,6 @@ void main()
 	vec3 Normal = texture(normalMap, TexCoord).rgb;
     Normal = normalize(Normal * 2.0 - 1.0);
     Normal = normalize(TBN * Normal);
-	//vec3 Normal = OutNormal.xyz;
 
 	//Ambient light
 	vec3 ambientLight = vec3(0.01f, 0.01f, 0.01f);
