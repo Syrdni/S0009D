@@ -132,7 +132,7 @@ void AnimatedModel::splitStringIntoFloatVetor(const std::string &s, char delim, 
 void AnimatedModel::jointDrawSetup(MeshResource* mr, TextureResource* tr, ShaderObject* so, LightingNode* ln, Vector4D cameraPos, std::string texturePath)
 {
     //rootJoint->calcInverseLocalPosition(Matrix4D());
-    rootJoint->calcWorldSpace(Matrix4D());
+    rootJoint->calcWorldSpace(Matrix4D(1, 0, 0, 0   , 0, 1, 0, 10,   0, 0, 1, 0,    0, 0, 0, 1));
     rootJoint->drawSetup(mr, tr, so, ln, cameraPos, texturePath);
 }
 
@@ -247,7 +247,7 @@ bool AnimatedModel::loadMeshDataFromNax2(std::string filePath)
     int i = 0;
 }
 
-void AnimatedModel::drawModel(Matrix4D mat)
+void AnimatedModel::drawModel(Matrix4D ViewProction, Matrix4D modelMatrix)
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, Diffuse);
@@ -257,7 +257,7 @@ void AnimatedModel::drawModel(Matrix4D mat)
     glUseProgram(program);
 
     unsigned int transformLoc = glGetUniformLocation(program, "transform");
-	glUniformMatrix4fv(transformLoc, 1, GL_TRUE, mat.getMatrix());
+	glUniformMatrix4fv(transformLoc, 1, GL_TRUE, ViewProction.getMatrix());
 
     unsigned int transformLoc2 = glGetUniformLocation(program, "cameraPosition");
 	glUniform4fv(transformLoc2, 1, Vector4D(-0.06f, 1.0f, 3.0f, 1.0f).getVector());
@@ -274,6 +274,9 @@ void AnimatedModel::drawModel(Matrix4D mat)
     
     unsigned int transformLoc3 = glGetUniformLocation(program, "jointTransforms");
     glUniformMatrix4fv(transformLoc3, jointArray.size(), GL_TRUE, &transformArray[0]);
+
+    unsigned int transformLoc4 = glGetUniformLocation(program, "modelMatrix");
+    glUniformMatrix4fv(transformLoc4, 1, GL_TRUE, modelMatrix.getMatrix());
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, vertexDataSize, GL_UNSIGNED_INT, NULL);

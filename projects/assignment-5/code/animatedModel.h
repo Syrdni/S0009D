@@ -39,7 +39,7 @@ class AnimatedModel
 
         void setup();
 
-        void drawModel(Matrix4D mat);
+        void drawModel(Matrix4D ViewPorjMatrix, Matrix4D modelMatrix);
 
     private:
 

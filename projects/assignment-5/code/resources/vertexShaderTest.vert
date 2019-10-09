@@ -7,6 +7,7 @@ layout(location = 4) in vec4 aBinormal;
 layout(location = 5) in vec4 aSkinWeights;
 layout(location = 6) in uvec4 aSkinJindices;
 
+out vec3 Pos;
 out vec2 TexCoord;
 out vec4 OutNormal;
 out vec4 CameraPosition;
@@ -17,6 +18,7 @@ out mat3 TBN;
 uniform mat4 transform;
 uniform vec4 cameraPosition;
 uniform mat4 jointTransforms[21];
+uniform mat4 modelMatrix;
 
 void main()
 {
@@ -25,17 +27,18 @@ void main()
                     jointTransforms[aSkinJindices[1]] * normWeights[1] + 
                     jointTransforms[aSkinJindices[2]] * normWeights[2] + 
                     jointTransforms[aSkinJindices[3]] * normWeights[3];
-    gl_Position = transform * (joint * vec4(pos, 1.0));
+    gl_Position = transform * modelMatrix * (joint * vec4(pos, 1.0));
 
-    vec4 totalNormal = joint * aNormal;
+    vec4 totalNormal = (mat4(transpose(inverse(modelMatrix))) * joint * aNormal);
 
     vec3 T = normalize(vec3(mat4(1) * aTangent));
     vec3 B = normalize(vec3(mat4(1) * aBinormal));
     vec3 N = normalize(vec3(mat4(1) * totalNormal));
     TBN = mat3(T, B, N);
 
+    Pos = (modelMatrix * vec4(pos, 1.0)).xyz;
     TexCoord = aTexCoord;
-    OutNormal = totalNormal;
+    OutNormal =  totalNormal;
     CameraPosition = cameraPosition;
     Tangent = aSkinWeights;
     Binormal = aBinormal;

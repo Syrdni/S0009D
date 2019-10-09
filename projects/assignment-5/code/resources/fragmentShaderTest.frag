@@ -9,6 +9,7 @@ in vec4 Binormal;
 //in vec4 LightColor;
 in vec4 CameraPosition;
 in mat3 TBN;
+in vec3 Pos;
 
 out vec4 FragColor;
 
@@ -17,9 +18,8 @@ uniform sampler2D normalMap;
 
 void main()
 {    
-    vec4 LightPosition = vec4(0, 1, 1, 1);
+    vec4 LightPosition = vec4(0, 4, 0, 1);
     vec4 LightColor = vec4(1.0, 1.0, 1.0, 1.0);
-    vec3 Pos = vec3(0, 0, 0);
 
 	vec3 Normal = texture(normalMap, TexCoord).rgb;
     Normal = normalize(Normal * 2.0 - 1.0);
