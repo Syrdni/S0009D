@@ -189,7 +189,7 @@ void Animator::update()
 
 void Animator::increaseAnimationTime()
 {    
-    animationTime += 6;
+    animationTime += 10;
     if (animationTime > currentAnimation.getAnimationLength())
     {
         animationTime = 0;
@@ -251,7 +251,8 @@ void Animator::applyPose(std::map<int, Matrix4D> currentPose, Joint* joint, Matr
     {
         applyPose(currentPose, joint->getChildren()[i], currentTransform);
     }
-    joint->worldPosition = currentTransform;   
+    joint->worldPosition = currentTransform; //* joint->inverseLocalPosition;
+    joint->transform = currentTransform * joint->inverseLocalPosition;   
 }
 
 void Animator::resetTimer()

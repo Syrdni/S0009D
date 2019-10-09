@@ -84,6 +84,16 @@ void AnimatedModel::buildJointTreeWithXML(std::string filePath)
             } 
         }    
     }
+    std::vector<Joint*> tempVector;
+    std::vector<int> hue {19, 18, 17, 0, 20, 15, 13, 1, 12, 9, 2, 10, 3, 11, 14, 16, 4, 5, 8, 6, 7};
+
+    for (int i = 0; i < hue.size(); i++)
+    {
+        tempVector.push_back(jointArray[hue[i]]);
+    }
+    jointArray = tempVector;
+
+    rootJoint->calcInverseLocalPosition(Matrix4D());
 }
 
 void AnimatedModel::splitStringIntoFloatVetor(const std::string &s, char delim, std::vector<float> &elems)
@@ -99,7 +109,7 @@ void AnimatedModel::splitStringIntoFloatVetor(const std::string &s, char delim, 
 
 void AnimatedModel::jointDrawSetup(MeshResource* mr, TextureResource* tr, ShaderObject* so, LightingNode* ln, Vector4D cameraPos, std::string texturePath)
 {
-    rootJoint->calcInverseLocalPosition(Matrix4D());
+    //rootJoint->calcInverseLocalPosition(Matrix4D());
     rootJoint->calcWorldSpace(Matrix4D());
     rootJoint->drawSetup(mr, tr, so, ln, cameraPos, texturePath);
 }
@@ -230,14 +240,18 @@ void AnimatedModel::drawModel(Matrix4D mat)
     unsigned int transformLoc2 = glGetUniformLocation(program, "cameraPosition");
 	glUniform4fv(transformLoc2, 1, Vector4D(-0.06f, 1.0f, 3.0f, 1.0f).getVector());
 
-    std::vector<Matrix4D> transformArray;
+    std::vector<float> transformArray;
     for (int i = 0; i < jointArray.size(); i++)
     {
-        transformArray.push_back(jointArray[i]->worldPosition);
+        for (int j = 0; j < 16; j++)
+        {
+            transformArray.push_back(jointArray[i]->transform.getMatrix()[j]);
+        }
+        
     }
     
     unsigned int transformLoc3 = glGetUniformLocation(program, "jointTransforms");
-    glUniformMatrix4fv(transformLoc3, jointArray.size(), GL_TRUE, (float*)transformArray.data());
+    glUniformMatrix4fv(transformLoc3, jointArray.size(), GL_TRUE, &transformArray[0]);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, vertexDataSize, GL_UNSIGNED_INT, NULL);
@@ -289,7 +303,7 @@ void AnimatedModel::setup()
 	glVertexAttribPointer(5, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*32));
 
     glEnableVertexAttribArray(6);
-	glVertexAttribPointer(6, 4, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*36));
+	glVertexAttribIPointer(6, 4, GL_UNSIGNED_BYTE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*36));
 
 	glBindVertexArray(0);
 
