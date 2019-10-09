@@ -56,9 +56,11 @@ class Joint
         //Returns the ID of the joint
         int getID();
 
+        //WorldPosition and inverseBindTransform together
         Matrix4D transform;
+
         //The inverse local position of the joint
-        Matrix4D inverseLocalPosition;
+        Matrix4D inverseBindTransform;
     private:
         void splitStringIntoFloatVetor(const std::string &s, char delim, std::vector<float> &elems);
 
@@ -69,7 +71,7 @@ class Joint
         //Vector of all the children to the joint
         std::vector<Joint*> children = std::vector<Joint*>();
 
-        Matrix4D localPosition;
+        Matrix4D bindPosition;
         Matrix4D defaultTransform;
         Matrix4D rotation;
         Matrix4D scale;

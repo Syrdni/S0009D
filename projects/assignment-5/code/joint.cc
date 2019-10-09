@@ -30,15 +30,15 @@ void Joint::addChild(Joint* child)
 void Joint::addMatrixes(Matrix4D pos, Matrix4D rot, Matrix4D sca)
 {
     rotation = rot;
-    localPosition = pos*rot*sca;
+    bindPosition = pos*rot*sca;
     scale = sca;
     transform = pos*rot*sca;
 }
 
 void Joint::calcInverseLocalPosition(Matrix4D parentLocalTransform)
 {
-    Matrix4D temp = parentLocalTransform * localPosition;
-    inverseLocalPosition = Matrix4D::inverse(temp);
+    Matrix4D temp = parentLocalTransform * bindPosition;
+    inverseBindTransform = Matrix4D::inverse(temp);
     for (int i = 0; i < children.size(); i++)
     {
         children[i]->calcInverseLocalPosition(temp);
@@ -119,8 +119,8 @@ int Joint::movePosition(Matrix4D mat, std::string jointName)
 {
     if (jointName == name)
     {
-        localPosition = localPosition * mat;
-        transform = localPosition*rotation*scale;
+        bindPosition = bindPosition * mat;
+        transform = bindPosition*rotation*scale;
         return 1;
     }
     for (int i = 0; i < children.size(); i++)
