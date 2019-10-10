@@ -23,7 +23,8 @@ unsigned int VertexComponent::getType()
 {
     if (this->f == Format::Float3 ||this->f == Format::Float2)
         return 0x1406;
-    else if (this->f == Format::Byte4N || this->f == Format::UByte4 || this->f == Format::UByte4N)
+    else if (this->f == Format::Byte4N)
         return 0x1400;
-    
+    else if (this->f == Format::UByte4 || this->f == Format::UByte4N)
+        return 0x1401; 
 }

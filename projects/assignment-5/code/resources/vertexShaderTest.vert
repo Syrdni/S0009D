@@ -5,7 +5,7 @@ layout(location = 2) in vec2 aTexCoord;
 layout(location = 3) in vec4 aTangent;
 layout(location = 4) in vec4 aBinormal;
 layout(location = 5) in vec4 aSkinWeights;
-layout(location = 6) in uvec4 aSkinJindices;
+layout(location = 6) in vec4 aSkinJindices;
 
 out vec3 Pos;
 out vec2 TexCoord;
@@ -23,10 +23,10 @@ uniform mat4 modelMatrix;
 void main()
 {
     vec4 normWeights = aSkinWeights / dot(aSkinWeights, vec4(1.0));
-    mat4x4 joint =  jointTransforms[aSkinJindices[0]] * normWeights[0] +
-                    jointTransforms[aSkinJindices[1]] * normWeights[1] + 
-                    jointTransforms[aSkinJindices[2]] * normWeights[2] + 
-                    jointTransforms[aSkinJindices[3]] * normWeights[3];
+    mat4x4 joint =  jointTransforms[int(aSkinJindices[0])] * normWeights[0] +
+                    jointTransforms[int(aSkinJindices[1])] * normWeights[1] + 
+                    jointTransforms[int(aSkinJindices[2])] * normWeights[2] + 
+                    jointTransforms[int(aSkinJindices[3])] * normWeights[3];
     gl_Position = transform * modelMatrix * (joint * vec4(pos, 1.0));
 
     vec4 totalNormal = (mat4(transpose(inverse(modelMatrix))) * joint * aNormal);

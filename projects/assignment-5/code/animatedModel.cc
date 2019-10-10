@@ -297,39 +297,16 @@ void AnimatedModel::setup()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexDataSize, indexDataPtr, GL_STATIC_DRAW);
 
-    //glEnableVertexAttribArray(0);
-    //glVertexAttribPointer(0, vertexComponents[0].sizeArray, vertexComponents[0].getType(), vertexComponents[0].isNormalized, sizeof(float)* vertexWidth, NULL);
-//
-    //int amountOfBytes = vertexComponents[0].sizeInBytes;
-    //for (int i = 1; i < vertexComponents.size(); i++)
-    //{
-    //    glEnableVertexAttribArray(i);
-    //    glVertexAttribPointer(i, vertexComponents[i].sizeArray, vertexComponents[i].getType(), vertexComponents[i].isNormalized, sizeof(float)* vertexWidth, (void*)(sizeof(char)*amountOfBytes));
-    //    amountOfBytes += vertexComponents[i].sizeInBytes;
-    //}
-	//glBindVertexArray(0);
-
     glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)* vertexWidth, NULL);
+    glVertexAttribPointer(0, vertexComponents[0].sizeArray, vertexComponents[0].getType(), vertexComponents[0].isNormalized, sizeof(float)* vertexWidth, NULL);
 
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*12));
-
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*16));
-
-    glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*24));
-
-    glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 4, GL_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*28));
-
-    glEnableVertexAttribArray(5);
-	glVertexAttribPointer(5, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*32));
-
-    glEnableVertexAttribArray(6);
-	glVertexAttribIPointer(6, 4, GL_UNSIGNED_BYTE, sizeof(float)* vertexWidth, (void*)(sizeof(char)*36));
-
+    int amountOfBytes = vertexComponents[0].sizeInBytes;
+    for (int i = 1; i < vertexComponents.size(); i++)
+    {
+        glEnableVertexAttribArray(i);
+        glVertexAttribPointer(i, vertexComponents[i].sizeArray, vertexComponents[i].getType(), vertexComponents[i].isNormalized, sizeof(float)* vertexWidth, (void*)(sizeof(char)*amountOfBytes));
+        amountOfBytes += vertexComponents[i].sizeInBytes;
+    }
 	glBindVertexArray(0);
 
     //Handels for textures
