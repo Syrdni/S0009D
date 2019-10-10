@@ -132,7 +132,7 @@ void AnimatedModel::splitStringIntoFloatVetor(const std::string &s, char delim, 
 void AnimatedModel::jointDrawSetup(MeshResource* mr, TextureResource* tr, ShaderObject* so, LightingNode* ln, Vector4D cameraPos, std::string texturePath)
 {
     //rootJoint->calcInverseLocalPosition(Matrix4D());
-    rootJoint->calcWorldSpace(Matrix4D(1, 0, 0, 0   , 0, 1, 0, 10,   0, 0, 1, 0,    0, 0, 0, 1));
+    rootJoint->calcWorldSpace(positionMatrix);
     rootJoint->drawSetup(mr, tr, so, ln, cameraPos, texturePath);
 }
 
@@ -150,7 +150,7 @@ void AnimatedModel::drawLines(Matrix4D mat)
 void AnimatedModel::moveJointPosition(Matrix4D mat, std::string name)
 {
     rootJoint->movePosition(mat, name);
-    rootJoint->calcWorldSpace(Matrix4D());
+    rootJoint->calcWorldSpace(positionMatrix);
 }
 
 Joint* AnimatedModel::getJointFromId(int id)
@@ -435,4 +435,10 @@ void AnimatedModel::setup()
     glUniform1i(glGetUniformLocation(program, "diffuseTexture"), 0);
     glUniform1i(glGetUniformLocation(program, "normalMap"), 1);
     glUseProgram(0);
+}
+
+void AnimatedModel::setPosition(Matrix4D mat)
+{
+    positionMatrix = mat;
+    rootJoint->calcWorldSpace(mat);
 }

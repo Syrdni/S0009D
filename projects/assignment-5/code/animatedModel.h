@@ -41,6 +41,8 @@ class AnimatedModel
 
         void drawModel(Matrix4D ViewPorjMatrix, Matrix4D modelMatrix);
 
+        void setPosition(Matrix4D positionMatrix);
+
     private:
 
     enum N2VertexComponent
@@ -112,4 +114,6 @@ class AnimatedModel
         void splitStringIntoFloatVetor(const std::string &s, char delim, std::vector<float> &elems);
 
         std::vector<Joint*> jointArray;
+
+        Matrix4D positionMatrix = Matrix4D();
 };

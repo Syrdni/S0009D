@@ -246,7 +246,7 @@ ExampleApp::Open()
 		//The point light source
 		LightingNode* ln = new LightingNode(Vector4D(0, 100, 0, 1), Vector4D(1.0f, 1.0f, 1.0f, 1.0f), 1);
 
-		position = Matrix4D(1, 0, 0, 10,
+		position = Matrix4D(1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1);
@@ -286,7 +286,7 @@ void
 ExampleApp::Run()
 {
 	float rotation = 0.01f;
-	Vector4D pos = Vector4D(0, 10, 0, 1);
+	Vector4D pos = Vector4D(0, 0, 0, 1);
 	while (this->window->IsOpen())
 	{	
 
@@ -300,13 +300,14 @@ ExampleApp::Run()
 
 		lookAt = Matrix4D::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-		GN.setTransform(perspectiveProjection*lookAt*(position*rotY));
-		GN.setPosition(position*rotY);
+		GN.setTransform(perspectiveProjection*lookAt*(position2*rotY));
+		GN.setPosition(position2*rotY);
 		GN.draw();
 
 		an.update();
 		//am->draw(perspectiveProjection*lookAt);
 		//am->drawLines(perspectiveProjection*lookAt);
+		am->setPosition((Matrix4D::getPositionMatrix(pos)*rotY));
 		am->drawModel(perspectiveProjection*lookAt, (Matrix4D::getPositionMatrix(pos)*rotY));
 
 		glFlush();
