@@ -29,7 +29,7 @@ void main()
                     jointTransforms[int(aSkinJindices[3])] * normWeights[3];
     gl_Position = transform * modelMatrix * (joint * vec4(pos, 1.0));
 
-    vec4 totalNormal = (mat4(transpose(inverse(modelMatrix))) * joint * aNormal);
+    vec4 totalNormal = mat4(transpose(inverse(modelMatrix))) * joint * aNormal;
 
     vec3 T = normalize(vec3(mat4(1) * aTangent));
     vec3 B = normalize(vec3(mat4(1) * aBinormal));
@@ -38,7 +38,7 @@ void main()
 
     Pos = (modelMatrix * vec4(pos, 1.0)).xyz;
     TexCoord = aTexCoord;
-    OutNormal =  totalNormal;
+    OutNormal =  aNormal;
     CameraPosition = cameraPosition;
     Tangent = aSkinWeights;
     Binormal = aBinormal;

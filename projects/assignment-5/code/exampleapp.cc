@@ -253,8 +253,8 @@ ExampleApp::Open()
 			0, 0, 1, 0,
 			0, 0, 0, 1);
 
-		position2 = Matrix4D(1, 0, 0, -150,
-			0, 1, 0, 0,
+		position2 = Matrix4D(1, 0, 0, 0,
+			0, 1, 0, 3,
 			0, 0, 1, 0,
 			0, 0, 0, 1);
 
@@ -263,7 +263,7 @@ ExampleApp::Open()
 
 
 		//Sets and loads all the things we need to create the object,
-		GN.setMeshResource(mr);
+		GN.setMeshResource(mr2);
 		GN.setShaderObject(so);
 		GN.setTextureResource(tr);
 		GN.setlightingNode(ln);
@@ -302,13 +302,16 @@ ExampleApp::Run()
 
 		lookAt = Matrix4D::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-		GN.setTransform(perspectiveProjection*lookAt*(position2*rotY));
+		GN.setTransform(perspectiveProjection*lookAt*(position2*rotY*Matrix4D(0.01, 0, 0, 0,
+                                                0, 0.01, 0, 0,
+                                                0, 0, 0.01, 0,
+                                                0, 0, 0, 1)));
 		GN.setPosition(position2*rotY);
 		GN.draw();
 
 		an.update();
-		//am->draw(perspectiveProjection*lookAt);
-		//am->drawLines(perspectiveProjection*lookAt);
+		am->draw(perspectiveProjection*lookAt);
+		am->drawLines(perspectiveProjection*lookAt);
 		am->setPosition((Matrix4D::getPositionMatrix(pos)));
 		am->drawModel(perspectiveProjection*lookAt, (Matrix4D::getPositionMatrix(pos)));
 
