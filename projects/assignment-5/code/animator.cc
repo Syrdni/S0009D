@@ -188,18 +188,19 @@ void Animator::update()
     increaseAnimationTime();
     std::map<int, Matrix4D> currentPos = calculateCurrentAnimationPose();
     applyPose(currentPos, entity->getRootJoint(), Matrix4D());
-    start = std::chrono::steady_clock::now();    
+    //start = std::chrono::steady_clock::now();    
 }
 
 void Animator::increaseAnimationTime()
 {    
     auto end = std::chrono::steady_clock::now();
     int elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-    animationTime += (elapsed/msBetweenFrames)*50;
+    animationTime += (elapsed/msBetweenFrames)*10;
     if (animationTime > currentAnimation.getAnimationLength())
     {
         animationTime = 0;
     }
+    start = end;
 }
 
 std::map<int, Matrix4D> Animator::calculateCurrentAnimationPose()
