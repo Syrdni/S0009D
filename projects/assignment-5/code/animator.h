@@ -71,4 +71,11 @@ class Animator
 
         //Resets the animation timer to 0
         void resetTimer();
+
+        int numberOfFramesPerSec = 24;
+
+        float msBetweenFrames = 1000/numberOfFramesPerSec;
+
+        //Used to calculate the time since the last frame
+       std::chrono::time_point<std::chrono::steady_clock> start;
 };

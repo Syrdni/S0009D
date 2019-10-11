@@ -107,6 +107,7 @@ bool Animator::readNax3File(std::string fileLocation)
 
         //Save the animationResource for later use
         animResource = anim;
+        return true;
     }
 }
 
@@ -168,6 +169,7 @@ void Animator::loadAnimation(int clipIndex)
         animation.push_back(keyFrame);
     }
     currentAnimation = Animation((clip.getNumberOfKeys()-1)*clip.getKeyDuration(), animation, clipIndex);
+    return;
 }
 
 void Animator::setAnimationModel(AnimatedModel* am)
@@ -178,18 +180,22 @@ void Animator::setAnimationModel(AnimatedModel* am)
 void Animator::update()
 {
     //Check if an animation is running
-    if (currentAnimation.getClipIndex() == -1)
+    if (currentAnimation.getClipIndex() == -1){
+        start = std::chrono::steady_clock::now();
         return;
+    }
     
     increaseAnimationTime();
     std::map<int, Matrix4D> currentPos = calculateCurrentAnimationPose();
     applyPose(currentPos, entity->getRootJoint(), Matrix4D());
-    
+    start = std::chrono::steady_clock::now();    
 }
 
 void Animator::increaseAnimationTime()
 {    
-    animationTime += 10;
+    auto end = std::chrono::steady_clock::now();
+    int elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    animationTime += (elapsed/msBetweenFrames)*50;
     if (animationTime > currentAnimation.getAnimationLength())
     {
         animationTime = 0;
@@ -213,7 +219,7 @@ std::vector<KeyFrame> Animator::getReleventKeyFrames()
         nextFrame = frames[i];
 
         //If the keyframes timestamp is bigger than the current animation time then we have found our next frame
-        if (nextFrame.getTimeStamp() > animationTime)
+        if (nextFrame.getTimeStamp() > (int)animationTime)
             break;
 
         previousFrame = frames[i]; 
@@ -226,7 +232,7 @@ std::vector<KeyFrame> Animator::getReleventKeyFrames()
 float Animator::calculateProgression(KeyFrame previousFrame, KeyFrame nextFrame)
 {
     float totalTime = nextFrame.getTimeStamp() - previousFrame.getTimeStamp();
-    float currentTime = animationTime - previousFrame.getTimeStamp();
+    float currentTime = (int)animationTime - previousFrame.getTimeStamp();
     return currentTime/totalTime;
 }
 

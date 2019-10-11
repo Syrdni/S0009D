@@ -6,6 +6,8 @@
 #include "exampleapp.h"
 #include <iostream>
 #include "core/app.h"
+#include <chrono>
+#include <thread>
 #define PI 3.14159265359
 
 const GLchar* vs =
@@ -307,12 +309,13 @@ ExampleApp::Run()
 		an.update();
 		//am->draw(perspectiveProjection*lookAt);
 		//am->drawLines(perspectiveProjection*lookAt);
-		am->setPosition((Matrix4D::getPositionMatrix(pos)*rotY));
-		am->drawModel(perspectiveProjection*lookAt, (Matrix4D::getPositionMatrix(pos)*rotY));
+		am->setPosition((Matrix4D::getPositionMatrix(pos)));
+		am->drawModel(perspectiveProjection*lookAt, (Matrix4D::getPositionMatrix(pos)));
 
 		glFlush();
 
 		this->window->SwapBuffers();
+		//std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
