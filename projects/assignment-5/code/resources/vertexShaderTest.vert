@@ -19,17 +19,26 @@ uniform mat4 transform;
 uniform vec4 cameraPosition;
 uniform mat4 jointTransforms[21];
 uniform mat4 modelMatrix;
+uniform bool isPlaying;
 
 void main()
 {
-    vec4 normWeights = aSkinWeights / dot(aSkinWeights, vec4(1.0));
-    mat4x4 joint =  jointTransforms[int(aSkinJindices[0])] * normWeights[0] +
-                    jointTransforms[int(aSkinJindices[1])] * normWeights[1] + 
-                    jointTransforms[int(aSkinJindices[2])] * normWeights[2] + 
-                    jointTransforms[int(aSkinJindices[3])] * normWeights[3];
-    gl_Position = transform * modelMatrix * (joint * vec4(pos, 1.0));
-
-    vec4 totalNormal = mat4(transpose(inverse(modelMatrix))) * joint * aNormal;
+    vec4 totalNormal;
+    if(isPlaying)
+    {
+        vec4 normWeights = aSkinWeights / dot(aSkinWeights, vec4(1.0));
+        mat4x4 joint =  jointTransforms[int(aSkinJindices[0])] * normWeights[0] +
+                        jointTransforms[int(aSkinJindices[1])] * normWeights[1] + 
+                        jointTransforms[int(aSkinJindices[2])] * normWeights[2] + 
+                        jointTransforms[int(aSkinJindices[3])] * normWeights[3];
+        gl_Position = transform * modelMatrix * (joint * vec4(pos, 1.0));
+        vec4 totalNormal = mat4(transpose(inverse(modelMatrix))) * joint * aNormal;
+    }
+    else
+    {
+        gl_Position = transform * modelMatrix * vec4(pos, 1.0);
+        totalNormal = aNormal;
+    }
 
     vec3 T = normalize(vec3(mat4(1) * aTangent));
     vec3 B = normalize(vec3(mat4(1) * aBinormal));
@@ -38,7 +47,7 @@ void main()
 
     Pos = (modelMatrix * vec4(pos, 1.0)).xyz;
     TexCoord = aTexCoord;
-    OutNormal =  aNormal;
+    OutNormal =  totalNormal;
     CameraPosition = cameraPosition;
     Tangent = aSkinWeights;
     Binormal = aBinormal;

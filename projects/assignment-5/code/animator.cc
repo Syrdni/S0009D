@@ -113,6 +113,12 @@ bool Animator::readNax3File(std::string fileLocation)
 
 void Animator::loadAnimation(int clipIndex)
 {
+    if (clipIndex == -1)
+    {
+        entity->isPlaying(false);
+        return;
+    }
+
     //Check if the index is vaild
     if (clipIndex >= animResource->getAmountOfClips() || clipIndex < 0)
         return;
@@ -124,6 +130,7 @@ void Animator::loadAnimation(int clipIndex)
     if (clipIndex == currentAnimation.getClipIndex())
         return;
 
+    entity->isPlaying(true);
     //Create a new animation
     std::vector<KeyFrame> animation;
 

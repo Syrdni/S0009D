@@ -18,7 +18,7 @@ uniform sampler2D normalMap;
 
 void main()
 {    
-    vec4 LightPosition = vec4(0, 4, 0, 1);
+    vec4 LightPosition = vec4(0, 5, 0, 1);
     vec4 LightColor = vec4(1.0, 1.0, 1.0, 1.0);
 
 	vec3 Normal = texture(normalMap, TexCoord).rgb;

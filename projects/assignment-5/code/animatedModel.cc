@@ -113,6 +113,7 @@ void AnimatedModel::buildJointTreeWithXML(std::string filePath)
     {
         tempVector.push_back(jointArray[orderVector[i]]);
     }
+    defaultArray = jointArray;
     jointArray = tempVector;
 
     rootJoint->calcInverseLocalPosition(Matrix4D());
@@ -263,20 +264,36 @@ void AnimatedModel::drawModel(Matrix4D ViewProction, Matrix4D modelMatrix)
 	glUniform4fv(transformLoc2, 1, Vector4D(-0.06f, 1.0f, 3.0f, 1.0f).getVector());
 
     std::vector<float> transformArray;
-    for (int i = 0; i < jointArray.size(); i++)
+    if(animationPlaying)
     {
-        for (int j = 0; j < 16; j++)
+        for (int i = 0; i < jointArray.size(); i++)
         {
-            transformArray.push_back(jointArray[i]->transform.getMatrix()[j]);
+            for (int j = 0; j < 16; j++)
+            {
+                transformArray.push_back(jointArray[i]->transform.getMatrix()[j]);
+            }  
         }
-        
     }
+    else
+    {
+        for (int i = 0; i < jointArray.size(); i++)
+        {
+            for (int j = 0; j < 16; j++)
+            {
+                transformArray.push_back(defaultArray[i]->worldPosition.getMatrix()[j]);
+            }  
+        }
+    }
+    
     
     unsigned int transformLoc3 = glGetUniformLocation(program, "jointTransforms");
     glUniformMatrix4fv(transformLoc3, jointArray.size(), GL_TRUE, &transformArray[0]);
 
     unsigned int transformLoc4 = glGetUniformLocation(program, "modelMatrix");
     glUniformMatrix4fv(transformLoc4, 1, GL_TRUE, modelMatrix.getMatrix());
+
+    unsigned int transformLoc5 = glGetUniformLocation(program, "isPlaying");
+    glUniform1i(transformLoc5, animationPlaying);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, vertexDataSize, GL_UNSIGNED_INT, NULL);
@@ -418,4 +435,9 @@ void AnimatedModel::setPosition(Matrix4D mat)
 {
     positionMatrix = mat;
     rootJoint->calcWorldSpace(mat);
+}
+
+void AnimatedModel::isPlaying(bool var)
+{
+    animationPlaying = var;
 }

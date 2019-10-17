@@ -43,6 +43,8 @@ class AnimatedModel
 
         void setPosition(Matrix4D positionMatrix);
 
+        void isPlaying(bool var);
+
     private:
 
     enum N2VertexComponent
@@ -115,5 +117,9 @@ class AnimatedModel
 
         std::vector<Joint*> jointArray;
 
+        std::vector<Joint*> defaultArray;
+
         Matrix4D positionMatrix = Matrix4D();
+
+        bool animationPlaying = false;
 };
