@@ -39,7 +39,7 @@ class AnimatedModel
 
         void setup();
 
-        void drawModel(Matrix4D ViewPorjMatrix, Matrix4D modelMatrix);
+        void drawModel(Matrix4D ViewPorjMatrix, Matrix4D modelMatrix, Vector4D cameraPos);
 
         void setPosition(Matrix4D positionMatrix);
 

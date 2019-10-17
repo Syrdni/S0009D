@@ -254,7 +254,7 @@ ExampleApp::Open()
 			0, 0, 0, 1);
 
 		position2 = Matrix4D(1, 0, 0, 0,
-			0, 1, 0, 5,
+			0, 1, 0, 6,
 			0, 0, 1, 0,
 			0, 0, 0, 1);
 
@@ -313,7 +313,7 @@ ExampleApp::Run()
 		am->draw(perspectiveProjection*lookAt);
 		am->drawLines(perspectiveProjection*lookAt);
 		am->setPosition((Matrix4D::getPositionMatrix(pos)));
-		am->drawModel(perspectiveProjection*lookAt, (Matrix4D::getPositionMatrix(pos)));
+		am->drawModel(perspectiveProjection*lookAt, (Matrix4D::getPositionMatrix(pos)), cameraPos);
 
 		glFlush();
 

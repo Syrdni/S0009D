@@ -248,7 +248,7 @@ bool AnimatedModel::loadMeshDataFromNax2(std::string filePath)
     int i = 0;
 }
 
-void AnimatedModel::drawModel(Matrix4D ViewProction, Matrix4D modelMatrix)
+void AnimatedModel::drawModel(Matrix4D ViewProction, Matrix4D modelMatrix, Vector4D cameraPos)
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, Diffuse);
@@ -261,7 +261,9 @@ void AnimatedModel::drawModel(Matrix4D ViewProction, Matrix4D modelMatrix)
 	glUniformMatrix4fv(transformLoc, 1, GL_TRUE, ViewProction.getMatrix());
 
     unsigned int transformLoc2 = glGetUniformLocation(program, "cameraPosition");
-	glUniform4fv(transformLoc2, 1, Vector4D(-0.06f, 1.0f, 3.0f, 1.0f).getVector());
+	//glUniform4fv(transformLoc2, 1, Vector4D(-0.06f, 1.0f, 3.0f, 1.0f).getVector());
+	glUniform4fv(transformLoc2, 1, cameraPos.getVector());
+
 
     std::vector<float> transformArray;
     if(animationPlaying)
