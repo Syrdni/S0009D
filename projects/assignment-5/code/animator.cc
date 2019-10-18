@@ -176,6 +176,7 @@ void Animator::loadAnimation(int clipIndex)
         animation.push_back(keyFrame);
     }
     currentAnimation = Animation((clip.getNumberOfKeys()-1)*clip.getKeyDuration(), animation, clipIndex);
+    deltaTimeStamp = currentAnimation.getKeyFrames()[1].getTimeStamp() - currentAnimation.getKeyFrames()[0].getTimeStamp();
     return;
 }
 
@@ -202,8 +203,8 @@ void Animator::increaseAnimationTime()
 {    
     auto end = std::chrono::steady_clock::now();
     int elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-    animationTime += (elapsed/msBetweenFrames)*10;
-    if (animationTime > currentAnimation.getAnimationLength())
+    animationTime += (elapsed/msBetweenFrames)*20;
+    if (animationTime > currentAnimation.getAnimationLength()+deltaTimeStamp)
     {
         animationTime = 0;
     }
@@ -231,6 +232,11 @@ std::vector<KeyFrame> Animator::getReleventKeyFrames()
             break;
 
         previousFrame = frames[i]; 
+        if(i == frames.size()-1)
+        {
+            nextFrame = frames[0];
+            nextFrame.setTimeStamp(previousFrame.getTimeStamp()+deltaTimeStamp);
+        }
     }
        
     std::vector<KeyFrame> v = {previousFrame, nextFrame};

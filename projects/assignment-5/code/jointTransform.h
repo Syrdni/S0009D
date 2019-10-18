@@ -38,5 +38,5 @@ class JointTransform
         static Matrix4D interpolate(Matrix4D start, Matrix4D end, float progression);
 
         //Returns a quaternion that is interpolated between the start and end (Quatenion)
-        static Quaternion interpolate(Quaternion start, Quaternion end, float progression);
+        static Quaternion interpolate(Quaternion start, Quaternion end, double progression);
 };

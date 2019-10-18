@@ -16,6 +16,11 @@ class Quaternion
         Matrix4D createMatrix();
 
         Quaternion operator *(const Quaternion &q);
+        Quaternion operator *(const float q);
+        Quaternion operator *(const double q);
+        Quaternion operator +(const Quaternion &q);
+        Quaternion operator -(const Quaternion &q);
+        Quaternion operator -=(const Quaternion &q);
 
         //Normalizes the values in the quaternion
         void normalize();
@@ -27,6 +32,8 @@ class Quaternion
         void setY(float y);
         void setZ(float z);
         void setW(float w);
+
+        static float dot_product(Quaternion a, Quaternion b);
 
     private: 
         float x,y,z,w;

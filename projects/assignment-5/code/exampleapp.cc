@@ -254,8 +254,8 @@ ExampleApp::Open()
 			0, 0, 0, 1);
 
 		position2 = Matrix4D(1, 0, 0, 0,
-			0, 1, 0, 6,
-			0, 0, 1, 0,
+			0, 1, 0, 3,
+			0, 0, 1, 5,
 			0, 0, 0, 1);
 
 		mr->loadFromOBJFile("dog.obj");

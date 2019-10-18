@@ -76,6 +76,8 @@ class Animator
 
         float msBetweenFrames = 1000/numberOfFramesPerSec;
 
+        int deltaTimeStamp = 0;
+
         //Used to calculate the time since the last frame
        std::chrono::time_point<std::chrono::steady_clock> start;
 };

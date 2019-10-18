@@ -12,6 +12,8 @@ class KeyFrame
         //Get the keyframes timestamp
         float getTimeStamp();
 
+        void setTimeStamp(int time);
+
         //Returns the map of jointTransforms that forms the pose the model will have at that keyframe
         std::map<int, JointTransform> getModelPose();
 

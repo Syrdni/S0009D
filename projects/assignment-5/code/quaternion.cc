@@ -76,12 +76,72 @@ Quaternion Quaternion::operator*(const Quaternion &q)
 {
     Quaternion r;
 
-	r.w = w*q.w - x*q.x - y*q.y - z*q.z;
-	r.x = w*q.x + x*q.w + y*q.z - z*q.y;
-	r.y = w*q.y + y*q.w + z*q.x - x*q.z;
-	r.z = w*q.z + z*q.w + x*q.y - y*q.x;
+	//r.x = w*q.x + x*q.w + y*q.z - z*q.y;
+	//r.y = w*q.y + y*q.w + z*q.x - x*q.z;
+	//r.z = w*q.z + z*q.w + x*q.y - y*q.x;
+	//r.w = w*q.w - x*q.x - y*q.y - z*q.z;
+
+    r.w = w*q.w;
+    r.x = x*q.x;
+    r.y = y*q.y;
+    r.z = z*q.z;
 
     return r;
+}
+
+Quaternion Quaternion::operator*(const float q)
+{
+    Quaternion r;
+	r.x = x*q;
+	r.y = y*q;
+	r.z = z*q;
+    r.w = w*q;
+
+    return r;
+}
+
+Quaternion Quaternion::operator*(const double q)
+{
+    Quaternion r;
+	r.x = x*q;
+	r.y = y*q;
+	r.z = z*q;
+    r.w = w*q;
+
+    return r;
+}
+
+Quaternion Quaternion::operator+(const Quaternion &q)
+{
+    Quaternion r;
+	r.x = x+q.x;
+	r.y = y+q.y;
+	r.z = z+q.z;
+    r.w = w+q.w;
+
+    return r;
+}
+
+Quaternion Quaternion::operator-(const Quaternion &q)
+{
+    Quaternion r;
+
+	r.x = x-q.x;
+	r.y = y-q.y;
+	r.z = z-q.z;
+	r.w = w-q.w;
+
+    return r;
+}
+
+Quaternion Quaternion::operator-=(const Quaternion &q)
+{
+    w -= q.w;
+    x -= q.x;
+    y -= q.y;
+    z -= q.z;
+
+  return (*this);
 }
 
 void Quaternion::normalize()
@@ -131,4 +191,9 @@ void Quaternion::setZ(float z)
 void Quaternion::setW(float w)
 {
     this->w = w;
+}
+
+float Quaternion::dot_product(Quaternion a, Quaternion b)
+{
+    return a.getX() * b.getX() + a.getY() * b.getY() + a.getZ() * b.getZ() + a.getW() * b.getW();
 }

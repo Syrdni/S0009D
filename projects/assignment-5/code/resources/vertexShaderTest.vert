@@ -40,13 +40,15 @@ void main()
         totalNormal = aNormal;
     }
 
-    vec3 T = normalize(vec3(mat4(1) * aTangent));
-    vec3 N = normalize(vec3(mat4(1) * totalNormal));
-    vec3 B = cross(N, T);
+    mat3 rotMat = mat3(inverse(transpose(modelMatrix)));
+
+    vec3 T = normalize(vec3(rotMat * aTangent.xyz));
+    vec3 N = normalize(vec3(rotMat * totalNormal.xyz));
+    vec3 B = normalize(vec3(rotMat * aBinormal.xyz));
     TBN = mat3(T, B, N);
 
     Pos = (modelMatrix * vec4(pos, 1.0)).xyz;
     TexCoord = aTexCoord;
-    OutNormal =  aNormal;
+    OutNormal =  totalNormal;
     CameraPosition = cameraPosition;
 }

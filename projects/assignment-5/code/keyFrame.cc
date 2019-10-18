@@ -25,3 +25,8 @@ float KeyFrame::getTimeStamp()
 {
     return timeStamp;
 }
+
+void KeyFrame::setTimeStamp(int time)
+{
+    timeStamp = time;
+}
