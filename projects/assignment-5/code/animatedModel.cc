@@ -57,20 +57,20 @@ void AnimatedModel::buildJointTreeWithXML(std::string filePath)
 
                                 //Parse out the position from the xml file    
                                 positionString = joint->Attribute("position");
-                                splitStringIntoFloatVetor(positionString, ',', floatVector);
+                                splitStringIntoFloatVector(positionString, ',', floatVector);
                                 positionVector = Vector4D(floatVector[0],floatVector[1],floatVector[2],floatVector[3]);
 
                                 //Parse out the rotation from the xml file    
                                 floatVector.clear();
                                 rotationString = joint->Attribute("rotation");
-                                splitStringIntoFloatVetor(rotationString, ',', floatVector);
+                                splitStringIntoFloatVector(rotationString, ',', floatVector);
                                 Matrix4D rotationMatrix = Quaternion::createMatrix(floatVector[0],floatVector[1],floatVector[2],floatVector[3]);
                                 rotationVector = Vector4D(floatVector[0],floatVector[1],floatVector[2],floatVector[3]);
 
                                 //Parse out the scale from the xml file    
                                 floatVector.clear();
                                 scaleString = joint->Attribute("scale");
-                                splitStringIntoFloatVetor(scaleString, ',', floatVector);
+                                splitStringIntoFloatVector(scaleString, ',', floatVector);
                                 scaleVector = Vector4D(floatVector[0],floatVector[1],floatVector[2],floatVector[3]);
 
                                 temp->addMatrixes(Matrix4D::getPositionMatrix(positionVector),
@@ -119,7 +119,7 @@ void AnimatedModel::buildJointTreeWithXML(std::string filePath)
     rootJoint->calcInverseLocalPosition(Matrix4D());
 }
 
-void AnimatedModel::splitStringIntoFloatVetor(const std::string &s, char delim, std::vector<float> &elems)
+void AnimatedModel::splitStringIntoFloatVector(const std::string &s, char delim, std::vector<float> &elems)
 {
     std::stringstream ss(s);
     std::string item;
@@ -132,9 +132,9 @@ void AnimatedModel::splitStringIntoFloatVetor(const std::string &s, char delim, 
 
 void AnimatedModel::jointDrawSetup(MeshResource* mr, TextureResource* tr, ShaderObject* so, LightingNode* ln, Vector4D cameraPos, std::string texturePath)
 {
-    //rootJoint->calcInverseLocalPosition(Matrix4D());
     rootJoint->calcWorldSpace(positionMatrix);
     rootJoint->drawSetup(mr, tr, so, ln, cameraPos, texturePath);
+    lightNode = ln;
 }
 
 void AnimatedModel::draw(Matrix4D mat)
@@ -260,9 +260,8 @@ void AnimatedModel::drawModel(Matrix4D ViewProction, Matrix4D modelMatrix, Vecto
     unsigned int transformLoc = glGetUniformLocation(program, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_TRUE, ViewProction.getMatrix());
 
-    unsigned int transformLoc2 = glGetUniformLocation(program, "cameraPosition");
-	//glUniform4fv(transformLoc2, 1, Vector4D(-0.06f, 1.0f, 3.0f, 1.0f).getVector());
-	glUniform4fv(transformLoc2, 1, cameraPos.getVector());
+    transformLoc = glGetUniformLocation(program, "cameraPosition");
+	glUniform4fv(transformLoc, 1, cameraPos.getVector());
 
 
     std::vector<float> transformArray;
@@ -287,15 +286,20 @@ void AnimatedModel::drawModel(Matrix4D ViewProction, Matrix4D modelMatrix, Vecto
         }
     }
     
-    
-    unsigned int transformLoc3 = glGetUniformLocation(program, "jointTransforms");
-    glUniformMatrix4fv(transformLoc3, jointArray.size(), GL_TRUE, &transformArray[0]);
+    transformLoc = glGetUniformLocation(program, "jointTransforms");
+    glUniformMatrix4fv(transformLoc, jointArray.size(), GL_TRUE, &transformArray[0]);
 
-    unsigned int transformLoc4 = glGetUniformLocation(program, "modelMatrix");
-    glUniformMatrix4fv(transformLoc4, 1, GL_TRUE, modelMatrix.getMatrix());
+    transformLoc = glGetUniformLocation(program, "modelMatrix");
+    glUniformMatrix4fv(transformLoc, 1, GL_TRUE, modelMatrix.getMatrix());
 
-    unsigned int transformLoc5 = glGetUniformLocation(program, "isPlaying");
-    glUniform1i(transformLoc5, animationPlaying);
+    transformLoc = glGetUniformLocation(program, "isPlaying");
+    glUniform1i(transformLoc, animationPlaying);
+
+    transformLoc = glGetUniformLocation(program, "aLightColor");
+    glUniform4fv(transformLoc, 1, lightNode->getColorWithIntensity().getVector());
+
+    transformLoc = glGetUniformLocation(program, "aLightPosition");
+    glUniform4fv(transformLoc, 1, lightNode->getPosition().getVector());
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, vertexDataSize, GL_UNSIGNED_INT, NULL);

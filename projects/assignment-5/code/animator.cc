@@ -195,8 +195,7 @@ void Animator::update()
     
     increaseAnimationTime();
     std::map<int, Matrix4D> currentPos = calculateCurrentAnimationPose();
-    applyPose(currentPos, entity->getRootJoint(), Matrix4D());
-    //start = std::chrono::steady_clock::now();    
+    applyPose(currentPos, entity->getRootJoint(), Matrix4D());  
 }
 
 void Animator::increaseAnimationTime()

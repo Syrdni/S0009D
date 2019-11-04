@@ -41,7 +41,7 @@ class Vector4D
 		vector[0] = a;
 		vector[1] = b;
 		vector[2] = c;
-		vector[3] = 1;//d;
+		vector[3] = d;//d;
 	}
 
 	///Deconstructor.
@@ -54,7 +54,7 @@ class Vector4D
 		float p1 = vector[0] + inVector.vector[0];
 		float p2 = vector[1] + inVector.vector[1];
 		float p3 = vector[2] + inVector.vector[2];
-		float p4 = 1;//vector[3] + inVector.vector[3];
+		float p4 = vector[3] + inVector.vector[3];
 
 		return Vector4D(p1, p2, p3, p4);
 	}
@@ -64,7 +64,7 @@ class Vector4D
 		float p1 = vector[0] - inVector.vector[0];
 		float p2 = vector[1] - inVector.vector[1];
 		float p3 = vector[2] - inVector.vector[2];
-		float p4 = 1;//vector[3] - inVector.vector[3];
+		float p4 = vector[3] - inVector.vector[3];
 
 		return Vector4D(p1, p2, p3, p4);
 	}
@@ -74,7 +74,7 @@ class Vector4D
 		float p1 = vector[0] * scaler;
 		float p2 = vector[1] * scaler;
 		float p3 = vector[2] * scaler;
-		float p4 = 1;// vector[3] * scaler;
+		float p4 = vector[3] * scaler;
 
 		return Vector4D(p1, p2, p3, p4);
 	}
@@ -101,7 +101,7 @@ class Vector4D
 		float p1 = vector[0] / length;
 		float p2 = vector[1] / length;
 		float p3 = vector[2] / length;
-		float p4 = 1;// vector[3] / length;
+		float p4 = vector[3] / length;
 
 		return Vector4D(p1, p2, p3, p4);
 	}
@@ -118,7 +118,7 @@ class Vector4D
 		return Vector4D((vector[1] * inVector.vector[2]) - (vector[2] * inVector.vector[1]),
 			(vector[2] * inVector.vector[0]) - (vector[0] * inVector.vector[2]),
 			(vector[0] * inVector.vector[1]) - (vector[1] * inVector.vector[0]),
-				1);
+			(vector[0] * inVector.vector[1]) - (vector[1] * inVector.vector[0]));
 
 		/*(Vector4D((vector[1] * inVector.vector[2]) - (vector[2] * inVector.vector[1]),
 			(vector[2] * inVector.vector[3]) - (vector[3] * inVector.vector[2]),

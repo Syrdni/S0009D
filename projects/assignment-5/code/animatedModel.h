@@ -37,12 +37,16 @@ class AnimatedModel
         //Load mesh data from a nax2 file
         bool loadMeshDataFromNax2(std::string filePath);
 
+        //Setups all the handels and the texture for the mesh
         void setup();
 
+        //Draws the model
         void drawModel(Matrix4D ViewPorjMatrix, Matrix4D modelMatrix, Vector4D cameraPos);
 
+        //Sets the position of the model
         void setPosition(Matrix4D positionMatrix);
 
+        //Is an animation playing?
         void isPlaying(bool var);
 
     private:
@@ -113,13 +117,19 @@ class AnimatedModel
         Joint* rootJoint;
 
         //Splits a string into a float vector. Used to pares the values from the xml file
-        void splitStringIntoFloatVetor(const std::string &s, char delim, std::vector<float> &elems);
+        void splitStringIntoFloatVector(const std::string &s, char delim, std::vector<float> &elems);
 
+        //The array of joints. Is ordered in the way the NAX document wants it to be
         std::vector<Joint*> jointArray;
 
+        //Same joints as vector above but are now in the order they loaded in
         std::vector<Joint*> defaultArray;
 
+        //The position of the model
         Matrix4D positionMatrix = Matrix4D();
 
+        //Is the an animation playing or not
         bool animationPlaying = false;
+
+        LightingNode* lightNode;
 };

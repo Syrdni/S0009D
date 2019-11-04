@@ -19,7 +19,6 @@ Joint::~Joint()
     {
         delete children[i];
     }
-    
 }
 
 void Joint::addChild(Joint* child)
