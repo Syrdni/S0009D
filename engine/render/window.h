@@ -58,6 +58,8 @@ public:
 	void SetUiRender(const std::function<void()>& func);
 	/// set optional nanovg render function
 	void SetNanoVGRender(const std::function<void(NVGcontext *)> & func);
+	/// returns the window
+	GLFWwindow* GetWindow(){return window;};
 
 private:
 
@@ -75,7 +77,7 @@ private:
 	/// resize update
 	void Resize();
 	/// title rename update
-	void Retitle(); 
+	void Retitle();
 
 	static int32 WindowCount;
 
