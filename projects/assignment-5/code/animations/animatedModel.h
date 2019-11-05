@@ -1,6 +1,6 @@
 #pragma once
 #include "joint.h"
-#include "tinyxml.h"
+#include "../tinyxml/tinyxml.h"
 #include "quaternion.h"
 #include "nax3Structs.h"
 #include "vertexComponent.h"

@@ -4,7 +4,7 @@
 #include "ShaderObject.h"
 #include "TextureResource.h"
 #include "MeshResource.h"
-#include "LightingNode.h"
+#include "../LightingNode.h"
 
 class GraphicsNode {
 	public:

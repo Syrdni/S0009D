@@ -1,6 +1,6 @@
 #pragma once
 #include "quaternion.h"
-#include "Matrix4D.h"
+#include "../Matrix4D.h"
 
 class JointTransform
 {

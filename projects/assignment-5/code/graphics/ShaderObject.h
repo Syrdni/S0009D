@@ -3,8 +3,8 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include "Vector4D.h"
-#include "Matrix4D.h"
+#include "../Vector4D.h"
+#include "../Matrix4D.h"
 
 class ShaderObject {
 public:

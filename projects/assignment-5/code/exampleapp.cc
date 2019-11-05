@@ -143,6 +143,9 @@ ExampleApp::Open()
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 		glEnable(GL_DEPTH_TEST);
+
+		s = Square(Vector4D(0, 0, 0, 1), 10.0f, 10.0f, Vector4D(1.0f, 1.0f, 1.0f, 1.0f));
+
 		
 		//Perspective projection
 		const float n = 0.1f;
@@ -179,21 +182,15 @@ ExampleApp::Open()
 			0, 0, 1, 0,
 			0, 0, 0, 1);
 
-		position2 = Matrix4D(1, 0, 0, 0,
-			0, 1, 0, 3,
-			0, 0, 1, 5,
-			0, 0, 0, 1);
-
 
 		//Sets and loads all the things we need to create the object,
 		am->jointDrawSetup(mr2, tr, so, ln, cameraPos, "texture.jpg");
-
 		an.setAnimationModel(am);
 		an.readNax3File("Unit_Footman.nax3");
 
 		//Setup for Dear ImGui context
 		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		ImGuiIO& io = ImGui::GetIO(); io.WantCaptureMouse = false; (void)io;
 		ImGui_ImplGlfwGL3_Init(window->GetWindow(), true);
 
 		//Setup style
@@ -228,7 +225,8 @@ ExampleApp::Run()
 		am->setPosition((Matrix4D::getPositionMatrix(pos)));
 		am->drawModel(perspectiveProjection*lookAt, (Matrix4D::getPositionMatrix(pos)), cameraPos);
 
-		glFlush();
+		//s.drawSquare(perspectiveProjection*lookAt, Matrix4D::getPositionMatrix(pos));
+
 
 		//ImGui
 		ImGui_ImplGlfwGL3_NewFrame();
@@ -240,14 +238,15 @@ ExampleApp::Run()
 			ImGui::Text("Hellow, world!");
 			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
 			ImGui::ColorEdit3("clear color", ln->getColorReference()->getVector());
+			ImGuiIO& io = ImGui::GetIO(); 
 			if(ImGui::Button("Button"))
 			{
 				counter++;
 			}
-			ImGui::Text(std::to_string(counter).c_str());
+			ImGui::Text(std::to_string(io.WantCaptureKeyboard).c_str());
 		}
-
 		ImGui::Render();
+		glFlush();
 		this->window->SwapBuffers();
 	}
 }

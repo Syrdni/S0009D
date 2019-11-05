@@ -6,8 +6,16 @@ PROJECT(assignment-5)
 FILE(GLOB assignment-5_headers code/*.h)
 FILE(GLOB assignment-5_sources code/*.cc)
 FILE(GLOB resources code/resources/*.*)
+FILE(GLOB animations code/animations/*.*)
+FILE(GLOB graphics code/graphics/*.*)
+FILE(GLOB tinyxml code/tinyxml/*.*)
 
-SET(files_assignment-5 ${assignment-5_headers} ${assignment-5_sources})
+SET(files_assignment-5 
+${assignment-5_headers} 
+${assignment-5_sources}
+${animations}
+${graphics}
+${tinyxml})
 SOURCE_GROUP("assignment-5" FILES ${files_assignment-5})
 
 foreach(FILE ${resources})

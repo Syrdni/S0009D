@@ -1,10 +1,10 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "Matrix4D.h"
-#include "tinyxml.h"
+#include "../Matrix4D.h"
+#include "../tinyxml/tinyxml.h"
 #include <sstream>
-#include "GraphicsNode.h"
+#include "../graphics/GraphicsNode.h"
 #define TIXML_USE_STL
 
 class Joint

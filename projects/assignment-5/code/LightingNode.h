@@ -1,6 +1,6 @@
 #pragma once
 #include "Vector4D.h"
-#include "ShaderObject.h"
+#include "graphics/ShaderObject.h"
 #include "Matrix4D.h"
 class LightingNode {
 public:

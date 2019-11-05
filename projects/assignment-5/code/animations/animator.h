@@ -6,7 +6,7 @@
 #include <fstream>
 #include "nax3Structs.h"
 #include "animationResource.h"
-#include "Vector4D.h"
+#include "../Vector4D.h"
 #include "animation.h"
 #include "animatedModel.h"
 #include <chrono>

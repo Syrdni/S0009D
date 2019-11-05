@@ -8,13 +8,14 @@
 //------------------------------------------------------------------------------
 #include "core/app.h"
 #include "render/window.h"
-#include "GraphicsNode.h"
+#include "graphics/GraphicsNode.h"
 #include <iostream>
 #include "LightingNode.h"
-#include "joint.h"
-#include "animatedModel.h"
+#include "animations/joint.h"
+#include "animations/animatedModel.h"
 #include <cmath>
-#include "animator.h"
+#include "animations/animator.h"
+#include "Square.h"
 
 namespace Example
 {
@@ -40,6 +41,9 @@ private:
 	GraphicsNode GN3;
 	AnimatedModel* am;
 	Animator an;
+
+	Square s;
+
 	float cameraSpeed = 0.05f;
 
 	//things to make the camera move
