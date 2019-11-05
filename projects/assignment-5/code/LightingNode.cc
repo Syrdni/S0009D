@@ -33,6 +33,11 @@ Vector4D LightingNode::getColor()
 	return color;
 }
 
+Vector4D* LightingNode::getColorReference()
+{
+	return &color;
+}
+
 Vector4D LightingNode::getColorWithIntensity()
 {
 	return color * intensity;

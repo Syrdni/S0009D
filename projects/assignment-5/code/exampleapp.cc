@@ -172,7 +172,7 @@ ExampleApp::Open()
 		mr2->loadFromOBJFile("sphere.obj");
 
 		//The point light source
-		LightingNode* ln = new LightingNode(Vector4D(0, 1, 3, 1), Vector4D(1.0f, 1.0f, 1.0f, 1.0f), 1);
+		ln = new LightingNode(Vector4D(0, 1, 3, 1), Vector4D(1.0f, 1.0f, 1.0f, 1.0f), 1);
 
 		position = Matrix4D(1, 0, 0, 0,
 			0, 1, 0, 0,
@@ -239,11 +239,12 @@ ExampleApp::Run()
 			static int counter = 0;
 			ImGui::Text("Hellow, world!");
 			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-			ImGui::ColorEdit3("clear color", (float*)&clear_color);
+			ImGui::ColorEdit3("clear color", ln->getColorReference()->getVector());
 			if(ImGui::Button("Button"))
 			{
 				counter++;
 			}
+			ImGui::Text(std::to_string(counter).c_str());
 		}
 
 		ImGui::Render();

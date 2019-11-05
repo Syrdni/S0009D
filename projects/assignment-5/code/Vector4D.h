@@ -18,6 +18,7 @@ class Vector4D
 		float length() const;
 		Vector4D normalize() const;
 		float dotProduct(const Vector4D& inVector) const;
+		static float dotProduct(const Vector4D& leftVector, const Vector4D& rightVector);
 		Vector4D crossProduct(const Vector4D& inVector) const;
 		void print();
 		float getFloat(int i) const;
@@ -111,6 +112,12 @@ class Vector4D
 		return(vector[0] * inVector.vector[0] +
 			vector[1] * inVector.vector[1] +
 			vector[2] * inVector.vector[2]);
+	}
+
+	inline float Vector4D::dotProduct(const Vector4D& leftVector, const Vector4D& rightVector){
+		return(leftVector[0] * rightVector[0] +
+			leftVector[1] * rightVector[1] +
+			leftVector[2] * rightVector[2]);
 	}
 
 	///Returns a vector that is the cross product of two vectors.

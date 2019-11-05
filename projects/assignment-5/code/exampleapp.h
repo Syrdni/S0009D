@@ -54,7 +54,7 @@ private:
 	float lastY;
 	float yaw = 0;
 	float pitch = 0;
-	
+	LightingNode* ln;
 	
 	Display::Window* window;
 };

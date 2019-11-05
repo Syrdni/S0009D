@@ -10,6 +10,7 @@ public:
 	void setup();
 	Vector4D getPosition();
 	Vector4D getColor();
+	Vector4D* getColorReference();
 	Vector4D getColorWithIntensity();
 private:
 	Vector4D position;
