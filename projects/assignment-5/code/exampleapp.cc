@@ -8,6 +8,8 @@
 #include "core/app.h"
 #include <chrono>
 #include <thread>
+#include "imgui.h"
+#include "imgui_impl_glfw_gl3.h"
 #define PI 3.14159265359
 using namespace Display;
 namespace Example
@@ -189,6 +191,14 @@ ExampleApp::Open()
 		an.setAnimationModel(am);
 		an.readNax3File("Unit_Footman.nax3");
 
+		//Setup for Dear ImGui context
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		ImGui_ImplGlfwGL3_Init(window->GetWindow(), true);
+
+		//Setup style
+		ImGui::StyleColorsDark();
+
 		return true;
 	}
 	return false;
@@ -200,19 +210,18 @@ ExampleApp::Open()
 void
 ExampleApp::Run()
 {
-	float rotation = 0.01f;
+	bool useImGuiWindow = true;
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	Vector4D pos = Vector4D(0, 0, 0, 1);
 	while (this->window->IsOpen())
 	{	
 		this->window->Update();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		rotation += 0.01;
-
-		Matrix4D rotY = Matrix4D::rotY(rotation);
-
 		lookAt = Matrix4D::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
+
+		//Update model
 		an.update();
 		//am->draw(perspectiveProjection*lookAt);
 		//am->drawLines(perspectiveProjection*lookAt);
@@ -221,6 +230,23 @@ ExampleApp::Run()
 
 		glFlush();
 
+		//ImGui
+		ImGui_ImplGlfwGL3_NewFrame();
+
+		if (useImGuiWindow)
+		{
+			static float f = 0.0f;
+			static int counter = 0;
+			ImGui::Text("Hellow, world!");
+			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+			ImGui::ColorEdit3("clear color", (float*)&clear_color);
+			if(ImGui::Button("Button"))
+			{
+				counter++;
+			}
+		}
+
+		ImGui::Render();
 		this->window->SwapBuffers();
 	}
 }
