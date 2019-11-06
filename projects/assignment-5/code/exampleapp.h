@@ -47,13 +47,13 @@ private:
 	float cameraSpeed = 0.05f;
 
 	//things to make the camera move
-	Vector4D cameraPos = Vector4D(-0.06f, 1.0f, 3.0f, 1.0f);
+	Vector4D cameraPos = Vector4D(0.0f, 0.0f, 3.0f, 1.0f);
 	Vector4D cameraFront = Vector4D(0.0f, 0.0f, -1.0f, 1.0f);
 	Vector4D cameraUp = Vector4D(0.0f, 1.0f, 0.0f, 1.0f);
 	Matrix4D position;
 	Matrix4D position2;
 	bool click = false;
-	bool firstMouse;
+	bool firstMouse = true;
 	float lastX;
 	float lastY;
 	float yaw = 0;

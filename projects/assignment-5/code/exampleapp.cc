@@ -86,10 +86,10 @@ ExampleApp::Open()
 		
 	});
 	window->SetMousePressFunction([this](int32 key, int32 action, int32) {
-		if (key == GLFW_MOUSE_BUTTON_LEFT, action == GLFW_PRESS) {
+		if (key == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 			click = true;
 		}
-		if (key == GLFW_MOUSE_BUTTON_LEFT, action == GLFW_RELEASE) {
+		if (key == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
 			click = false;
 			firstMouse = true;
 		}
@@ -217,15 +217,15 @@ ExampleApp::Run()
 
 		lookAt = Matrix4D::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
+		s.drawSquare(Matrix4D::getPositionMatrix(pos), perspectiveProjection*lookAt);
 
 		//Update model
-		an.update();
+		//an.update();
 		//am->draw(perspectiveProjection*lookAt);
 		//am->drawLines(perspectiveProjection*lookAt);
-		am->setPosition((Matrix4D::getPositionMatrix(pos)));
-		am->drawModel(perspectiveProjection*lookAt, (Matrix4D::getPositionMatrix(pos)), cameraPos);
+		//am->setPosition((Matrix4D::getPositionMatrix(pos)));
+		//am->drawModel(perspectiveProjection*lookAt, (Matrix4D::getPositionMatrix(pos)), cameraPos);
 
-		//s.drawSquare(perspectiveProjection*lookAt, Matrix4D::getPositionMatrix(pos));
 
 
 		//ImGui
