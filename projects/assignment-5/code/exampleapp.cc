@@ -246,7 +246,6 @@ ExampleApp::Run()
 		//am->drawLines(perspectiveProjection*lookAt);
 		//am->setPosition((Matrix4D::getPositionMatrix(pos)));
 		//am->drawModel(perspectiveProjection*lookAt, (Matrix4D::getPositionMatrix(pos)), cameraPos);
-		ray.draw(combinedMatrix);
 
 
 

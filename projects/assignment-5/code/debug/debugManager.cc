@@ -19,5 +19,10 @@ void DebugManager::setViewMatrix(Matrix4D mat)
 
 void DebugManager::addShape(DebugShape* shape)
 {
-    debugShapeVector.push_back(shape);
+    debugShapeVector.push_back(std::shared_ptr<DebugShape>(shape));
+}
+
+void DebugManager::clear()
+{
+    debugShapeVector.clear();
 }

@@ -16,16 +16,10 @@ class Ray
         void setDirection(Vector4D direction);
         Vector4D getDirection();
         Vector4D intersect(mPlane plane);
-        void draw(Matrix4D viewMatrix);
         Vector4D getPoint(int i);
 
-    private:
-        void setup();
-        bool render;
+    private:;
         Vector4D origin;
         Vector4D direction;
         float maxDist = 3;
-        std::vector<float> vertices;
-        std::vector<int> indices;
-        unsigned int VAO, EBO, VBO, vertexShader, pixelShader, program;  
 };
