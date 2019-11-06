@@ -8,6 +8,8 @@ Ray::Ray(Vector4D pos, Vector4D dir)
     this->direction = dir;
 }
 
+Ray::~Ray(){};
+
 void Ray::setOrigin(Vector4D pos)
 {
     this->origin = pos;

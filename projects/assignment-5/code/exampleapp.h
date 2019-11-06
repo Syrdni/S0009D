@@ -16,6 +16,7 @@
 #include <cmath>
 #include "animations/animator.h"
 #include "Square.h"
+#include "Ray.h"
 
 namespace Example
 {
@@ -61,5 +62,8 @@ private:
 	LightingNode* ln;
 	
 	Display::Window* window;
+
+	Ray ray;
+	Vector4D mousePos;
 };
 } // namespace Example

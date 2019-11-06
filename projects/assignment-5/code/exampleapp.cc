@@ -85,7 +85,7 @@ ExampleApp::Open()
 			an.loadAnimation(8);
 		
 	});
-	window->SetMousePressFunction([this](int32 key, int32 action, int32) {
+	window->SetMousePressFunction([this](int32 key, int32 action, int32 test) {
 		if (key == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 			click = true;
 		}
@@ -93,9 +93,24 @@ ExampleApp::Open()
 			click = false;
 			firstMouse = true;
 		}
-
+		if (key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+		{
+			//Shoot ray
+			int windowWidth, windowHeight;
+			window->GetSize(windowWidth, windowHeight);
+			Vector4D nds = Vector4D((mousePos[0] * 2.0f) / windowWidth -1.0f, 1.0f - (2.0f * mousePos[1]) / windowHeight, 1, 1);
+			Vector4D clip = Vector4D(nds[0], nds[1], -1.0f, 1.0);
+			Vector4D eye = Matrix4D::inverse(perspectiveProjection) * clip;
+			Vector4D world = Matrix4D::inverse(lookAt) * eye;
+			world = world.normalize();
+			//ray = Ray(cameraPos, world);
+			std::cout << world[0] << " " << world[1] << " " << world[2] << std::endl;
+		}
+		//std::cout << mousePos[0] << " " << mousePos[1] << std::endl;
 	});
 	window->SetMouseMoveFunction([this](float64 posX, float64 posY) {
+		mousePos = Vector4D(posX, posY, 0, 1);
+
 		if (click) {
 
 			if (firstMouse)
