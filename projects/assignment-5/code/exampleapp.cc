@@ -190,8 +190,8 @@ ExampleApp::Open()
 
 		//Setup for Dear ImGui context
 		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); io.WantCaptureMouse = false; (void)io;
-		ImGui_ImplGlfwGL3_Init(window->GetWindow(), true);
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		ImGui_ImplGlfwGL3_Init(window->GetWindow(), false);
 
 		//Setup style
 		ImGui::StyleColorsDark();
