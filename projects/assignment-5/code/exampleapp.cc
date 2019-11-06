@@ -105,7 +105,7 @@ ExampleApp::Open()
 			Vector4D world = Matrix4D::inverse(lookAt) * eye;
 			world = world.normalize();
 			ray = Ray(cameraPos, world, true);
-			debugManager.addShape(new DebugLine(ray.getPoint(0), ray.getPoint(1)));
+			debugManager.createLine(ray.getPoint(0), ray.getPoint(1));
 			std::cout << "WORLD:" << world[0] << " " << world[1] << " " << world[2] << std::endl;
 		}
 	});
@@ -254,17 +254,12 @@ ExampleApp::Run()
 
 		if (useImGuiWindow)
 		{
-			static float f = 0.0f;
-			static int counter = 0;
-			ImGui::Text("Hellow, world!");
-			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-			ImGui::ColorEdit3("clear color", ln->getColorReference()->getVector());
-			ImGuiIO& io = ImGui::GetIO(); 
-			if(ImGui::Button("Button"))
+			if(ImGui::Button("Clear debug shapes"))
 			{
-				counter++;
+				debugManager.clear();
 			}
-			ImGui::Text(std::to_string(io.WantCaptureKeyboard).c_str());
+			ImGui::Checkbox("Render debugShapes", debugManager.getRenderBool());
+			ImGui::Checkbox("Create debugShapes", debugManager.getCreateShapes());
 		}
 		ImGui::Render();
 		glFlush();

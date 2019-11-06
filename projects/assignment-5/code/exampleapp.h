@@ -18,7 +18,6 @@
 #include "Square.h"
 #include "Ray.h"
 #include "debug/debugManager.h"
-#include "debug/debugLine.h"
 
 namespace Example
 {
