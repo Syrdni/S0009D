@@ -6,7 +6,7 @@ class Ray
 {
     public:
     Ray();
-    Ray(Vector4D pos, Vector4D dir);
+    Ray(Vector4D pos, Vector4D dir, bool render);
     ~Ray();
     void setOrigin(Vector4D position);
     Vector4D getOrigin();
@@ -16,4 +16,5 @@ class Ray
     private:
         Vector4D origin;
         Vector4D direction;
+        float maxDist = 100;
 };

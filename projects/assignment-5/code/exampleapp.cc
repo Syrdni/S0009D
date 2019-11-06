@@ -101,10 +101,11 @@ ExampleApp::Open()
 			Vector4D nds = Vector4D((mousePos[0] * 2.0f) / windowWidth -1.0f, 1.0f - (2.0f * mousePos[1]) / windowHeight, 1, 1);
 			Vector4D clip = Vector4D(nds[0], nds[1], -1.0f, 1.0);
 			Vector4D eye = Matrix4D::inverse(perspectiveProjection) * clip;
+			eye = Vector4D(eye[0], eye[1], -1.0, 0.0f);
 			Vector4D world = Matrix4D::inverse(lookAt) * eye;
 			world = world.normalize();
 			//ray = Ray(cameraPos, world);
-			std::cout << world[0] << " " << world[1] << " " << world[2] << std::endl;
+			std::cout << "WORLD:" << world[0] << " " << world[1] << " " << world[2] << std::endl;
 		}
 		//std::cout << mousePos[0] << " " << mousePos[1] << std::endl;
 	});

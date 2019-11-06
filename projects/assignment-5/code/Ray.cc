@@ -2,10 +2,14 @@
 
 Ray::Ray(){}
 
-Ray::Ray(Vector4D pos, Vector4D dir)
+Ray::Ray(Vector4D pos, Vector4D dir, bool render)
 {
     this->origin = pos;
     this->direction = dir;
+    if (render)
+    {
+        //render the ray
+    }
 }
 
 Ray::~Ray(){};
