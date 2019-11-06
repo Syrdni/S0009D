@@ -7,7 +7,7 @@ float vertices[] = {
     -1.0f, 1.0f
 };
 
-int indicies[] = {
+int indices[] = {
     0, 1, 2,
     0, 3, 2
 };
@@ -58,7 +58,7 @@ void Square::setupSquare()
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*8, &vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*6, &indicies, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*6, &indices, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2, NULL);
@@ -118,7 +118,7 @@ void Square::drawSquare(Matrix4D modelMatrix, Matrix4D viewMatrix)
     glUniform4fv(transformLoc, 1, color.getVector());
 
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, sizeof(float)*8, GL_UNSIGNED_INT, NULL);
+    glDrawElements(GL_TRIANGLES, sizeof(int)*6, GL_UNSIGNED_INT, NULL);
     glBindVertexArray(0);
     glUseProgram(0);
 }

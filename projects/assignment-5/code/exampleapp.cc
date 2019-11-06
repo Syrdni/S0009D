@@ -104,7 +104,7 @@ ExampleApp::Open()
 			eye = Vector4D(eye[0], eye[1], -1.0, 0.0f);
 			Vector4D world = Matrix4D::inverse(lookAt) * eye;
 			world = world.normalize();
-			//ray = Ray(cameraPos, world);
+			ray = Ray(cameraPos, world, true);
 			std::cout << "WORLD:" << world[0] << " " << world[1] << " " << world[2] << std::endl;
 		}
 		//std::cout << mousePos[0] << " " << mousePos[1] << std::endl;
@@ -241,6 +241,7 @@ ExampleApp::Run()
 		//am->drawLines(perspectiveProjection*lookAt);
 		//am->setPosition((Matrix4D::getPositionMatrix(pos)));
 		//am->drawModel(perspectiveProjection*lookAt, (Matrix4D::getPositionMatrix(pos)), cameraPos);
+		ray.draw(perspectiveProjection*lookAt);
 
 
 
