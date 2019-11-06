@@ -105,9 +105,9 @@ ExampleApp::Open()
 			Vector4D world = Matrix4D::inverse(lookAt) * eye;
 			world = world.normalize();
 			ray = Ray(cameraPos, world, true);
+			debugManager.addShape(new DebugLine(ray.getPoint(0), ray.getPoint(1)));
 			std::cout << "WORLD:" << world[0] << " " << world[1] << " " << world[2] << std::endl;
 		}
-		//std::cout << mousePos[0] << " " << mousePos[1] << std::endl;
 	});
 	window->SetMouseMoveFunction([this](float64 posX, float64 posY) {
 		mousePos = Vector4D(posX, posY, 0, 1);
@@ -232,8 +232,13 @@ ExampleApp::Run()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		lookAt = Matrix4D::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		Matrix4D combinedMatrix = perspectiveProjection*lookAt;
+		debugManager.setViewMatrix(combinedMatrix);
 
-		s.drawSquare(Matrix4D::getPositionMatrix(pos), perspectiveProjection*lookAt);
+		s.drawSquare(Matrix4D::getPositionMatrix(pos), combinedMatrix);
+
+		debugManager.drawDebugShapes();
+
 
 		//Update model
 		//an.update();
@@ -241,7 +246,7 @@ ExampleApp::Run()
 		//am->drawLines(perspectiveProjection*lookAt);
 		//am->setPosition((Matrix4D::getPositionMatrix(pos)));
 		//am->drawModel(perspectiveProjection*lookAt, (Matrix4D::getPositionMatrix(pos)), cameraPos);
-		ray.draw(perspectiveProjection*lookAt);
+		ray.draw(combinedMatrix);
 
 
 

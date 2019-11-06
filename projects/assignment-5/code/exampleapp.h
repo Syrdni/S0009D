@@ -17,6 +17,8 @@
 #include "animations/animator.h"
 #include "Square.h"
 #include "Ray.h"
+#include "debug/debugManager.h"
+#include "debug/debugLine.h"
 
 namespace Example
 {
@@ -65,5 +67,7 @@ private:
 
 	Ray ray;
 	Vector4D mousePos;
+
+	DebugManager debugManager;
 };
 } // namespace Example

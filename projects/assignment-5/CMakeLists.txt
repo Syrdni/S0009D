@@ -9,13 +9,15 @@ FILE(GLOB resources code/resources/*.*)
 FILE(GLOB animations code/animations/*.*)
 FILE(GLOB graphics code/graphics/*.*)
 FILE(GLOB tinyxml code/tinyxml/*.*)
+FILE(GLOB debug code/debug/*.*)
 
 SET(files_assignment-5 
 ${assignment-5_headers} 
 ${assignment-5_sources}
 ${animations}
 ${graphics}
-${tinyxml})
+${tinyxml}
+${debug})
 SOURCE_GROUP("assignment-5" FILES ${files_assignment-5})
 
 foreach(FILE ${resources})

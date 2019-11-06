@@ -67,7 +67,15 @@ Vector4D Ray::intersect(mPlane plane)
     //Calculate t
     float t = Vector4D::dotProduct(plane.getPosition()-this->origin, plane.getNormal()) / d;
 
+    if (t < 0)
+    {
+        std::cout << "Miss" << std::endl;
+        return Vector4D(0,0,0,1);
+    }
+    
+
     //With t calculated we now can find where the ray is intersected with the plane
+    std::cout << "Hit" << std::endl;
     return (this->origin + this->direction * t);
 }
 
@@ -151,4 +159,12 @@ void Ray::draw(Matrix4D viewMatrix)
     glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_INT, NULL);
     glBindVertexArray(0);
     glUseProgram(0);
+}
+
+Vector4D Ray::getPoint(int i)
+{
+    if (i == 0)
+        return origin;
+    else
+        return origin+(direction*maxDist);
 }
