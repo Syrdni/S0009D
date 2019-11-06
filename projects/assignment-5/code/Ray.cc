@@ -74,19 +74,18 @@ Vector4D Ray::intersect(mPlane plane)
 void Ray::setup()
 {
     vertices.push_back(origin[0]); vertices.push_back(origin[1]); vertices.push_back(origin[2]);
-    vertices.push_back(origin[0]+1); vertices.push_back(origin[1]+1); vertices.push_back(origin[2]+1);
     vertices.push_back(direction[0]*maxDist); vertices.push_back(direction[1]*maxDist); vertices.push_back(direction[2]*maxDist);
-    indices.push_back(0); indices.push_back(1); indices.push_back(2);
+    indices.push_back(0); indices.push_back(1);
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*9, &vertices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), &vertices[0], GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*3, &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*indices.size(), &indices[0], GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, NULL);
@@ -149,7 +148,7 @@ void Ray::draw(Matrix4D viewMatrix)
     glUniform4fv(transformLoc, 1, Vector4D(1.0, 1.0, 1.0, 1.0).getVector());
 
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL);
+    glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_INT, NULL);
     glBindVertexArray(0);
     glUseProgram(0);
 }
