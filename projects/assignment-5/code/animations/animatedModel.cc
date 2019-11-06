@@ -37,8 +37,6 @@ void AnimatedModel::buildJointTreeWithXML(std::string filePath)
                         Joint* temp;
                         while (joint)
                         {
-                            std::cout << "index: " << joint->Attribute("index") << " parent: " << joint->Attribute("parent") << std::endl;
-
                             if (rootjoint)
                             {
                                 this->rootJoint = temp = new Joint(atoi(joint->Attribute("index")), nullptr, joint->Attribute("name"));
