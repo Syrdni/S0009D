@@ -28,6 +28,14 @@ void DebugManager::createLine(Vector4D p1, Vector4D p2)
     addShape(new DebugLine(p1, p2));
 }
 
+void DebugManager::createCube(Vector4D pos, float width, float height, float length)
+{
+    if(!createShapes)
+        return;
+
+    addShape(new DebugCube(pos, width, height, length));
+}
+
 void DebugManager::addShape(DebugShape* shape)
 {
     debugShapeVector.push_back(std::shared_ptr<DebugShape>(shape));

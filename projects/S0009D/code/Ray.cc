@@ -57,20 +57,18 @@ Vector4D Ray::intersect(mPlane plane)
     //Check if the ray is parallel to the plane. If that is the case the ray will never hit the plane
     float d = Vector4D::dotProduct(plane.getNormal(), this->direction);
     if (d == 0)
-        return Vector4D(0,0,0,1);
+        return Vector4D(0,0,0,-1);
     
     //Calculate t
     float t = Vector4D::dotProduct(plane.getPosition()-this->origin, plane.getNormal()) / d;
 
     if (t < 0)
     {
-        std::cout << "Miss" << std::endl;
-        return Vector4D(0,0,0,1);
+        return Vector4D(0,0,0,-1);
     }
     
 
     //With t calculated we now can find where the ray is intersected with the plane
-    std::cout << "Hit" << std::endl;
     return (this->origin + this->direction * t);
 }
 

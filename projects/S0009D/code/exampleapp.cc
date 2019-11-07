@@ -105,8 +105,12 @@ ExampleApp::Open()
 			Vector4D world = Matrix4D::inverse(lookAt) * eye;
 			world = world.normalize();
 			ray = Ray(cameraPos, world, true);
+			Vector4D temp = ray.intersect(mPlane(Vector4D(0, 0, 0, 0), Vector4D(0, 0, 1, 0)));
+			if (temp[3] != -1)
+			{
+				debugManager.createCube(temp, 0.05, 0.05, 0.05);
+			}	
 			debugManager.createLine(ray.getPoint(0), ray.getPoint(1));
-			std::cout << "WORLD:" << world[0] << " " << world[1] << " " << world[2] << std::endl;
 		}
 	});
 	window->SetMouseMoveFunction([this](float64 posX, float64 posY) {
