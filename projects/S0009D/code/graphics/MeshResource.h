@@ -36,8 +36,6 @@ public:
 
 
 private:
-	void CombineBuffers();
-
 	float* vertexBuffer;
 	int* indexBuffer;
 	float* textureCordinateBuffer;

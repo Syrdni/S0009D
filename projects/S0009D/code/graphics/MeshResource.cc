@@ -108,7 +108,7 @@ bool MeshResource::loadFromOBJFile(const char * fileName)
 	FILE * file = fopen(fileName, "r");
 	if (file == NULL)
 	{
-		printf("FOFANON! \n");
+		printf("Error file not found! \n");
 		return false;
 	}
 	while (true)
@@ -142,7 +142,7 @@ bool MeshResource::loadFromOBJFile(const char * fileName)
 			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
 			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
 			if (matches != 9) {
-				printf("File can't be read by our simple parser : ( Try exporting with other options\n");
+				printf("File can't be read by this simple parser. Try exporting with other options\n");
 				return false;
 			}
 			vertexIndices.push_back(vertexIndex[0]);
@@ -195,15 +195,6 @@ bool MeshResource::loadFromOBJFile(const char * fileName)
 			indexes.push_back(checkUp.at(check));
 		}
 	}
-
-	
-	/*for (int i = 0; i < indexes.size(); i++)
-	{
-		combinedBuffer.push_back(vertices[vertexIndices[i]-1]);
-		combinedBuffer.push_back(textureCordinates[uvIndices[i]-1]);
-		combinedBuffer.push_back(normals[normalIndices[i]-1]);
-	}*/
-
 }
 
 void MeshResource::bindVBO()
@@ -215,13 +206,3 @@ void MeshResource::unbindVBO()
 {
 	glBindBuffer(0, 0);
 }
-
-//Combines the vertices, texture cordinates and normals to one buffer.
-void MeshResource::CombineBuffers()
-{
-	//combinedBuffer.insert(combinedBuffer.end(), vertices.begin(), vertices.end());
-	//combinedBuffer.insert(combinedBuffer.end(), textureCordinates.begin(), textureCordinates.end());
-	//combinedBuffer.insert(combinedBuffer.end(), normals.begin(), normals.end());
-	// normals
-}
-
