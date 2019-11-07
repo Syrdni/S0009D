@@ -29,6 +29,7 @@ class Matrix4D
 		static Matrix4D getPositionMatrix(Vector4D& inVector);
 		static Matrix4D getScaleMatrix(Vector4D& invector);
 		static Matrix4D lookAt(Vector4D cameraPos, Vector4D target, Vector4D up);
+		static Matrix4D rotationDir(const Vector4D& direction, const Vector4D& up);
 
 	private:
 		float matrix[16];
@@ -574,4 +575,44 @@ class Matrix4D
 		);*/
 
 		return lookAt;
+	}
+
+	inline Matrix4D Matrix4D::rotationDir(const Vector4D& direction, const Vector4D& up)
+	{
+		Matrix4D rot;
+		if (direction[0] == up[0] && direction[1] == up[1] && direction[2] == up[2])
+			return rot;
+		
+		Vector4D invertedZ = direction;
+		invertedZ[2] *= -1;
+
+		Vector4D V = up.crossProduct(invertedZ);
+		V = V.normalize();
+
+		float phi = acos(up.dotProduct(invertedZ));
+		phi *= -1;
+		float rcos = cosf(phi);
+		float rsin = sinf(phi);
+
+		rot[0] = 		 rcos + V[0] * V[0] * (1.0 - rcos);
+		rot[1] =  V[2] * rsin + V[1] * V[0] * (1.0 - rcos);
+		rot[2] = -V[1] * rsin + V[2] * V[0] * (1.0 - rcos);
+		rot[3] = 0.0f;
+		
+		rot[4] = -V[2] * rsin + V[0] * V[1] * (1.0 - rcos);
+		rot[5] = 		 rcos + V[1] * V[1] * (1.0 - rcos);
+		rot[6] = -V[0] * rsin + V[2] * V[1] * (1.0 - rcos);
+		rot[7] = 0.0f;
+
+		rot[8] =   V[1] * rsin + V[0] * V[2] * (1.0 - rcos);
+		rot[9] =  -V[0] * rsin + V[1] * V[2] * (1.0 - rcos);
+		rot[10] = 		  rcos + V[2] * V[2] * (1.0 - rcos);
+		rot[11] = 0.0f;
+
+		rot[12] = 0.0f;
+		rot[13] = 0.0f;
+		rot[14] = 0.0f;
+		rot[15] = 1.0f;
+
+		return rot;
 	}

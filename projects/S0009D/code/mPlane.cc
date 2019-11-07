@@ -1,5 +1,7 @@
 #include "mPlane.h"
 
+mPlane::mPlane(){}
+
 mPlane::mPlane(Vector4D pos, Vector4D dir)
 {
     this->position = pos;
@@ -29,4 +31,9 @@ void mPlane::setNormal(Vector4D dir)
 Vector4D mPlane::getNormal()
 {
     return this->normal;
+}
+
+Vector4D& mPlane::getReferenceToNormal()
+{
+    return normal;
 }

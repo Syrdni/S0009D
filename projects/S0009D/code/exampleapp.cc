@@ -105,7 +105,7 @@ ExampleApp::Open()
 			Vector4D world = Matrix4D::inverse(lookAt) * eye;
 			world = world.normalize();
 			ray = Ray(cameraPos, world, true);
-			Vector4D temp = ray.intersect(mPlane(Vector4D(0, 0, 0, 0), Vector4D(0, 0, 1, 0)));
+			Vector4D temp = ray.intersect(mPlane(s.getPosition(), s.getPlane().getNormal()));
 			if (temp[3] != -1)
 			{
 				debugManager.createCube(temp, 0.05, 0.05, 0.05);
@@ -164,7 +164,7 @@ ExampleApp::Open()
 
 		glEnable(GL_DEPTH_TEST);
 
-		s = Square(Vector4D(0, 0, 0, 1), 10.0f, 10.0f, Vector4D(1.0f, 1.0f, 1.0f, 1.0f));
+		s = Square(Vector4D(0, 0, 0, 1), Vector4D(1, 0, 0, 1), 10.0f, 10.0f, Vector4D(1.0f, 1.0f, 1.0f, 1.0f));
 
 		
 		//Perspective projection
@@ -256,7 +256,7 @@ ExampleApp::Run()
 		//ImGui
 		ImGui_ImplGlfwGL3_NewFrame();
 
-		if (useImGuiWindow)
+		if (useImGuiWindow)	
 		{
 			if(ImGui::Button("Clear debug shapes"))
 			{
@@ -264,6 +264,7 @@ ExampleApp::Run()
 			}
 			ImGui::Checkbox("Render debugShapes", debugManager.getRenderBool());
 			ImGui::Checkbox("Create debugShapes", debugManager.getCreateShapes());
+			ImGui::InputFloat4("Normal", s.getReferenceToPlane().getReferenceToNormal().getReference());
 		}
 		ImGui::Render();
 		glFlush();

@@ -10,6 +10,7 @@ class mPlane
         Vector4D getPosition();
         void setNormal(Vector4D dir);
         Vector4D getNormal();
+        Vector4D& getReferenceToNormal();
     private:
         Vector4D position;
         Vector4D normal;

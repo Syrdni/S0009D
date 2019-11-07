@@ -23,6 +23,7 @@ class Vector4D
 		void print();
 		float getFloat(int i) const;
 		float* getVector();
+		float (&getReference())[4] {return vector;};
 
 	private:
 		float vector[4];
@@ -102,7 +103,7 @@ class Vector4D
 		float p1 = vector[0] / length;
 		float p2 = vector[1] / length;
 		float p3 = vector[2] / length;
-		float p4 = vector[3] / length;
+		float p4 = vector[3];//vector[3] / length;
 
 		return Vector4D(p1, p2, p3, p4);
 	}
