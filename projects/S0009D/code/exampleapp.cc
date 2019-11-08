@@ -104,6 +104,7 @@ ExampleApp::Open()
 			eye = Vector4D(eye[0], eye[1], -1.0, 0.0f);
 			Vector4D world = Matrix4D::inverse(lookAt) * eye;
 			world = world.normalize();
+			std::cout << "WORLD:" << world[0] << " " << world[1] << " " << world[2] << std::endl;
 			ray = Ray(cameraPos, world, true);
 			Vector4D temp = ray.intersect(mPlane(s.getPosition(), s.getPlane().getNormal()));
 			if (temp[3] != -1)
