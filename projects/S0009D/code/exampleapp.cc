@@ -240,7 +240,7 @@ ExampleApp::Run()
 		Matrix4D combinedMatrix = perspectiveProjection*lookAt;
 		debugManager.setViewMatrix(combinedMatrix);
 
-		s.drawSquare(Matrix4D::getPositionMatrix(pos), combinedMatrix);
+		s.update(combinedMatrix);
 
 		debugManager.drawDebugShapes();
 
@@ -265,7 +265,8 @@ ExampleApp::Run()
 			}
 			ImGui::Checkbox("Render debugShapes", debugManager.getRenderBool());
 			ImGui::Checkbox("Create debugShapes", debugManager.getCreateShapes());
-			ImGui::InputFloat4("Normal", s.getReferenceToPlane().getReferenceToNormal().getReference());
+			ImGui::InputFloat4("Normal", s.getNormal().getVector());
+			ImGui::InputFloat4("Position", s.getPosition().getVector());
 		}
 		ImGui::Render();
 		glFlush();

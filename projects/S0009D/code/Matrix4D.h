@@ -29,7 +29,7 @@ class Matrix4D
 		static Matrix4D getPositionMatrix(Vector4D& inVector);
 		static Matrix4D getScaleMatrix(Vector4D& invector);
 		static Matrix4D lookAt(Vector4D cameraPos, Vector4D target, Vector4D up);
-		static Matrix4D rotationDir(const Vector4D& direction, const Vector4D& base);
+		static Matrix4D rotationDir(const Vector4D& direction, const Vector4D& base = Vector4D(0, 0, 1, 1));
 
 	private:
 		float matrix[16];

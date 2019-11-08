@@ -42,6 +42,7 @@ Square::Square(Vector4D pos, Vector4D normal, float w, float h, Vector4D rgb)
     this->width = w;
     this->height = h;
     this->color = rgb;
+    this->normal = normal;
     this->plane = mPlane(pos, normal);
     setupSquare();
 }
@@ -105,7 +106,7 @@ void Square::setupSquare()
 	glLinkProgram(program);
 }
 
-void Square::drawSquare(Matrix4D modelMatrix, Matrix4D viewMatrix)
+void Square::drawSquare(Matrix4D viewMatrix)
 {
     glUseProgram(program);
 
@@ -113,7 +114,7 @@ void Square::drawSquare(Matrix4D modelMatrix, Matrix4D viewMatrix)
     glUniformMatrix4fv(transformLoc, 1, GL_TRUE, viewMatrix.getMatrix());
 
     transformLoc = glGetUniformLocation(program, "aModelMatrix");
-    glUniformMatrix4fv(transformLoc, 1, GL_TRUE, (Matrix4D::rotationDir(plane.getNormal(), normal)* modelMatrix).getMatrix());
+    glUniformMatrix4fv(transformLoc, 1, GL_TRUE, (Matrix4D::getPositionMatrix(position)* Matrix4D::rotationDir(normal)).getMatrix());
 
     transformLoc = glGetUniformLocation(program, "aColor");
     glUniform4fv(transformLoc, 1, color.getVector());
@@ -122,6 +123,13 @@ void Square::drawSquare(Matrix4D modelMatrix, Matrix4D viewMatrix)
     glDrawElements(GL_TRIANGLES, sizeof(int)*6, GL_UNSIGNED_INT, NULL);
     glBindVertexArray(0);
     glUseProgram(0);
+}
+
+void Square::update(Matrix4D viewMatrix)
+{
+    this->plane.setPosition(position);
+    this->plane.setNormal(normal);
+    this->drawSquare(viewMatrix);
 }
 
 mPlane Square::getPlane()
@@ -134,7 +142,12 @@ mPlane& Square::getReferenceToPlane()
     return plane;
 }
 
-Vector4D Square::getPosition()
+Vector4D& Square::getPosition()
 {
     return position;
+}
+
+Vector4D& Square::getNormal()
+{
+    return normal;
 }
