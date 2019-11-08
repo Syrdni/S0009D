@@ -267,6 +267,7 @@ ExampleApp::Run()
 			ImGui::Checkbox("Create debugShapes", debugManager.getCreateShapes());
 			ImGui::InputFloat4("Normal", s.getNormal().getVector());
 			ImGui::InputFloat4("Position", s.getPosition().getVector());
+			ImGui::ColorEdit3("Color", s.getColor().getVector());
 		}
 		ImGui::Render();
 		glFlush();

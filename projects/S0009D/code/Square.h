@@ -16,6 +16,7 @@ class Square
         mPlane& getReferenceToPlane();
         Vector4D& getPosition();
         Vector4D& getNormal();
+        Vector4D& getColor();
     private:
         void setupSquare();
         Vector4D position, color, normal;

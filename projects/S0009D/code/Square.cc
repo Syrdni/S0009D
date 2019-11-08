@@ -151,3 +151,8 @@ Vector4D& Square::getNormal()
 {
     return normal;
 }
+
+Vector4D& Square::getColor()
+{
+    return color;
+}
