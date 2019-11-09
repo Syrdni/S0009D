@@ -68,6 +68,6 @@ private:
 	Ray ray;
 	Vector4D mousePos;
 
-	DebugManager debugManager;
+	DebugManager* debugManager = DebugManager::getInstance();
 };
 } // namespace Example

@@ -186,7 +186,7 @@ float Square::checkIfHit(Ray ray)
         intersectionVector2.dotProduct(normal2) < 0 &&
         intersectionVector4.dotProduct(normal1) < 0)
     {
-        std::cout << "Hit" << std::endl;
+        DebugManager::getInstance()->createCube(result.point, 0.05, 0.05, 0.05, Vector4D(1, 0, 0, 1));
         return result.distance;
     }
     else

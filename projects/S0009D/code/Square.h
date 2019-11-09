@@ -4,6 +4,7 @@
 #include "string.h"
 #include "Matrix4D.h"
 #include "Ray.h"
+#include "debug/debugManager.h"
 
 class Square
 {

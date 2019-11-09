@@ -12,6 +12,9 @@
 #include "imgui_impl_glfw_gl3.h"
 #define PI 3.14159265359
 using namespace Display;
+
+DebugManager *DebugManager::instance = 0;
+
 namespace Example
 {
 //------------------------------------------------------------------------------
@@ -105,8 +108,9 @@ ExampleApp::Open()
 			eye = Vector4D(eye[0], eye[1], -1.0, 0.0f);
 			Vector4D world = Matrix4D::inverse(lookAt) * eye;
 			world = world.normalize();
-			std::cout << "WORLD:" << world[0] << " " << world[1] << " " << world[2] << std::endl;
+			//std::cout << "WORLD:" << world[0] << " " << world[1] << " " << world[2] << std::endl;
 			ray = Ray(cameraPos, world);
+			DebugManager::getInstance()->createLine(ray.getOrigin(), ray.getPoint(1), Vector4D(0, 1, 0, 1));
 
 			float closest = 1000000;
 			for (int i = 0; i < squareVector.size(); i++)
@@ -117,17 +121,6 @@ ExampleApp::Open()
 					closest = distance;
 					s = &squareVector[i];
 				}
-			}
-			
-			//squareVector[0].checkIfHit(ray);
-			for (int i = 0; i < squareVector.size(); i++)
-			{
-				PointAndDistance temp = ray.intersect(squareVector[i].getPlane());
-				if (temp.distance != -1)
-				{
-					debugManager.createCube(temp.point, 0.05, 0.05, 0.05);
-				}	
-				debugManager.createLine(ray.getPoint(0), ray.getPoint(1));
 			}
 		}
 	});
@@ -261,26 +254,14 @@ ExampleApp::Run()
 
 		lookAt = Matrix4D::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		Matrix4D combinedMatrix = perspectiveProjection*lookAt;
-		debugManager.setViewMatrix(combinedMatrix);
+		debugManager->setViewMatrix(combinedMatrix);
 
 		for (int i = 0; i < squareVector.size(); i++)
 		{
 			squareVector[i].update(combinedMatrix);
 		}
-		
-		
 
-		debugManager.drawDebugShapes();
-
-
-		//Update model
-		//an.update();
-		//am->draw(perspectiveProjection*lookAt);
-		//am->drawLines(perspectiveProjection*lookAt);
-		//am->setPosition((Matrix4D::getPositionMatrix(pos)));
-		//am->drawModel(perspectiveProjection*lookAt, (Matrix4D::getPositionMatrix(pos)), cameraPos);
-
-
+		debugManager->drawDebugShapes();
 
 		//ImGui
 		ImGui_ImplGlfwGL3_NewFrame();
@@ -289,11 +270,11 @@ ExampleApp::Run()
 		{
 			if(ImGui::Button("Clear debug shapes"))
 			{
-				debugManager.clear();
+				debugManager->clear();
 				system("clear");
 			}
-			ImGui::Checkbox("Render debugShapes", debugManager.getRenderBool());
-			ImGui::Checkbox("Create debugShapes", debugManager.getCreateShapes());
+			ImGui::Checkbox("Render debugShapes", debugManager->getRenderBool());
+			ImGui::Checkbox("Create debugShapes", debugManager->getCreateShapes());
 			ImGui::InputFloat4("Normal", s->getNormal().getVector());
 			ImGui::InputFloat4("Position", s->getPosition().getVector());
 			ImGui::ColorEdit3("Color", s->getColor().getVector());

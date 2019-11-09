@@ -2,7 +2,7 @@
 
 DebugLine::DebugLine(){}
 
-DebugLine::DebugLine(Vector4D point1, Vector4D point2)
+DebugLine::DebugLine(Vector4D point1, Vector4D point2, Vector4D color)
 {
     vertices.push_back(point1[0]);
     vertices.push_back(point1[1]);
@@ -13,6 +13,8 @@ DebugLine::DebugLine(Vector4D point1, Vector4D point2)
 
     indices.push_back(0);
     indices.push_back(1);
+
+    this->color = color;
 
     setup();
 }
@@ -30,7 +32,7 @@ void DebugLine::draw(Matrix4D viewMatrix)
     glUniformMatrix4fv(transformLoc, 1, GL_TRUE, Matrix4D().getMatrix());
 
     transformLoc = glGetUniformLocation(program, "aColor");
-    glUniform4fv(transformLoc, 1, Vector4D(1.0, 1.0, 0.0, 1.0).getVector());
+    glUniform4fv(transformLoc, 1, color.getVector());
 
     glBindVertexArray(VAO);
     glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_INT, NULL);

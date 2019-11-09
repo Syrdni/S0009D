@@ -2,7 +2,7 @@
 
 DebugCube::DebugCube(){}
 
-DebugCube::DebugCube(Vector4D pos, float width, float height, float length)
+DebugCube::DebugCube(Vector4D pos, float width, float height, float length, Vector4D color)
 {
     float w = width/2;
     float h = height/2;
@@ -35,6 +35,8 @@ DebugCube::DebugCube(Vector4D pos, float width, float height, float length)
 
     indices.push_back(4);    indices.push_back(5);    indices.push_back(6);
     indices.push_back(4);    indices.push_back(6);    indices.push_back(7);
+
+    this->color = color;
     
     setup();
 }

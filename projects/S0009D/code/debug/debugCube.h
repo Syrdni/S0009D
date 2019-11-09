@@ -8,10 +8,11 @@ class DebugCube : public DebugShape
 {
     public:
         DebugCube();
-        DebugCube(Vector4D pos, float width, float height, float length);
+        DebugCube(Vector4D pos, float width, float height, float length, Vector4D color);
         ~DebugCube();
         void draw(Matrix4D viewMatrix);
     
     private:
         void setup();
+        Vector4D color;
 };
