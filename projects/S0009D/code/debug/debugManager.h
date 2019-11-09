@@ -22,6 +22,6 @@ class DebugManager
         void addShape(DebugShape* shape);
         std::vector<std::shared_ptr<DebugShape>> debugShapeVector;
         Matrix4D viewMatrix;
-        bool render;
-        bool createShapes;
+        bool render = true;
+        bool createShapes = true;
 };

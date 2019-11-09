@@ -44,7 +44,8 @@ private:
 	AnimatedModel* am;
 	Animator an;
 
-	Square s;
+	Square* s;
+	std::vector<Square> squareVector;
 
 	float cameraSpeed = 0.05f;
 

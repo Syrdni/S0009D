@@ -1,17 +1,4 @@
 #include "Square.h"
-
-float vertices[] = {
-    1.0f, 1.0f,
-    1.0f, -1.0f,
-    -1.0f, -1.0f,
-    -1.0f, 1.0f
-};
-
-int indices[] = {
-    0, 1, 2,
-    0, 3, 2
-};
-
 const GLchar* vs =
 "#version 430\n"
 "layout(location=0) in vec2 pos;\n"
@@ -42,8 +29,22 @@ Square::Square(Vector4D pos, Vector4D normal, float w, float h, Vector4D rgb)
     this->width = w;
     this->height = h;
     this->color = rgb;
-    this->normal = normal;
+    this->normal = normal.normalize();
     this->plane = mPlane(pos, normal);
+
+    vertices[0] = vertices[0] * w;
+    vertices[1] = vertices[1] * h;
+    vertices[2] = vertices[2] * w;
+    vertices[3] = vertices[3] * h;
+    vertices[4] = vertices[4] * w;
+    vertices[5] = vertices[5] * h;
+    vertices[6] = vertices[6] * w;
+    vertices[7] = vertices[7] * h;
+
+    point1 = Vector4D(vertices[0], vertices[1], 0, 1);
+    point2 = Vector4D(vertices[2], vertices[3], 0, 1);
+    point3 = Vector4D(vertices[4], vertices[5], 0, 1);
+    point4 = Vector4D(vertices[6], vertices[7], 0, 1);
     setupSquare();
 }
 
@@ -155,4 +156,43 @@ Vector4D& Square::getNormal()
 Vector4D& Square::getColor()
 {
     return color;
+}
+
+float Square::checkIfHit(Ray ray)
+{
+    PointAndDistance result = ray.intersect(plane);
+
+    if (result.distance == -1)
+        return -1;
+    
+    Vector4D temp = result.point;
+    temp[3] = 1;
+    temp = Matrix4D::inverse(Matrix4D::getPositionMatrix(position)* Matrix4D::rotationDir(normal)) * temp;
+
+    //Normals for the sides of the square
+    Vector4D normal1 = point1 - point2;
+    Vector4D normal2 = point2 - point1;
+    Vector4D normal3 = point2 - point3;
+    Vector4D normal4 = point3 - point2;
+
+    //Calculate vector for the corners to intersection point
+    Vector4D intersectionVector1 = temp - point1;
+    Vector4D intersectionVector2 = temp - point2;
+    Vector4D intersectionVector3 = temp - point3;
+    Vector4D intersectionVector4 = temp - point4;
+
+    if (intersectionVector1.dotProduct(normal3) < 0 &&
+        intersectionVector3.dotProduct(normal4) < 0 &&
+        intersectionVector2.dotProduct(normal2) < 0 &&
+        intersectionVector4.dotProduct(normal1) < 0)
+    {
+        std::cout << "Hit" << std::endl;
+        return result.distance;
+    }
+    else
+    {
+        return -1;
+    }
+    
+    
 }

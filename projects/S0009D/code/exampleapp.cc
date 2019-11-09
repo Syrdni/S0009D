@@ -98,6 +98,7 @@ ExampleApp::Open()
 			//Shoot ray
 			int windowWidth, windowHeight;
 			window->GetSize(windowWidth, windowHeight);
+			//Convert screencords to worldspace
 			Vector4D nds = Vector4D((mousePos[0] * 2.0f) / windowWidth -1.0f, 1.0f - (2.0f * mousePos[1]) / windowHeight, 1, 1);
 			Vector4D clip = Vector4D(nds[0], nds[1], -1.0f, 1.0);
 			Vector4D eye = Matrix4D::inverse(perspectiveProjection) * clip;
@@ -105,13 +106,29 @@ ExampleApp::Open()
 			Vector4D world = Matrix4D::inverse(lookAt) * eye;
 			world = world.normalize();
 			std::cout << "WORLD:" << world[0] << " " << world[1] << " " << world[2] << std::endl;
-			ray = Ray(cameraPos, world, true);
-			Vector4D temp = ray.intersect(mPlane(s.getPosition(), s.getPlane().getNormal()));
-			if (temp[3] != -1)
+			ray = Ray(cameraPos, world);
+
+			float closest = 1000000;
+			for (int i = 0; i < squareVector.size(); i++)
 			{
-				debugManager.createCube(temp, 0.05, 0.05, 0.05);
-			}	
-			debugManager.createLine(ray.getPoint(0), ray.getPoint(1));
+				float distance = squareVector[i].checkIfHit(ray);
+				if (distance != -1 && distance < closest)
+				{
+					closest = distance;
+					s = &squareVector[i];
+				}
+			}
+			
+			//squareVector[0].checkIfHit(ray);
+			for (int i = 0; i < squareVector.size(); i++)
+			{
+				PointAndDistance temp = ray.intersect(squareVector[i].getPlane());
+				if (temp.distance != -1)
+				{
+					debugManager.createCube(temp.point, 0.05, 0.05, 0.05);
+				}	
+				debugManager.createLine(ray.getPoint(0), ray.getPoint(1));
+			}
 		}
 	});
 	window->SetMouseMoveFunction([this](float64 posX, float64 posY) {
@@ -165,7 +182,13 @@ ExampleApp::Open()
 
 		glEnable(GL_DEPTH_TEST);
 
-		s = Square(Vector4D(0, 0, 0, 1), Vector4D(1, 0, 0, 1), 10.0f, 10.0f, Vector4D(1.0f, 1.0f, 1.0f, 1.0f));
+		squareVector.push_back(Square(Vector4D(0, 0, 0, 1), Vector4D(0, 0, 1, 1), 2.0f, 2.0f, Vector4D(1.0f, 1.0f, 1.0f, 1.0f)));
+
+		for (int i = 0; i < 3; i++)
+		{
+			squareVector.push_back(Square(Vector4D(rand() % 10, rand() % 10, rand() % 10, 1), Vector4D(rand() % 10, rand() % 10, rand() % 10, 1), 1.0f, 1.0f, Vector4D(1.0f, 1.0f, 1.0f, 1.0f)));
+		}
+		
 
 		
 		//Perspective projection
@@ -240,7 +263,12 @@ ExampleApp::Run()
 		Matrix4D combinedMatrix = perspectiveProjection*lookAt;
 		debugManager.setViewMatrix(combinedMatrix);
 
-		s.update(combinedMatrix);
+		for (int i = 0; i < squareVector.size(); i++)
+		{
+			squareVector[i].update(combinedMatrix);
+		}
+		
+		
 
 		debugManager.drawDebugShapes();
 
@@ -262,12 +290,13 @@ ExampleApp::Run()
 			if(ImGui::Button("Clear debug shapes"))
 			{
 				debugManager.clear();
+				system("clear");
 			}
 			ImGui::Checkbox("Render debugShapes", debugManager.getRenderBool());
 			ImGui::Checkbox("Create debugShapes", debugManager.getCreateShapes());
-			ImGui::InputFloat4("Normal", s.getNormal().getVector());
-			ImGui::InputFloat4("Position", s.getPosition().getVector());
-			ImGui::ColorEdit3("Color", s.getColor().getVector());
+			ImGui::InputFloat4("Normal", s->getNormal().getVector());
+			ImGui::InputFloat4("Position", s->getPosition().getVector());
+			ImGui::ColorEdit3("Color", s->getColor().getVector());
 		}
 		ImGui::Render();
 		glFlush();
