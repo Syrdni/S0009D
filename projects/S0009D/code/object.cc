@@ -69,6 +69,12 @@ void Object::setupFirstAABB(std::vector<Vertex> vertices)
 
 void Object::draw()
 {
+    Vector4D dimentions = Vector4D(currentAABB.maxPoint[0]-currentAABB.minPoint[0], currentAABB.maxPoint[1]-currentAABB.minPoint[1], currentAABB.maxPoint[2]-currentAABB.minPoint[2], 1);
+    Vector4D pos = Vector4D(currentAABB.minPoint[0] + (dimentions[0]/2),
+                                currentAABB.minPoint[1] + (dimentions[1]/2),
+                                currentAABB.minPoint[2] + (dimentions[2]/2),
+                                1);
+    DebugManager::getInstance()->createSingleFrameCube(pos, dimentions[0], dimentions[1], dimentions[2], Vector4D(0, 0, 1, 1), true);
     graphicsNode.setTransform(viewmatrix*Matrix4D::getPositionMatrix(position));
     graphicsNode.setPosition(Matrix4D::getPositionMatrix(position));
     graphicsNode.draw();

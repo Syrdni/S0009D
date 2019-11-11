@@ -265,6 +265,8 @@ ExampleApp::Run()
 		}
 
 		debugManager->drawDebugShapes();
+		debugManager->clearSingleFrameVector();
+
 		objectVector[0].setViewMatrix(combinedMatrix);
 		objectVector[0].draw();
 
