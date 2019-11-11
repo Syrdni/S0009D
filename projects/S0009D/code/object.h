@@ -1,6 +1,7 @@
 #pragma once
 #include "graphics/GraphicsNode.h"
 #include "debug/debugManager.h"
+#include "mPlane.h"
 
 struct AABB
 {
@@ -18,7 +19,8 @@ class Object
         void setViewMatrix(Matrix4D viewmatrix);
         void setupFirstAABB(std::vector<Vertex> vertices);
         void draw();
-
+        mPlane* getPlanesFromAABB();
+        AABB getAABB();
     private:
         GraphicsNode graphicsNode;
         Vector4D position;

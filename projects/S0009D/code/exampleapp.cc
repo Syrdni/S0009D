@@ -122,6 +122,16 @@ ExampleApp::Open()
 					s = &squareVector[i];
 				}
 			}
+
+			for (int i = 0; i < objectVector.size(); i++)
+			{
+				ray.intersect(objectVector[i].getAABB());
+				//Get planes
+				//Check if you hit the AABB
+				//Save the object in a temporary array together with length
+				//Check if you hit the closest objet in the mesh. If not continue with another mesh in the vector
+			}
+			
 		}
 	});
 	window->SetMouseMoveFunction([this](float64 posX, float64 posY) {
@@ -175,7 +185,7 @@ ExampleApp::Open()
 
 		glEnable(GL_DEPTH_TEST);
 
-		squareVector.push_back(Square(Vector4D(0, 0, 0, 1), Vector4D(0, 0, 1, 1), 2.0f, 2.0f, Vector4D(1.0f, 1.0f, 1.0f, 1.0f)));
+		squareVector.push_back(Square(Vector4D(0, 0, -3, 1), Vector4D(0, 0, 1, 1), 2.0f, 2.0f, Vector4D(1.0f, 1.0f, 1.0f, 1.0f)));
 
 		for (int i = 0; i < 3; i++)
 		{
@@ -217,15 +227,6 @@ ExampleApp::Open()
 
 
 		objectVector.push_back(Object(mr, so, tr, ln, cameraPos, "texture2.jpg"));
-		//GraphicsNode GN = GraphicsNode();
-		//GN.setMeshResource(mr);
-		//GN.setShaderObject(so);
-		//GN.setTextureResource(tr);
-		//GN.setlightingNode(ln);
-		//GN.setCameraPosition(cameraPos);
-		//GN.loadTexture("texture2.jpg");
-		//GN.preDrawSetup();
-		//objectVector.push_back(GN);
 
 		//Setup for Dear ImGui context
 		ImGui::CreateContext();
