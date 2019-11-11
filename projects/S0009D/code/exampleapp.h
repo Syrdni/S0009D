@@ -18,6 +18,7 @@
 #include "Square.h"
 #include "Ray.h"
 #include "debug/debugManager.h"
+#include "object.h"
 
 namespace Example
 {
@@ -46,7 +47,7 @@ private:
 
 	Square* s;
 	std::vector<Square> squareVector;
-	std::vector<GraphicsNode> objectVector;
+	std::vector<Object> objectVector;
 
 	float cameraSpeed = 0.05f;
 

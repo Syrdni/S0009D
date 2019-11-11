@@ -182,8 +182,6 @@ ExampleApp::Open()
 			squareVector.push_back(Square(Vector4D(rand() % 10, rand() % 10, rand() % 10, 1), Vector4D(rand() % 10, rand() % 10, rand() % 10, 1), 1.0f, 1.0f, Vector4D(1.0f, 1.0f, 1.0f, 1.0f)));
 		}
 		
-
-		
 		//Perspective projection
 		const float n = 0.1f;
 		const float f = 100000.0f;
@@ -198,11 +196,6 @@ ExampleApp::Open()
 			0, 0, -((f + n) / (f - n)), -((2 * f*n) / (f - n)),
 			0, 0, -1, 0
 		);
-
-		am = new AnimatedModel();
-		am->buildJointTreeWithXML("Unit_Footman.constants");
-		am->loadMeshDataFromNax2("Unit_Footman.nvx2");
-		am->setup();
 
 		ShaderObject* so = new ShaderObject();
 
@@ -223,20 +216,16 @@ ExampleApp::Open()
 			0, 0, 0, 1);
 
 
-		GraphicsNode GN = GraphicsNode();
-		GN.setMeshResource(mr);
-		GN.setShaderObject(so);
-		GN.setTextureResource(tr);
-		GN.setlightingNode(ln);
-		GN.setCameraPosition(cameraPos);
-		GN.loadTexture("texture.jpg");
-		GN.preDrawSetup();
-		objectVector.push_back(GN);
-
-		//Sets and loads all the things we need to create the object,
-		am->jointDrawSetup(mr2, tr, so, ln, cameraPos, "texture.jpg");
-		an.setAnimationModel(am);
-		an.readNax3File("Unit_Footman.nax3");
+		objectVector.push_back(Object(mr, so, tr, ln, cameraPos, "texture2.jpg"));
+		//GraphicsNode GN = GraphicsNode();
+		//GN.setMeshResource(mr);
+		//GN.setShaderObject(so);
+		//GN.setTextureResource(tr);
+		//GN.setlightingNode(ln);
+		//GN.setCameraPosition(cameraPos);
+		//GN.loadTexture("texture2.jpg");
+		//GN.preDrawSetup();
+		//objectVector.push_back(GN);
 
 		//Setup for Dear ImGui context
 		ImGui::CreateContext();
@@ -275,7 +264,7 @@ ExampleApp::Run()
 		}
 
 		debugManager->drawDebugShapes();
-		objectVector[0].setTransform(combinedMatrix);
+		objectVector[0].setViewMatrix(combinedMatrix);
 		objectVector[0].draw();
 
 		//ImGui

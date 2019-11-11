@@ -161,11 +161,10 @@ Vector4D& Square::getColor()
 float Square::checkIfHit(Ray ray)
 {
     PointAndDistance result = ray.intersect(plane);
-    DebugManager::getInstance()->createCube(result.point, 0.05, 0.05, 0.05, Vector4D(1, 0, 0, 1));
 
     if (result.distance == -1)
         return -1;
-    
+
     Vector4D temp = result.point;
     temp[3] = 1;
     temp = Matrix4D::inverse(Matrix4D::getPositionMatrix(position)* Matrix4D::rotationDir(normal)) * temp;
@@ -194,6 +193,4 @@ float Square::checkIfHit(Ray ray)
     {
         return -1;
     }
-    
-    
 }

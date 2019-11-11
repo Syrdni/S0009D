@@ -34,7 +34,7 @@ PointAndDistance Ray::intersect(mPlane plane)
 {
     //Check if the ray is parallel to the plane. If that is the case the ray will never hit the plane
     float d = Vector4D::dotProduct(plane.getNormal(), this->direction);
-    if (d == 0)
+    if (d >= 0)
         return PointAndDistance(Vector4D(0,0,0,-1), -1);
     
     //Calculate t
