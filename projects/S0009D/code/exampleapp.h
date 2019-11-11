@@ -46,6 +46,7 @@ private:
 
 	Square* s;
 	std::vector<Square> squareVector;
+	std::vector<GraphicsNode> objectVector;
 
 	float cameraSpeed = 0.05f;
 

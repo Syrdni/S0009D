@@ -208,6 +208,9 @@ ExampleApp::Open()
 
 		TextureResource* tr = new TextureResource();
 
+		MeshResource* mr = new MeshResource();
+		mr->loadFromOBJFile("cat.obj");
+
 		MeshResource* mr2 = new MeshResource();
 		mr2->loadFromOBJFile("sphere.obj");
 
@@ -219,6 +222,16 @@ ExampleApp::Open()
 			0, 0, 1, 0,
 			0, 0, 0, 1);
 
+
+		GraphicsNode GN = GraphicsNode();
+		GN.setMeshResource(mr);
+		GN.setShaderObject(so);
+		GN.setTextureResource(tr);
+		GN.setlightingNode(ln);
+		GN.setCameraPosition(cameraPos);
+		GN.loadTexture("texture.jpg");
+		GN.preDrawSetup();
+		objectVector.push_back(GN);
 
 		//Sets and loads all the things we need to create the object,
 		am->jointDrawSetup(mr2, tr, so, ln, cameraPos, "texture.jpg");
@@ -262,6 +275,8 @@ ExampleApp::Run()
 		}
 
 		debugManager->drawDebugShapes();
+		objectVector[0].setTransform(combinedMatrix);
+		objectVector[0].draw();
 
 		//ImGui
 		ImGui_ImplGlfwGL3_NewFrame();
