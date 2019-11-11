@@ -23,7 +23,7 @@ class Object
         AABB getAABB();
     private:
         GraphicsNode graphicsNode;
-        Vector4D position;
+        Vector4D position = Vector4D(3, 0, 0, 1);
         Matrix4D viewmatrix;
         AABB originalAABB;
         AABB currentAABB;

@@ -48,6 +48,15 @@ void Object::setupFirstAABB(std::vector<Vertex> vertices)
         else if (vertices[i].pos[2] < originalAABB.minPoint[2])
             originalAABB.minPoint[2] = vertices[i].pos[2];
     }
+
+    originalAABB.minPoint[0] += position[0];
+    originalAABB.minPoint[1] += position[1];
+    originalAABB.minPoint[2] += position[2];
+
+    originalAABB.maxPoint[0] += position[0];
+    originalAABB.maxPoint[1] += position[1];
+    originalAABB.maxPoint[2] += position[2];
+
     Vector4D dimentions = Vector4D(originalAABB.maxPoint[0]-originalAABB.minPoint[0], originalAABB.maxPoint[1]-originalAABB.minPoint[1], originalAABB.maxPoint[2]-originalAABB.minPoint[2], 1);
     Vector4D position = Vector4D(originalAABB.minPoint[0] + (dimentions[0]/2),
                                 originalAABB.minPoint[1] + (dimentions[1]/2),
