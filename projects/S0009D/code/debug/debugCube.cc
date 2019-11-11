@@ -2,7 +2,7 @@
 
 DebugCube::DebugCube(){}
 
-DebugCube::DebugCube(Vector4D pos, float width, float height, float length, Vector4D color)
+DebugCube::DebugCube(Vector4D pos, float width, float height, float length, Vector4D color, bool wireframe)
 {
     float w = width/2;
     float h = height/2;
@@ -37,6 +37,7 @@ DebugCube::DebugCube(Vector4D pos, float width, float height, float length, Vect
     indices.push_back(4);    indices.push_back(6);    indices.push_back(7);
 
     this->color = color;
+    this->wireframe = wireframe;
     
     setup();
 }
@@ -52,10 +53,18 @@ void DebugCube::draw(Matrix4D viewMatrix)
     glUniformMatrix4fv(transformLoc, 1, GL_TRUE, Matrix4D().getMatrix());
 
     transformLoc = glGetUniformLocation(program, "aColor");
-    glUniform4fv(transformLoc, 1, Vector4D(1.0, 0.0, 0.0, 1.0).getVector());
+    glUniform4fv(transformLoc, 1, color.getVector());
 
     glBindVertexArray(VAO);
+
+    if (wireframe)
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
+    
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL);
+
+    if (wireframe)
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL);
+
     glBindVertexArray(0);
     glUseProgram(0);
 }

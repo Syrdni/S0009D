@@ -206,3 +206,8 @@ void MeshResource::unbindVBO()
 {
 	glBindBuffer(0, 0);
 }
+
+std::vector<Vertex> MeshResource::getVertexBuffer()
+{
+	return combinedBuffer;
+}

@@ -37,12 +37,12 @@ void DebugManager::createLine(Vector4D p1, Vector4D p2, Vector4D color)
     addShape(new DebugLine(p1, p2, color));
 }
 
-void DebugManager::createCube(Vector4D pos, float width, float height, float length, Vector4D color)
+void DebugManager::createCube(Vector4D pos, float width, float height, float length, Vector4D color, bool wireframe)
 {
     if(!createShapes)
         return;
 
-    addShape(new DebugCube(pos, width, height, length, color));
+    addShape(new DebugCube(pos, width, height, length, color, wireframe));
 }
 
 void DebugManager::addShape(DebugShape* shape)

@@ -33,6 +33,7 @@ public:
 	bool loadFromOBJFile(const char * fileName);
 	void bindVBO();
 	void unbindVBO();
+	std::vector<Vertex> getVertexBuffer();
 
 
 private:
