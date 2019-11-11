@@ -125,9 +125,12 @@ ExampleApp::Open()
 
 			for (int i = 0; i < objectVector.size(); i++)
 			{
-				ray.intersect(objectVector[i].getAABB());
-				//Get planes
-				//Check if you hit the AABB
+				PointAndDistance PaD = ray.intersect(objectVector[i].getAABB());
+				//Check if we hit an AABB
+				if(PaD.distance != -1)
+				{
+					//Check if we hit the mesh
+				}
 				//Save the object in a temporary array together with length
 				//Check if you hit the closest objet in the mesh. If not continue with another mesh in the vector
 			}

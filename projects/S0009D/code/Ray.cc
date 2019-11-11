@@ -65,7 +65,7 @@ PointAndDistance Ray::intersect(AABB aabb)
     DebugManager::getInstance()->createCube(this->origin + this->direction * txMin, 0.05, 0.05, 0.05, Vector4D(1, 0, 0, 1), false);
     DebugManager::getInstance()->createCube(this->origin + this->direction * txMax, 0.05, 0.05, 0.05, Vector4D(1, 0, 0, 1), false);
 
-    // Y-axis
+    // Calculate T for when we pass the Y axis of the bounding box;
     float tyMin = (aabb.minPoint[1] - this->origin[1]) / this->direction[1];
     float tyMax = (aabb.maxPoint[1] - this->origin[1]) / this->direction[1];
     if(tyMax < tyMin)
@@ -77,7 +77,7 @@ PointAndDistance Ray::intersect(AABB aabb)
     DebugManager::getInstance()->createCube(this->origin + this->direction * tyMin, 0.05, 0.05, 0.05, Vector4D(0, 1, 0, 1), false);
     DebugManager::getInstance()->createCube(this->origin + this->direction * tyMax, 0.05, 0.05, 0.05, Vector4D(0, 1, 0, 1), false);
 
-    // Z-axis
+    // Calculate T for when we pass the Z axis of the bounding box;
     float tzMin = (aabb.minPoint[2] - this->origin[2]) / this->direction[2];
     float tzMax = (aabb.maxPoint[2] - this->origin[2]) / this->direction[2];
     if(tzMax < tzMin)
@@ -89,21 +89,27 @@ PointAndDistance Ray::intersect(AABB aabb)
     DebugManager::getInstance()->createCube(this->origin + this->direction * tzMin, 0.05, 0.05, 0.05, Vector4D(0, 0, 1, 1), false);
     DebugManager::getInstance()->createCube(this->origin + this->direction * tzMax, 0.05, 0.05, 0.05, Vector4D(0, 0, 1, 1), false);
     
-    //Calculate biggest and smalest T in the ray
+    //Calculate the greatest min and smallest max
     float tMin = (txMin > tyMin)? txMin : tyMin;
     float tMax = (txMax < tyMax)? txMax : tyMax;
+
+    //Did not intersect with the AABB
     if (txMin > tyMax || tyMin > txMax)
         return PointAndDistance(Vector4D(0, 0, 0, -1), -1);
     if (tMin > tzMax || tzMin > tMax)
         return PointAndDistance(Vector4D(0, 0, 0, -1), -1);
+
+    //Did intersect with the AABB
     if (tzMin > tMin)
         tMin = tzMin;
     if (tzMax = tMax)
         tMax = tzMax;
 
     DebugManager::getInstance()->createCube(this->origin + this->direction * tMin, 0.06, 0.06, 0.06, Vector4D(0, 0, 0, 1), false);
-    DebugManager::getInstance()->createCube(this->origin + this->direction * tMax, 0.06, 0.06, 0.06, Vector4D(0, 0, 0, 1), false);    
-    
+    DebugManager::getInstance()->createCube(this->origin + this->direction * tMax, 0.06, 0.06, 0.06, Vector4D(0, 0, 0, 1), false);      
+
+    //Return the point closest to the camera
+    return PointAndDistance(this->origin + this->direction * tMin, tMin); 
 }
 
 Vector4D Ray::getPoint(int i)

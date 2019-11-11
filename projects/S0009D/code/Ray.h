@@ -4,7 +4,13 @@
 #include "mPlane.h"
 #include <vector>
 #include "string.h"
-#include "object.h"
+#include "debug/debugManager.h"
+
+struct AABB
+{
+    Vector4D minPoint = Vector4D(99999, 99999, 99999, 1);
+    Vector4D maxPoint = Vector4D(-99999, -99999, -99999, 1);;
+};
 
 struct PointAndDistance
 {

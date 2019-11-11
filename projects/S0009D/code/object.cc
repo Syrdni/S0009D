@@ -80,11 +80,21 @@ void Object::draw()
     graphicsNode.draw();
 }
 
-mPlane* Object::getPlanesFromAABB()
-{
-}
-
 AABB Object::getAABB()
 {
     return currentAABB;
 }
+
+bool Object::checkIfRayIntersects(Ray ray)
+{
+    std::vector<Vertex> vertBuffer = graphicsNode.getMeshResource()->getVertexBuffer();
+    ray.setOrigin(Matrix4D::inverse(Matrix4D::getPositionMatrix(position)) * ray.getOrigin());
+    ray.setDirection(Matrix4D::inverse(Matrix4D::getPositionMatrix(position)) * ray.getDirection());
+    for (int i = 0; i < vertBuffer.size(); i++)
+    {
+    }
+    
+}
+
+//Origin med allt
+//Direction med bara rotation

@@ -2,12 +2,7 @@
 #include "graphics/GraphicsNode.h"
 #include "debug/debugManager.h"
 #include "mPlane.h"
-
-struct AABB
-{
-    Vector4D minPoint = Vector4D(99999, 99999, 99999, 1);
-    Vector4D maxPoint = Vector4D(-99999, -99999, -99999, 1);;
-};
+#include "Ray.h"
 
 class Object
 {
@@ -19,11 +14,11 @@ class Object
         void setViewMatrix(Matrix4D viewmatrix);
         void setupFirstAABB(std::vector<Vertex> vertices);
         void draw();
-        mPlane* getPlanesFromAABB();
         AABB getAABB();
+        bool checkIfRayIntersects(Ray ray);
     private:
         GraphicsNode graphicsNode;
-        Vector4D position = Vector4D(3, 0, 0, 1);
+        Vector4D position = Vector4D(0, 0, 0, 1);
         Matrix4D viewmatrix;
         AABB originalAABB;
         AABB currentAABB;
