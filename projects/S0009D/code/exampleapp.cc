@@ -131,7 +131,7 @@ ExampleApp::Open()
 				if(PaD.distance != -1)
 				{
 					PointAndDistance meshIntersection = objectVector[i].checkIfRayIntersects(ray);
-					if (closest > meshIntersection.distance)
+					if (closest > meshIntersection.distance && meshIntersection.distance != -1)
 					{
 						o = &objectVector[i];
 						closest = meshIntersection.distance;

@@ -74,15 +74,18 @@ void Object::updateAABB()
     currentAABB.minPoint = Vector4D(99999, 99999, 99999, 1);
     std::vector<Vector4D> pointVector;
 
-    pointVector.push_back(totalRotation * Vector4D(originalAABB.maxPoint[0], originalAABB.maxPoint[1], originalAABB.maxPoint[2], 1));
-    pointVector.push_back(totalRotation * Vector4D(originalAABB.maxPoint[0], originalAABB.minPoint[1], originalAABB.maxPoint[2], 1));
-    pointVector.push_back(totalRotation * Vector4D(originalAABB.minPoint[0], originalAABB.minPoint[1], originalAABB.maxPoint[2], 1));
-    pointVector.push_back(totalRotation * Vector4D(originalAABB.minPoint[0], originalAABB.maxPoint[1], originalAABB.maxPoint[2], 1));
+    Matrix4D combinedMatrix = totalRotation * Matrix4D::getScaleMatrix(scale);
 
-    pointVector.push_back(totalRotation * Vector4D(originalAABB.maxPoint[0], originalAABB.maxPoint[1], originalAABB.minPoint[2], 1));
-    pointVector.push_back(totalRotation * Vector4D(originalAABB.maxPoint[0], originalAABB.minPoint[1], originalAABB.minPoint[2], 1));
-    pointVector.push_back(totalRotation * Vector4D(originalAABB.minPoint[0], originalAABB.minPoint[1], originalAABB.minPoint[2], 1));
-    pointVector.push_back(totalRotation * Vector4D(originalAABB.minPoint[0], originalAABB.maxPoint[1], originalAABB.minPoint[2], 1));
+
+    pointVector.push_back(combinedMatrix * Vector4D(originalAABB.maxPoint[0], originalAABB.maxPoint[1], originalAABB.maxPoint[2], 1));
+    pointVector.push_back(combinedMatrix * Vector4D(originalAABB.maxPoint[0], originalAABB.minPoint[1], originalAABB.maxPoint[2], 1));
+    pointVector.push_back(combinedMatrix * Vector4D(originalAABB.minPoint[0], originalAABB.minPoint[1], originalAABB.maxPoint[2], 1));
+    pointVector.push_back(combinedMatrix * Vector4D(originalAABB.minPoint[0], originalAABB.maxPoint[1], originalAABB.maxPoint[2], 1));
+
+    pointVector.push_back(combinedMatrix * Vector4D(originalAABB.maxPoint[0], originalAABB.maxPoint[1], originalAABB.minPoint[2], 1));
+    pointVector.push_back(combinedMatrix * Vector4D(originalAABB.maxPoint[0], originalAABB.minPoint[1], originalAABB.minPoint[2], 1));
+    pointVector.push_back(combinedMatrix * Vector4D(originalAABB.minPoint[0], originalAABB.minPoint[1], originalAABB.minPoint[2], 1));
+    pointVector.push_back(combinedMatrix * Vector4D(originalAABB.minPoint[0], originalAABB.maxPoint[1], originalAABB.minPoint[2], 1));
 
     for (int i = 0; i < pointVector.size(); i++)
     {
@@ -137,6 +140,10 @@ PointAndDistance Object::checkIfRayIntersects(Ray ray)
 {
     std::vector<PointAndDistance> intersectionPoints;
     Vector4D normal1, normal2, normal3;
+
+    //Get the combined matrix of scale and rotation
+    Matrix4D combinedMatrix = totalRotation * Matrix4D::getScaleMatrix(scale);
+
     //Gett the Vertex and index buffer
     std::vector<Vertex> vertBuffer = graphicsNode.getMeshResource()->getVertexBuffer();
     std::vector<int> indBuffer = graphicsNode.getMeshResource()->getIndexBuffer();
@@ -146,9 +153,9 @@ PointAndDistance Object::checkIfRayIntersects(Ray ray)
     Vector4D originOriginal = ray.getOrigin();
     //Set 4th coord to 1
     ray.setOrigin(Vector4D(ray.getOrigin()[0], ray.getOrigin()[1], ray.getOrigin()[2], 1));
-    ray.setOrigin(Matrix4D::inverse(Matrix4D::getPositionMatrix(position) * totalRotation) * ray.getOrigin());
+    ray.setOrigin(Matrix4D::inverse(Matrix4D::getPositionMatrix(position) * combinedMatrix) * ray.getOrigin());
 
-    ray.setDirection(Matrix4D::inverse(Matrix4D::getPositionMatrix(position) * totalRotation) * ray.getDirection());
+    ray.setDirection(Matrix4D::inverse(Matrix4D::getPositionMatrix(position) * combinedMatrix) * ray.getDirection());
     ray.setDirection(Vector4D(ray.getDirection()[0], ray.getDirection()[1], ray.getDirection()[2], 1));
     //Loop through all the triangles in the vector
     for (int i = 0; i < indBuffer.size(); i += 3)
@@ -187,13 +194,13 @@ PointAndDistance Object::checkIfRayIntersects(Ray ray)
             Vector4D::dotProduct(normal, v3v2.crossProduct(PV1)) > 0 &&
             Vector4D::dotProduct(normal, v1v3.crossProduct(PV2)) > 0)
             {
-                DebugManager::getInstance()->createCube((Matrix4D::getPositionMatrix(position) * totalRotation * temp.point), 0.5, 0.5, 0.5, Vector4D(1, 0, 0, 1));
+                DebugManager::getInstance()->createCube((Matrix4D::getPositionMatrix(position) * combinedMatrix * temp.point), 0.5, 0.5, 0.5, Vector4D(1, 0, 0, 1));
                 //DebugManager::getInstance()->createCube((pos1 + pos2 + pos3)*(1.0/3.0), 0.3, 0.3, 0.3, Vector4D(0, 0, 1, 1));
                 //DebugManager::getInstance()->createCube(pos1, 0.3, 0.3, 0.3, Vector4D(1, 0, 0, 1));
                 //DebugManager::getInstance()->createCube(pos2, 0.3, 0.3, 0.3, Vector4D(1, 0, 0, 1));
                 //DebugManager::getInstance()->createCube(pos3, 0.3, 0.3, 0.3, Vector4D(1, 0, 0, 1));
                 //DebugManager::getInstance()->createLine((pos1 + pos2 + pos3)*(1.0/3.0), (pos1 + pos2 + pos3)*(1.0/3.0) + normal * 2, Vector4D(1, 0, 0, 1));
-                intersectionPoints.push_back(PointAndDistance(Matrix4D::getPositionMatrix(position) * totalRotation * temp.point, temp.distance));
+                intersectionPoints.push_back(PointAndDistance(Matrix4D::getPositionMatrix(position) * combinedMatrix * temp.point, temp.distance));
             }
             //DebugManager::getInstance()->createCube((pos1 + pos2 + pos3)*(1.0/3.0), 0.3, 0.3, 0.3, Vector4D(1, 1, 1, 1));
         }  
