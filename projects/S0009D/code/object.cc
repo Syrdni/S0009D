@@ -72,34 +72,37 @@ void Object::updateAABB()
     std::vector<Vertex> vertices = graphicsNode.getMeshResource()->getVertexBuffer();
     currentAABB.maxPoint = Vector4D(-99999, -99999, -99999, 1);
     currentAABB.minPoint = Vector4D(99999, 99999, 99999, 1);
-    for (int i = 0; i < vertices.size(); i++)
+    std::vector<Vector4D> pointVector;
+
+    pointVector.push_back(totalRotation * Vector4D(originalAABB.maxPoint[0], originalAABB.maxPoint[1], originalAABB.maxPoint[2], 1));
+    pointVector.push_back(totalRotation * Vector4D(originalAABB.maxPoint[0], originalAABB.minPoint[1], originalAABB.maxPoint[2], 1));
+    pointVector.push_back(totalRotation * Vector4D(originalAABB.minPoint[0], originalAABB.minPoint[1], originalAABB.maxPoint[2], 1));
+    pointVector.push_back(totalRotation * Vector4D(originalAABB.minPoint[0], originalAABB.maxPoint[1], originalAABB.maxPoint[2], 1));
+
+    pointVector.push_back(totalRotation * Vector4D(originalAABB.maxPoint[0], originalAABB.maxPoint[1], originalAABB.minPoint[2], 1));
+    pointVector.push_back(totalRotation * Vector4D(originalAABB.maxPoint[0], originalAABB.minPoint[1], originalAABB.minPoint[2], 1));
+    pointVector.push_back(totalRotation * Vector4D(originalAABB.minPoint[0], originalAABB.minPoint[1], originalAABB.minPoint[2], 1));
+    pointVector.push_back(totalRotation * Vector4D(originalAABB.minPoint[0], originalAABB.maxPoint[1], originalAABB.minPoint[2], 1));
+
+    for (int i = 0; i < pointVector.size(); i++)
     {
-        if (vertices[i].pos[0] > currentAABB.maxPoint[0])
-            currentAABB.maxPoint[0] = vertices[i].pos[0];
-
-        else if (vertices[i].pos[0] < currentAABB.minPoint[0])
-            currentAABB.minPoint[0] = vertices[i].pos[0];
-        
-        if (vertices[i].pos[1] > currentAABB.maxPoint[1])
-            currentAABB.maxPoint[1] = vertices[i].pos[1];
-
-        else if (vertices[i].pos[1] < currentAABB.minPoint[1])
-            currentAABB.minPoint[1] = vertices[i].pos[1];
-
-        if (vertices[i].pos[2] > currentAABB.maxPoint[2])
-            currentAABB.maxPoint[2] = vertices[i].pos[2];
-
-        else if (vertices[i].pos[2] < currentAABB.minPoint[2])
-            currentAABB.minPoint[2] = vertices[i].pos[2];
+        if (pointVector[i][0] >= currentAABB.maxPoint[0]) currentAABB.maxPoint[0] = pointVector[i][0];
+        if (pointVector[i][1] >= currentAABB.maxPoint[1]) currentAABB.maxPoint[1] = pointVector[i][1];
+        if (pointVector[i][2] >= currentAABB.maxPoint[2]) currentAABB.maxPoint[2] = pointVector[i][2];
+        if (pointVector[i][0] <= currentAABB.minPoint[0]) currentAABB.minPoint[0] = pointVector[i][0];
+        if (pointVector[i][1] <= currentAABB.minPoint[1]) currentAABB.minPoint[1] = pointVector[i][1];
+        if (pointVector[i][2] <= currentAABB.minPoint[2]) currentAABB.minPoint[2] = pointVector[i][2];
     }
+    
+    //currentAABB.minPoint[1] = originalAABB.minPoint[1];
+    //currentAABB.minPoint[2] = originalAABB.minPoint[2];
+    //currentAABB.minPoint[0] = originalAABB.minPoint[0];
+    //currentAABB.maxPoint[0] = originalAABB.maxPoint[0];
+    //currentAABB.maxPoint[1] = originalAABB.maxPoint[1];
+    //currentAABB.maxPoint[2] = originalAABB.maxPoint[2];
 
-    currentAABB.minPoint[0] += position[0];
-    currentAABB.minPoint[1] += position[1];
-    currentAABB.minPoint[2] += position[2];
-
-    currentAABB.maxPoint[0] += position[0];
-    currentAABB.maxPoint[1] += position[1];
-    currentAABB.maxPoint[2] += position[2];
+    currentAABB.minPoint = Matrix4D::getPositionMatrix(position) * currentAABB.minPoint;
+    currentAABB.maxPoint = Matrix4D::getPositionMatrix(position) * currentAABB.maxPoint;
 
     Vector4D dimentions = Vector4D(currentAABB.maxPoint[0]-currentAABB.minPoint[0], currentAABB.maxPoint[1]-currentAABB.minPoint[1], currentAABB.maxPoint[2]-currentAABB.minPoint[2], 1);
     Vector4D position = Vector4D(currentAABB.minPoint[0] + (dimentions[0]/2),
@@ -117,7 +120,11 @@ void Object::draw()
                                 currentAABB.minPoint[2] + (dimentions[2]/2),
                                 1);
     DebugManager::getInstance()->createSingleFrameCube(pos, dimentions[0], dimentions[1], dimentions[2], Vector4D(0, 0, 1, 1), true);
-    graphicsNode.setTransform(viewmatrix*Matrix4D::getPositionMatrix(position));
+    Matrix4D rotationX = Matrix4D::rotX(rotation[0]);
+    Matrix4D rotationY = Matrix4D::rotY(rotation[1]);
+    Matrix4D rotationZ = Matrix4D::rotZ(rotation[2]);
+    totalRotation = rotationX * rotationY * rotationZ;
+    graphicsNode.setTransform(viewmatrix*Matrix4D::getPositionMatrix(position) * totalRotation);
     graphicsNode.setPosition(Matrix4D::getPositionMatrix(position));
     graphicsNode.draw();
 }
@@ -173,6 +180,11 @@ bool Object::checkIfRayIntersects(Ray ray)
 Vector4D& Object::getReferenceToPosition()
 {
     return position;
+}
+
+Vector4D& Object::getReferenceToRotation()
+{
+    return rotation;
 }
 
 //Origin med allt

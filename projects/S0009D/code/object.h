@@ -19,10 +19,18 @@ class Object
         AABB getAABB();
         bool checkIfRayIntersects(Ray ray);
         Vector4D& getReferenceToPosition();
+        Vector4D& getReferenceToRotation();
     private:
+        float findTheSmallesCoordinate(float p1, float p2);
+        float findTheBiggestCoordinate(float p1, float p2);
         GraphicsNode graphicsNode;
+
+        Vector4D rotation;
         Vector4D position;
+
         Matrix4D viewmatrix;
+        Matrix4D totalRotation;
+
         AABB originalAABB;
         AABB currentAABB;
 };

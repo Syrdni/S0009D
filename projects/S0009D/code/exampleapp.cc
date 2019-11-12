@@ -297,6 +297,7 @@ ExampleApp::Run()
 			//ImGui::InputFloat4("Position", s->getPosition().getVector());
 			//ImGui::ColorEdit3("Color", s->getColor().getVector());
 			ImGui::InputFloat4("Position", o->getReferenceToPosition().getVector());
+			ImGui::SliderFloat4("Rotation", o->getReferenceToRotation().getVector(), 0, 2*3.14159265359);
 			
 		}
 		ImGui::Render();
