@@ -93,13 +93,6 @@ void Object::updateAABB()
         if (pointVector[i][1] <= currentAABB.minPoint[1]) currentAABB.minPoint[1] = pointVector[i][1];
         if (pointVector[i][2] <= currentAABB.minPoint[2]) currentAABB.minPoint[2] = pointVector[i][2];
     }
-    
-    //currentAABB.minPoint[1] = originalAABB.minPoint[1];
-    //currentAABB.minPoint[2] = originalAABB.minPoint[2];
-    //currentAABB.minPoint[0] = originalAABB.minPoint[0];
-    //currentAABB.maxPoint[0] = originalAABB.maxPoint[0];
-    //currentAABB.maxPoint[1] = originalAABB.maxPoint[1];
-    //currentAABB.maxPoint[2] = originalAABB.maxPoint[2];
 
     currentAABB.minPoint = Matrix4D::getPositionMatrix(position) * currentAABB.minPoint;
     currentAABB.maxPoint = Matrix4D::getPositionMatrix(position) * currentAABB.maxPoint;
@@ -124,8 +117,8 @@ void Object::draw()
     Matrix4D rotationY = Matrix4D::rotY(rotation[1]);
     Matrix4D rotationZ = Matrix4D::rotZ(rotation[2]);
     totalRotation = rotationX * rotationY * rotationZ;
-    graphicsNode.setTransform(viewmatrix*Matrix4D::getPositionMatrix(position) * totalRotation);
-    graphicsNode.setPosition(Matrix4D::getPositionMatrix(position));
+    graphicsNode.setTransform(viewmatrix * Matrix4D::getPositionMatrix(position) * totalRotation);
+    graphicsNode.setPosition(Matrix4D::getPositionMatrix(position) * totalRotation);
     graphicsNode.draw();
 }
 
