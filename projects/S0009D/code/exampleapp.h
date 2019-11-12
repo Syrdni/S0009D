@@ -46,6 +46,7 @@ private:
 	Animator an;
 
 	Square* s;
+	Object* o;
 	std::vector<Square> squareVector;
 	std::vector<Object> objectVector;
 

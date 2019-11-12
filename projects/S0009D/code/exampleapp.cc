@@ -219,7 +219,7 @@ ExampleApp::Open()
 		mr->loadFromOBJFile("dog.obj");
 
 		MeshResource* mr2 = new MeshResource();
-		mr2->loadFromOBJFile("sphere.obj");
+		mr2->loadFromOBJFile("cat.obj");
 
 		//The point light source
 		ln = new LightingNode(Vector4D(0, 1, 3, 1), Vector4D(1.0f, 1.0f, 1.0f, 1.0f), 1);
@@ -231,6 +231,8 @@ ExampleApp::Open()
 
 
 		objectVector.push_back(Object(mr, so, tr, ln, cameraPos, "texture2.jpg"));
+		objectVector.push_back(Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
+		o = &objectVector[0];
 
 		//Setup for Dear ImGui context
 		ImGui::CreateContext();
@@ -271,8 +273,12 @@ ExampleApp::Run()
 		debugManager->drawDebugShapes();
 		debugManager->clearSingleFrameVector();
 
-		objectVector[0].setViewMatrix(combinedMatrix);
-		objectVector[0].draw();
+		for (int i = 0; i < objectVector.size(); i++)
+		{
+			objectVector[i].setViewMatrix(combinedMatrix);
+			objectVector[i].update();
+		}
+		
 
 		//ImGui
 		ImGui_ImplGlfwGL3_NewFrame();
@@ -287,9 +293,11 @@ ExampleApp::Run()
 			ImGui::Checkbox("Render debugShapes", debugManager->getRenderBool());
 			ImGui::Checkbox("Create debugShapes", debugManager->getCreateShapes());
 			ImGui::SliderFloat("CameraSpeed", &cameraSpeed, 0.01f, 10);
-			ImGui::InputFloat4("Normal", s->getNormal().getVector());
-			ImGui::InputFloat4("Position", s->getPosition().getVector());
-			ImGui::ColorEdit3("Color", s->getColor().getVector());
+			//ImGui::InputFloat4("Normal", s->getNormal().getVector());
+			//ImGui::InputFloat4("Position", s->getPosition().getVector());
+			//ImGui::ColorEdit3("Color", s->getColor().getVector());
+			ImGui::InputFloat4("Position", o->getReferenceToPosition().getVector());
+			
 		}
 		ImGui::Render();
 		glFlush();

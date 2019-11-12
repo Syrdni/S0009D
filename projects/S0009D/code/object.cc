@@ -62,9 +62,51 @@ void Object::setupFirstAABB(std::vector<Vertex> vertices)
                                 originalAABB.minPoint[1] + (dimentions[1]/2),
                                 originalAABB.minPoint[2] + (dimentions[2]/2),
                                 1);
-    DebugManager::getInstance()->createCube(position, dimentions[0], dimentions[1], dimentions[2], Vector4D(0, 0, 1, 1), true);
+    DebugManager::getInstance()->createSingleFrameCube(position, dimentions[0], dimentions[1], dimentions[2], Vector4D(0, 0, 1, 1), true);
     currentAABB = originalAABB;
     
+}
+
+void Object::updateAABB()
+{
+    std::vector<Vertex> vertices = graphicsNode.getMeshResource()->getVertexBuffer();
+    currentAABB.maxPoint = Vector4D(-99999, -99999, -99999, 1);
+    currentAABB.minPoint = Vector4D(99999, 99999, 99999, 1);
+    for (int i = 0; i < vertices.size(); i++)
+    {
+        if (vertices[i].pos[0] > currentAABB.maxPoint[0])
+            currentAABB.maxPoint[0] = vertices[i].pos[0];
+
+        else if (vertices[i].pos[0] < currentAABB.minPoint[0])
+            currentAABB.minPoint[0] = vertices[i].pos[0];
+        
+        if (vertices[i].pos[1] > currentAABB.maxPoint[1])
+            currentAABB.maxPoint[1] = vertices[i].pos[1];
+
+        else if (vertices[i].pos[1] < currentAABB.minPoint[1])
+            currentAABB.minPoint[1] = vertices[i].pos[1];
+
+        if (vertices[i].pos[2] > currentAABB.maxPoint[2])
+            currentAABB.maxPoint[2] = vertices[i].pos[2];
+
+        else if (vertices[i].pos[2] < currentAABB.minPoint[2])
+            currentAABB.minPoint[2] = vertices[i].pos[2];
+    }
+
+    currentAABB.minPoint[0] += position[0];
+    currentAABB.minPoint[1] += position[1];
+    currentAABB.minPoint[2] += position[2];
+
+    currentAABB.maxPoint[0] += position[0];
+    currentAABB.maxPoint[1] += position[1];
+    currentAABB.maxPoint[2] += position[2];
+
+    Vector4D dimentions = Vector4D(currentAABB.maxPoint[0]-currentAABB.minPoint[0], currentAABB.maxPoint[1]-currentAABB.minPoint[1], currentAABB.maxPoint[2]-currentAABB.minPoint[2], 1);
+    Vector4D position = Vector4D(currentAABB.minPoint[0] + (dimentions[0]/2),
+                                currentAABB.minPoint[1] + (dimentions[1]/2),
+                                currentAABB.minPoint[2] + (dimentions[2]/2),
+                                1);
+    DebugManager::getInstance()->createSingleFrameCube(position, dimentions[0], dimentions[1], dimentions[2], Vector4D(0, 0, 1, 1), true);
 }
 
 void Object::draw()
@@ -78,6 +120,12 @@ void Object::draw()
     graphicsNode.setTransform(viewmatrix*Matrix4D::getPositionMatrix(position));
     graphicsNode.setPosition(Matrix4D::getPositionMatrix(position));
     graphicsNode.draw();
+}
+
+void Object::update()
+{
+    updateAABB();
+    draw();
 }
 
 AABB Object::getAABB()
@@ -120,6 +168,11 @@ bool Object::checkIfRayIntersects(Ray ray)
         }
          
     }
+}
+
+Vector4D& Object::getReferenceToPosition()
+{
+    return position;
 }
 
 //Origin med allt
