@@ -117,8 +117,8 @@ void Object::draw()
     Matrix4D rotationY = Matrix4D::rotY(rotation[1]);
     Matrix4D rotationZ = Matrix4D::rotZ(rotation[2]);
     totalRotation = rotationX * rotationY * rotationZ;
-    graphicsNode.setTransform(viewmatrix * Matrix4D::getPositionMatrix(position) * totalRotation);
-    graphicsNode.setPosition(Matrix4D::getPositionMatrix(position) * totalRotation);
+    graphicsNode.setTransform(viewmatrix * Matrix4D::getPositionMatrix(position) * totalRotation * Matrix4D::getScaleMatrix(scale));
+    graphicsNode.setPosition(Matrix4D::getPositionMatrix(position) * totalRotation * Matrix4D::getScaleMatrix(scale) );
     graphicsNode.draw();
 }
 
@@ -219,6 +219,11 @@ Vector4D& Object::getReferenceToPosition()
 Vector4D& Object::getReferenceToRotation()
 {
     return rotation;
+}
+
+Vector4D& Object::getReferenceToScale()
+{
+    return scale;
 }
 
 //Origin med allt

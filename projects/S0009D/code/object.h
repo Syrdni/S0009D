@@ -20,12 +20,14 @@ class Object
         PointAndDistance checkIfRayIntersects(Ray ray);
         Vector4D& getReferenceToPosition();
         Vector4D& getReferenceToRotation();
+        Vector4D& getReferenceToScale();
     private:
         float findTheSmallesCoordinate(float p1, float p2);
         float findTheBiggestCoordinate(float p1, float p2);
         GraphicsNode graphicsNode;
 
         Vector4D rotation;
+        Vector4D scale = Vector4D(1, 1, 1, 1);
         Vector4D position;
 
         Matrix4D viewmatrix;
