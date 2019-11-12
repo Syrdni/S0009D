@@ -142,6 +142,8 @@ PointAndDistance Object::checkIfRayIntersects(Ray ray)
     std::vector<int> indBuffer = graphicsNode.getMeshResource()->getIndexBuffer();
 
     //Convert the ray into localspace for the model
+    //Save origin for so we can use it to calculate distance
+    Vector4D originOriginal = ray.getOrigin();
     //Set 4th coord to 1
     ray.setOrigin(Vector4D(ray.getOrigin()[0], ray.getOrigin()[1], ray.getOrigin()[2], 1));
     ray.setOrigin(Matrix4D::inverse(Matrix4D::getPositionMatrix(position) * totalRotation) * ray.getOrigin());

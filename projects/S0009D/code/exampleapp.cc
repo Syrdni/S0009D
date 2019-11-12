@@ -132,11 +132,11 @@ ExampleApp::Open()
 				{
 					PointAndDistance meshIntersection = objectVector[i].checkIfRayIntersects(ray);
 					if (closest > meshIntersection.distance)
+					{
 						o = &objectVector[i];
-					
+						closest = meshIntersection.distance;
+					}
 				}
-				//Save the object in a temporary array together with length
-				//Check if you hit the closest objet in the mesh. If not continue with another mesh in the vector
 			}
 			
 		}
@@ -217,6 +217,8 @@ ExampleApp::Open()
 		ShaderObject* so = new ShaderObject();
 
 		TextureResource* tr = new TextureResource();
+		TextureResource* tr2 = new TextureResource();
+		TextureResource* tr3 = new TextureResource();
 
 		MeshResource* mr = new MeshResource();
 		mr->loadFromOBJFile("dog.obj");
@@ -234,8 +236,12 @@ ExampleApp::Open()
 
 
 		objectVector.push_back(Object(mr, so, tr, ln, cameraPos, "texture2.jpg"));
+		objectVector.push_back(Object(mr, so, tr2, ln, cameraPos, "tex.jpg"));
+		objectVector.push_back(Object(mr, so, tr3, ln, cameraPos, "texture.jpg"));
 		objectVector.push_back(Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
 		o = &objectVector[0];
+		objectVector[1].getReferenceToPosition().getVector()[0] = 150;
+		objectVector[2].getReferenceToPosition().getVector()[0] = -150;
 
 		//Setup for Dear ImGui context
 		ImGui::CreateContext();
