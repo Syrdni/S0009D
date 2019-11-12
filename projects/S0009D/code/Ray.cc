@@ -105,8 +105,8 @@ PointAndDistance Ray::intersect(AABB aabb)
     if (tzMax = tMax)
         tMax = tzMax;
 
-    DebugManager::getInstance()->createCube(this->origin + this->direction * tMin, 0.02, 0.02, 0.02, Vector4D(0, 0, 0, 1), false);
-    DebugManager::getInstance()->createCube(this->origin + this->direction * tMax, 0.02, 0.02, 0.02, Vector4D(0, 0, 0, 1), false);      
+    DebugManager::getInstance()->createCube(this->origin + this->direction * tMin, 0.1, 0.1, 0.1, Vector4D(0, 0, 0, 1), false);
+    DebugManager::getInstance()->createCube(this->origin + this->direction * tMax, 0.1, 0.1, 0.1, Vector4D(0, 0, 0, 1), false);      
 
     //Return the point closest to the camera
     return PointAndDistance(this->origin + this->direction * tMin, tMin); 

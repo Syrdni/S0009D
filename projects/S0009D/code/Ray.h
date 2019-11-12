@@ -36,5 +36,5 @@ class Ray
     private:;
         Vector4D origin;
         Vector4D direction;
-        float maxDist = 50;
+        float maxDist = 200;
 };

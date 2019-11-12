@@ -49,7 +49,7 @@ private:
 	std::vector<Square> squareVector;
 	std::vector<Object> objectVector;
 
-	float cameraSpeed = 0.05f;
+	float cameraSpeed = 0.5;
 
 	//things to make the camera move
 	Vector4D cameraPos = Vector4D(0.0f, 0.0f, 3.0f, 1.0f);

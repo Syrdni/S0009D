@@ -216,7 +216,7 @@ ExampleApp::Open()
 		TextureResource* tr = new TextureResource();
 
 		MeshResource* mr = new MeshResource();
-		mr->loadFromOBJFile("cat.obj");
+		mr->loadFromOBJFile("dog.obj");
 
 		MeshResource* mr2 = new MeshResource();
 		mr2->loadFromOBJFile("sphere.obj");
@@ -286,6 +286,7 @@ ExampleApp::Run()
 			}
 			ImGui::Checkbox("Render debugShapes", debugManager->getRenderBool());
 			ImGui::Checkbox("Create debugShapes", debugManager->getCreateShapes());
+			ImGui::SliderFloat("CameraSpeed", &cameraSpeed, 0.01f, 10);
 			ImGui::InputFloat4("Normal", s->getNormal().getVector());
 			ImGui::InputFloat4("Position", s->getPosition().getVector());
 			ImGui::ColorEdit3("Color", s->getColor().getVector());
