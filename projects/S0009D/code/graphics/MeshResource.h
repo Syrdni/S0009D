@@ -34,6 +34,7 @@ public:
 	void bindVBO();
 	void unbindVBO();
 	std::vector<Vertex> getVertexBuffer();
+	std::vector<int> getIndexBuffer();
 
 
 private:

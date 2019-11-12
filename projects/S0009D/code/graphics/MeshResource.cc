@@ -211,3 +211,8 @@ std::vector<Vertex> MeshResource::getVertexBuffer()
 {
 	return combinedBuffer;
 }
+
+std::vector<int> MeshResource::getIndexBuffer()
+{
+	return indexes;
+}

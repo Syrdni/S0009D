@@ -129,6 +129,7 @@ ExampleApp::Open()
 				//Check if we hit an AABB
 				if(PaD.distance != -1)
 				{
+					objectVector[i].checkIfRayIntersects(ray);
 					//Check if we hit the mesh
 				}
 				//Save the object in a temporary array together with length

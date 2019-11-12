@@ -87,13 +87,38 @@ AABB Object::getAABB()
 
 bool Object::checkIfRayIntersects(Ray ray)
 {
+    Vector4D normal1, normal2, normal3;
     std::vector<Vertex> vertBuffer = graphicsNode.getMeshResource()->getVertexBuffer();
+    std::vector<int> indBuffer = graphicsNode.getMeshResource()->getIndexBuffer();
     ray.setOrigin(Matrix4D::inverse(Matrix4D::getPositionMatrix(position)) * ray.getOrigin());
     ray.setDirection(Matrix4D::inverse(Matrix4D::getPositionMatrix(position)) * ray.getDirection());
-    for (int i = 0; i < vertBuffer.size(); i++)
+    for (int i = 0; i < indBuffer.size(); i += 3)
     {
+        normal1[0] = vertBuffer[indBuffer[i]].normal[0];   normal1[1] = vertBuffer[indBuffer[i]].normal[1];   normal1[2] = vertBuffer[indBuffer[i]].normal[2];
+        normal2[0] = vertBuffer[indBuffer[i+1]].normal[0]; normal2[1] = vertBuffer[indBuffer[i+1]].normal[1]; normal2[2] = vertBuffer[indBuffer[i+1]].normal[2];
+        normal3[0] = vertBuffer[indBuffer[i+2]].normal[0]; normal3[1] = vertBuffer[indBuffer[i+2]].normal[1]; normal3[2] = vertBuffer[indBuffer[i+2]].normal[2];
+
+        Vector4D normal = (normal1 + normal2 + normal3) * (1.0/3.0);
+        if (Vector4D::dotProduct(normal, ray.getDirection()) < 0)
+        {
+            Vector4D pos1, pos2, pos3;
+            pos1[0] = vertBuffer[indBuffer[i]].pos[0];   pos1[1] = vertBuffer[indBuffer[i]].pos[1];   pos1[2] = vertBuffer[indBuffer[i]].pos[2];
+            pos2[0] = vertBuffer[indBuffer[i+1]].pos[0]; pos2[1] = vertBuffer[indBuffer[i+1]].pos[1]; pos2[2] = vertBuffer[indBuffer[i+1]].pos[2];
+            pos3[0] = vertBuffer[indBuffer[i+2]].pos[0]; pos3[1] = vertBuffer[indBuffer[i+2]].pos[1]; pos3[2] = vertBuffer[indBuffer[i+2]].pos[2];
+            Vector4D v2v1 = pos2-pos1; Vector4D v3v2 = pos3-pos2; Vector4D v1v3 = pos1-pos3; 
+            PointAndDistance temp = ray.intersect(mPlane((pos1 + pos2 + pos3)*0.33, normal));
+            Vector4D PV0 = temp.point - pos1; Vector4D PV1 = temp.point - pos2; Vector4D PV2 = temp.point - pos3;
+            if (Vector4D::dotProduct(normal, v2v1.crossProduct(PV0)) > 0 &&
+            Vector4D::dotProduct(normal, v3v2.crossProduct(PV1)) > 0 &&
+            Vector4D::dotProduct(normal, v1v3.crossProduct(PV2)) > 0)
+            {
+                DebugManager::getInstance()->createCube((Matrix4D::getPositionMatrix(position) * temp.point), 0.03, 0.03, 0.03, Vector4D(1, 0, 0, 1));
+            }
+            
+            //DebugManager::getInstance()->createCube((pos1 + pos2 + pos3)*0.33, 0.01, 0.01, 0.01, Vector4D(1, 1, 1, 1));
+        }
+         
     }
-    
 }
 
 //Origin med allt
