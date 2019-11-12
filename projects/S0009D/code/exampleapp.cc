@@ -112,7 +112,7 @@ ExampleApp::Open()
 			ray = Ray(cameraPos, world);
 			DebugManager::getInstance()->createLine(ray.getOrigin(), ray.getPoint(1), Vector4D(0, 1, 0, 1));
 
-			float closest = 1000000;
+			float closest = 100000000;
 			for (int i = 0; i < squareVector.size(); i++)
 			{
 				float distance = squareVector[i].checkIfHit(ray);
@@ -123,14 +123,17 @@ ExampleApp::Open()
 				}
 			}
 
+			closest = 100000000;
 			for (int i = 0; i < objectVector.size(); i++)
 			{
 				PointAndDistance PaD = ray.intersect(objectVector[i].getAABB());
 				//Check if we hit an AABB
 				if(PaD.distance != -1)
 				{
-					objectVector[i].checkIfRayIntersects(ray);
-					//Check if we hit the mesh
+					PointAndDistance meshIntersection = objectVector[i].checkIfRayIntersects(ray);
+					if (closest > meshIntersection.distance)
+						o = &objectVector[i];
+					
 				}
 				//Save the object in a temporary array together with length
 				//Check if you hit the closest objet in the mesh. If not continue with another mesh in the vector

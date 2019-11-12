@@ -17,7 +17,7 @@ class Object
         void draw();
         void update();
         AABB getAABB();
-        bool checkIfRayIntersects(Ray ray);
+        PointAndDistance checkIfRayIntersects(Ray ray);
         Vector4D& getReferenceToPosition();
         Vector4D& getReferenceToRotation();
     private:
