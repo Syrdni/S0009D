@@ -44,7 +44,7 @@ DebugCube::DebugCube(Vector4D pos, float width, float height, float length, Vect
 
 void DebugCube::draw(Matrix4D viewMatrix)
 {
-    glUseProgram(program);
+    glUseProgram(DebugCube::program);
 
     unsigned int transformLoc = glGetUniformLocation(program, "aPerspectiveTransform");
     glUniformMatrix4fv(transformLoc, 1, GL_TRUE, viewMatrix.getMatrix());
