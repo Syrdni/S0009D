@@ -175,12 +175,13 @@ float Square::checkIfHit(Ray ray)
     Vector4D normal3 = point2 - point3;
     Vector4D normal4 = point3 - point2;
 
-    //Calculate vector for the corners to intersection point
+    //Calculate vector to the point from the corners
     Vector4D intersectionVector1 = temp - point1;
     Vector4D intersectionVector2 = temp - point2;
     Vector4D intersectionVector3 = temp - point3;
     Vector4D intersectionVector4 = temp - point4;
 
+    //Check if we are inside the area
     if (intersectionVector1.dotProduct(normal3) < 0 &&
         intersectionVector3.dotProduct(normal4) < 0 &&
         intersectionVector2.dotProduct(normal2) < 0 &&

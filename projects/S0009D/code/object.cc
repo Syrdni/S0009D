@@ -28,6 +28,7 @@ void Object::setViewMatrix(Matrix4D viewmatrix)
 
 void Object::setupFirstAABB(std::vector<Vertex> vertices)
 {
+    //Create the original AABB with mesh data
     for (int i = 0; i < vertices.size(); i++)
     {
         if (vertices[i].pos[0] > originalAABB.maxPoint[0])
@@ -49,6 +50,7 @@ void Object::setupFirstAABB(std::vector<Vertex> vertices)
             originalAABB.minPoint[2] = vertices[i].pos[2];
     }
 
+    //Convert to worldspace
     originalAABB.minPoint[0] += position[0];
     originalAABB.minPoint[1] += position[1];
     originalAABB.minPoint[2] += position[2];
@@ -57,26 +59,32 @@ void Object::setupFirstAABB(std::vector<Vertex> vertices)
     originalAABB.maxPoint[1] += position[1];
     originalAABB.maxPoint[2] += position[2];
 
+    //Set current AABB to the original
+    currentAABB = originalAABB;
+
+    //Debug things
     Vector4D dimentions = Vector4D(originalAABB.maxPoint[0]-originalAABB.minPoint[0], originalAABB.maxPoint[1]-originalAABB.minPoint[1], originalAABB.maxPoint[2]-originalAABB.minPoint[2], 1);
     Vector4D position = Vector4D(originalAABB.minPoint[0] + (dimentions[0]/2),
                                 originalAABB.minPoint[1] + (dimentions[1]/2),
                                 originalAABB.minPoint[2] + (dimentions[2]/2),
                                 1);
     DebugManager::getInstance()->createSingleFrameCube(position, dimentions[0], dimentions[1], dimentions[2], Vector4D(0, 0, 1, 1), true);
-    currentAABB = originalAABB;
     
 }
 
 void Object::updateAABB()
 {
-    std::vector<Vertex> vertices = graphicsNode.getMeshResource()->getVertexBuffer();
+    //Reset AABB
     currentAABB.maxPoint = Vector4D(-99999, -99999, -99999, 1);
     currentAABB.minPoint = Vector4D(99999, 99999, 99999, 1);
+
+    //Create a vector that will contain all the points for the AABB
     std::vector<Vector4D> pointVector;
 
+    //Create the combinedMatrix with rotation and scale
     Matrix4D combinedMatrix = totalRotation * Matrix4D::getScaleMatrix(scale);
 
-
+    //Apply the matrix to the original AABB and add the new points to the vector
     pointVector.push_back(combinedMatrix * Vector4D(originalAABB.maxPoint[0], originalAABB.maxPoint[1], originalAABB.maxPoint[2], 1));
     pointVector.push_back(combinedMatrix * Vector4D(originalAABB.maxPoint[0], originalAABB.minPoint[1], originalAABB.maxPoint[2], 1));
     pointVector.push_back(combinedMatrix * Vector4D(originalAABB.minPoint[0], originalAABB.minPoint[1], originalAABB.maxPoint[2], 1));
@@ -87,6 +95,7 @@ void Object::updateAABB()
     pointVector.push_back(combinedMatrix * Vector4D(originalAABB.minPoint[0], originalAABB.minPoint[1], originalAABB.minPoint[2], 1));
     pointVector.push_back(combinedMatrix * Vector4D(originalAABB.minPoint[0], originalAABB.maxPoint[1], originalAABB.minPoint[2], 1));
 
+    //Find the min and max
     for (int i = 0; i < pointVector.size(); i++)
     {
         if (pointVector[i][0] >= currentAABB.maxPoint[0]) currentAABB.maxPoint[0] = pointVector[i][0];
@@ -97,9 +106,12 @@ void Object::updateAABB()
         if (pointVector[i][2] <= currentAABB.minPoint[2]) currentAABB.minPoint[2] = pointVector[i][2];
     }
 
+    //Apply position matrix to the new AABB
     currentAABB.minPoint = Matrix4D::getPositionMatrix(position) * currentAABB.minPoint;
     currentAABB.maxPoint = Matrix4D::getPositionMatrix(position) * currentAABB.maxPoint;
 
+
+    //Debug thingy
     Vector4D dimentions = Vector4D(currentAABB.maxPoint[0]-currentAABB.minPoint[0], currentAABB.maxPoint[1]-currentAABB.minPoint[1], currentAABB.maxPoint[2]-currentAABB.minPoint[2], 1);
     Vector4D position = Vector4D(currentAABB.minPoint[0] + (dimentions[0]/2),
                                 currentAABB.minPoint[1] + (dimentions[1]/2),
@@ -110,12 +122,15 @@ void Object::updateAABB()
 
 void Object::draw()
 {
+    //Debug thiny for AABB
     Vector4D dimentions = Vector4D(currentAABB.maxPoint[0]-currentAABB.minPoint[0], currentAABB.maxPoint[1]-currentAABB.minPoint[1], currentAABB.maxPoint[2]-currentAABB.minPoint[2], 1);
     Vector4D pos = Vector4D(currentAABB.minPoint[0] + (dimentions[0]/2),
                                 currentAABB.minPoint[1] + (dimentions[1]/2),
                                 currentAABB.minPoint[2] + (dimentions[2]/2),
                                 1);
     DebugManager::getInstance()->createSingleFrameCube(pos, dimentions[0], dimentions[1], dimentions[2], Vector4D(0, 0, 1, 1), true);
+
+
     Matrix4D rotationX = Matrix4D::rotX(rotation[0]);
     Matrix4D rotationY = Matrix4D::rotY(rotation[1]);
     Matrix4D rotationZ = Matrix4D::rotZ(rotation[2]);
@@ -144,45 +159,37 @@ PointAndDistance Object::checkIfRayIntersects(Ray ray)
     //Get the combined matrix of scale and rotation
     Matrix4D combinedMatrix = totalRotation * Matrix4D::getScaleMatrix(scale);
 
-    //Gett the Vertex and index buffer
+    //Get the Vertex and index buffer
     std::vector<Vertex> vertBuffer = graphicsNode.getMeshResource()->getVertexBuffer();
     std::vector<int> indBuffer = graphicsNode.getMeshResource()->getIndexBuffer();
 
-    //Convert the ray into localspace for the model
     //Save origin for so we can use it to calculate distance
     Vector4D originOriginal = ray.getOrigin();
-    //Set 4th coord to 1
-    ray.setOrigin(Vector4D(ray.getOrigin()[0], ray.getOrigin()[1], ray.getOrigin()[2], 1));
+
+    //Convert the ray into the localspace of the model
+    ray.setOrigin(Vector4D(ray.getOrigin()[0], ray.getOrigin()[1], ray.getOrigin()[2], 1)); //Set 4 coord to 1 or else...
     ray.setOrigin(Matrix4D::inverse(Matrix4D::getPositionMatrix(position) * combinedMatrix) * ray.getOrigin());
 
     ray.setDirection(Matrix4D::inverse(Matrix4D::getPositionMatrix(position) * combinedMatrix) * ray.getDirection());
-    ray.setDirection(Vector4D(ray.getDirection()[0], ray.getDirection()[1], ray.getDirection()[2], 1));
-    //Loop through all the triangles in the vector
+    ray.setDirection(Vector4D(ray.getDirection()[0], ray.getDirection()[1], ray.getDirection()[2], 1)); //Same here
+
+    //Loop through all the triangles
     for (int i = 0; i < indBuffer.size(); i += 3)
     {
-        //Calculate the normals for each triangle
+        //Calculate the normal for the triangle
         Vector4D pos1, pos2, pos3;
         pos1[0] = vertBuffer[indBuffer[i]].pos[0];   pos1[1] = vertBuffer[indBuffer[i]].pos[1];   pos1[2] = vertBuffer[indBuffer[i]].pos[2];
         pos2[0] = vertBuffer[indBuffer[i+1]].pos[0]; pos2[1] = vertBuffer[indBuffer[i+1]].pos[1]; pos2[2] = vertBuffer[indBuffer[i+1]].pos[2];
         pos3[0] = vertBuffer[indBuffer[i+2]].pos[0]; pos3[1] = vertBuffer[indBuffer[i+2]].pos[1]; pos3[2] = vertBuffer[indBuffer[i+2]].pos[2];
 
-        Vector4D V0, V1;
-        V0 = pos2 - pos1; V1 = pos3 - pos1;
-
-        Vector4D normal = V0.crossProduct(V1);//(normal1 + normal2 + normal3) * (1.0/3.0);
-        normal[3] = 1;
+        Vector4D normal = (pos2 - pos1).crossProduct(pos3 - pos1);
         normal = normal.normalize();
 
         //Cehck if we hit the triangle
         if (Vector4D::dotProduct(normal, ray.getDirection()) < 0)
         {
-
-            //Find the point for our mPlane
             //Construct the vectors we need to check if our point is inside the plane
             Vector4D v2v1 = pos2-pos1; Vector4D v3v2 = pos3-pos2; Vector4D v1v3 = pos1-pos3;
-            v2v1[3] = 1; 
-            v3v2[3] = 1; 
-            v1v3[3] = 1; 
 
             //Find the point where we intersected with the plane
             PointAndDistance temp = ray.intersect(mPlane((pos1 + pos2 + pos3)*(1.0/3.0), normal));
@@ -191,29 +198,26 @@ PointAndDistance Object::checkIfRayIntersects(Ray ray)
             
             temp.point[3] = 1;
 
-            //Calculate vetors towards the point
+            //Calculate vetors towards the point from all corners of the triangle
             Vector4D PV0 = temp.point - pos1; Vector4D PV1 = temp.point - pos2; Vector4D PV2 = temp.point - pos3;
-            PV0[3] = 1; PV1[3] = 1; PV2[3] = 1;
 
-            //True if we hit the triangle
+            //Check if we are inside the triangle
             if (Vector4D::dotProduct(normal, v2v1.crossProduct(PV0)) > 0 &&
             Vector4D::dotProduct(normal, v3v2.crossProduct(PV1)) > 0 &&
             Vector4D::dotProduct(normal, v1v3.crossProduct(PV2)) > 0)
             {
                 DebugManager::getInstance()->createCube((Matrix4D::getPositionMatrix(position) * combinedMatrix * temp.point), 0.5, 0.5, 0.5, Vector4D(1, 0, 0, 1));
-                //DebugManager::getInstance()->createCube(Matrix4D::getPositionMatrix(position) * combinedMatrix * (pos1 + pos2 + pos3)*(1.0/3.0), 0.3, 0.3, 0.3, Vector4D(0, 0, 1, 1));
-                //DebugManager::getInstance()->createCube(Matrix4D::getPositionMatrix(position) * combinedMatrix * pos1, 0.03, 0.03, 0.03, Vector4D(1, 0, 0, 1));
-                //DebugManager::getInstance()->createCube(Matrix4D::getPositionMatrix(position) * combinedMatrix * pos2, 0.03, 0.03, 0.03, Vector4D(1, 0, 0, 1));
-                //DebugManager::getInstance()->createCube(Matrix4D::getPositionMatrix(position) * combinedMatrix * pos3, 0.03, 0.03, 0.03, Vector4D(1, 0, 0, 1));
-                //DebugManager::getInstance()->createLine(Matrix4D::getPositionMatrix(position) * combinedMatrix * (pos1 + pos2 + pos3)*(1.0/3.0), Matrix4D::getPositionMatrix(position) * combinedMatrix * (pos1 + pos2 + pos3)*(1.0/3.0) + normal * 2, Vector4D(1, 0, 0, 1));
+                
+                //Add the intersection point to the vector
                 intersectionPoints.push_back(PointAndDistance(Matrix4D::getPositionMatrix(position) * combinedMatrix * temp.point, temp.distance));
             }
-            //DebugManager::getInstance()->createCube((pos1 + pos2 + pos3)*(1.0/3.0), 0.3, 0.3, 0.3, Vector4D(1, 1, 1, 1));
         }  
     }
+    //If we didnt intersect with the mesh return with distance of -1
     if (intersectionPoints.size() <= 0)
         return PointAndDistance(Vector4D(0, 0, 0, -1), -1);
 
+    //Else find the closest point of intersection and return it
     PointAndDistance closest = PointAndDistance(Vector4D(0, 0, 0, -1), 999999);
     for (int i = 0; i < intersectionPoints.size(); i++)
     {
