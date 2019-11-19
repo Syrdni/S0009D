@@ -108,7 +108,7 @@ ExampleApp::Open()
 			eye = Vector4D(eye[0], eye[1], -1.0, 0.0f);
 			Vector4D world = Matrix4D::inverse(lookAt) * eye;
 			world = world.normalize();
-			//std::cout << "WORLD:" << world[0] << " " << world[1] << " " << world[2] << std::endl;
+
 			ray = Ray(cameraPos, world);
 			DebugManager::getInstance()->createLine(ray.getOrigin(), ray.getPoint(1), Vector4D(0, 1, 0, 1));
 
@@ -135,10 +135,10 @@ ExampleApp::Open()
 					{
 						o = &objectVector[i];
 						closest = meshIntersection.distance;
+						o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection());
 					}
 				}
 			}
-			
 		}
 	});
 	window->SetMouseMoveFunction([this](float64 posX, float64 posY) {
@@ -191,13 +191,6 @@ ExampleApp::Open()
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 		glEnable(GL_DEPTH_TEST);
-
-		squareVector.push_back(Square(Vector4D(0, 0, -3, 1), Vector4D(0, 0, 1, 1), 2.0f, 2.0f, Vector4D(1.0f, 1.0f, 1.0f, 1.0f)));
-
-		for (int i = 0; i < 3; i++)
-		{
-			squareVector.push_back(Square(Vector4D(rand() % 10, rand() % 10, rand() % 10, 1), Vector4D(rand() % 10, rand() % 10, rand() % 10, 1), 1.0f, 1.0f, Vector4D(1.0f, 1.0f, 1.0f, 1.0f)));
-		}
 		
 		//Perspective projection
 		const float n = 0.1f;
@@ -236,12 +229,12 @@ ExampleApp::Open()
 
 
 		objectVector.push_back(Object(mr, so, tr, ln, cameraPos, "texture2.jpg"));
-		objectVector.push_back(Object(mr, so, tr2, ln, cameraPos, "tex.jpg"));
-		objectVector.push_back(Object(mr, so, tr3, ln, cameraPos, "texture.jpg"));
-		objectVector.push_back(Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
+		//objectVector.push_back(Object(mr, so, tr2, ln, cameraPos, "tex.jpg"));
+		//objectVector.push_back(Object(mr, so, tr3, ln, cameraPos, "texture.jpg"));
+		//objectVector.push_back(Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
 		o = &objectVector[0];
-		objectVector[1].getReferenceToPosition().getVector()[0] = 150;
-		objectVector[2].getReferenceToPosition().getVector()[0] = -150;
+		//objectVector[1].getReferenceToPosition().getVector()[0] = 150;
+		//objectVector[2].getReferenceToPosition().getVector()[0] = -150;
 
 		//Setup for Dear ImGui context
 		ImGui::CreateContext();

@@ -126,7 +126,7 @@ class Vector4D
 		return Vector4D((vector[1] * inVector.vector[2]) - (vector[2] * inVector.vector[1]),
 			(vector[2] * inVector.vector[0]) - (vector[0] * inVector.vector[2]),
 			(vector[0] * inVector.vector[1]) - (vector[1] * inVector.vector[0]),
-			(vector[0] * inVector.vector[1]) - (vector[1] * inVector.vector[0]));
+			(1));
 
 		/*(Vector4D((vector[1] * inVector.vector[2]) - (vector[2] * inVector.vector[1]),
 			(vector[2] * inVector.vector[3]) - (vector[3] * inVector.vector[2]),

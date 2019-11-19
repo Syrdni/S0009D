@@ -3,6 +3,7 @@
 #include "debug/debugManager.h"
 #include "mPlane.h"
 #include "Ray.h"
+#include "rigidbody.h"
 
 class Object
 {
@@ -21,6 +22,7 @@ class Object
         Vector4D& getReferenceToPosition();
         Vector4D& getReferenceToRotation();
         Vector4D& getReferenceToScale();
+        Rigidbody& getReferenceToRigidbody();
     private:
         float findTheSmallesCoordinate(float p1, float p2);
         float findTheBiggestCoordinate(float p1, float p2);
@@ -35,4 +37,6 @@ class Object
 
         AABB originalAABB;
         AABB currentAABB;
+
+        Rigidbody rb;
 };
