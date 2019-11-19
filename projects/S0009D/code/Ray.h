@@ -10,7 +10,7 @@ struct AABB
 {
     Vector4D minPoint = Vector4D(99999, 99999, 99999, 1);
     Vector4D maxPoint = Vector4D(-99999, -99999, -99999, 1);
-    Vector4D getCenter(){return maxPoint - ((maxPoint - minPoint)*0.5);};
+    Vector4D getCenter(){return (maxPoint+minPoint)*0.5;};
 };
 
 struct PointAndDistance

@@ -135,7 +135,7 @@ ExampleApp::Open()
 					{
 						o = &objectVector[i];
 						closest = meshIntersection.distance;
-						o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection());
+						o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*0.1);
 					}
 				}
 			}

@@ -20,14 +20,12 @@ class Rigidbody
         Matrix4D rotation;
         Vector4D position;
 
-        Matrix4D Drot = Matrix4D(0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0);
+        Matrix4D Drot = Matrix4D(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
 
         Matrix4D inertiaTensor;
         Matrix4D inverseInertiaTensor;
 
-        Vector4D forceToAdd;
-        Vector4D posOfForce;
-
+        Vector4D velocity;
         Vector4D momentum;
         Vector4D dMomentum;
 
