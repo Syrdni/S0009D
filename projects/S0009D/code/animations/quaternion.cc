@@ -72,19 +72,79 @@ Matrix4D Quaternion::createMatrix()
     return returnMatrix;
 }
 
+Quaternion Quaternion::createQuaternion(Matrix4D m)
+{
+    float i, j, k, r, s;
+    float tr = m[0] + m[5] + m[10];
+    if(tr >= 0)
+    {
+        s = sqrt(tr + 1);
+        r = 0.5 * s;
+        s = 0.5 / s;
+        i = (m[9] - m[6]) * s;
+        j = (m[2] - m[8]) * s;
+        k = (m[4] - m[1]) * s;
+    }
+    else
+    {
+        int i = 0;
+        if(m[5] > m[0])
+            i = 1;
+        if(m[10] > m[(i*4)+i])
+            i = 2;
+        switch (i)
+        {
+        case 0:
+            s = sqrt((m[0] - (m[5] + m[10])) + 1);
+            i = 0.5 * s;
+            s = 0.5 / s;
+            j = (m[1] + m[4]) * s;
+            k = (m[8] + m[2]) * s;
+            r = (m[9] - m[6]) * s;
+            break;
+        case 1:
+            s = sqrt((m[5] - (m[10] + m[0])) + 1);
+            j = 0.5 * s;
+            s = 0.5 / s;
+            k = (m[6] + m[9]) * s;
+            i = (m[1] + m[4]) * s;
+            r = (m[2] - m[8]) * s;
+            break;
+        case 2:
+            s = sqrt((m[10] - (m[0] + m[5])) + 1);
+            k = 0.5 * s;
+            s = 0.5 / s;
+            i = (m[8] + m[2]) * s;
+            j = (m[6] + m[9]) * s;
+            r = (m[4] - m[1]) * s;
+        }
+    }
+    return Quaternion(i, j, k, r);
+    //float w = sqrt(1.0 + mat[0] + mat[5] + mat[10])/2.0;
+    //float x = sqrt(mat[9] - mat[6]) / (w*4.0);
+    //float y = sqrt(mat[2] - mat[8]) / (w*4.0);
+    //float z = sqrt(mat[4] - mat[1]) / (w*4.0);
+    //return Quaternion(x, y, z, w);
+}
+
 Quaternion Quaternion::operator*(const Quaternion &q)
 {
     Quaternion r;
 
-	//r.x = w*q.x + x*q.w + y*q.z - z*q.y;
-	//r.y = w*q.y + y*q.w + z*q.x - x*q.z;
-	//r.z = w*q.z + z*q.w + x*q.y - y*q.x;
-	//r.w = w*q.w - x*q.x - y*q.y - z*q.z;
+    r.x = w*q.x + x*q.w + y*q.z - z*q.y;
+    r.y = w*q.y + y*q.w + z*q.x - x*q.z;
+    r.z = w*q.z + z*q.w + x*q.y - y*q.x;
+    r.w = w*q.w - x*q.x - y*q.y - z*q.z;
 
-    r.w = w*q.w;
-    r.x = x*q.x;
-    r.y = y*q.y;
-    r.z = z*q.z;
+    //r.x = w*q.x + x*q.w + y*q.z - z*q.y;
+    //r.y = w*q.y + y*q.w + z*q.x - x*q.z;
+    //r.z = w*q.z + z*q.w + x*q.y - y*q.x;
+    //r.w = w*q.w - x*q.x - y*q.y - z*q.z;
+
+    //r.w = w*q.w;
+    //r.x = x*q.x;
+    //r.y = y*q.y;
+    //r.z = z*q.z;
 
     return r;
 }
@@ -196,4 +256,9 @@ void Quaternion::setW(float w)
 float Quaternion::dot_product(Quaternion a, Quaternion b)
 {
     return a.getX() * b.getX() + a.getY() * b.getY() + a.getZ() * b.getZ() + a.getW() * b.getW();
+}
+
+Vector4D Quaternion::getVector()
+{
+    return Vector4D(x, y, z, w);
 }

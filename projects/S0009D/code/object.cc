@@ -5,7 +5,9 @@ Object::Object(){}
 Object::Object(MeshResource* mr, ShaderObject* so, TextureResource* tr, LightingNode* ln, Vector4D& cameraPos, std::string texturePath)
 {
     setupGraphicsNode(mr, so, tr, ln, cameraPos, texturePath);
-    rb = Rigidbody(originalAABB, 1, totalRotation, getReferenceToPosition());
+    //totalRotation = Matrix4D::rotX(2) * Matrix4D::rotY(2);
+    //position = Vector4D(100, 0, 0, 1);
+    rb = Rigidbody(originalAABB, 10, totalRotation, getReferenceToPosition());
 }
 
 Object::~Object(){}
@@ -136,9 +138,9 @@ void Object::draw()
     Matrix4D rotationY = Matrix4D::rotY(rotation[1]);
     Matrix4D rotationZ = Matrix4D::rotZ(rotation[2]);
     //totalRotation = (rotationX * rotationY * rotationZ)+rb.getRotation();
-    graphicsNode.setTransform(viewmatrix * Matrix4D::getPositionMatrix(position) * (rb.getRotation()) * Matrix4D::getScaleMatrix(scale));
     totalRotation = rb.getRotation();
-    graphicsNode.setPosition(Matrix4D::getPositionMatrix(position) * Matrix4D::getScaleMatrix(scale) );
+    graphicsNode.setTransform(viewmatrix * Matrix4D::getPositionMatrix(position) * (totalRotation) * Matrix4D::getScaleMatrix(scale));
+    graphicsNode.setPosition(Matrix4D::getPositionMatrix(position)* Matrix4D::getScaleMatrix(scale) );
     graphicsNode.draw();
 }
 

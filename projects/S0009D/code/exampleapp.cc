@@ -135,7 +135,7 @@ ExampleApp::Open()
 					{
 						o = &objectVector[i];
 						closest = meshIntersection.distance;
-						o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*0.1);
+						o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*10);
 					}
 				}
 			}
@@ -262,6 +262,9 @@ ExampleApp::Run()
 	{	
 		this->window->Update();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		//ImGui
+		ImGui_ImplGlfwGL3_NewFrame();
 
 		lookAt = Matrix4D::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		Matrix4D combinedMatrix = perspectiveProjection*lookAt;
@@ -282,8 +285,6 @@ ExampleApp::Run()
 		}
 		
 
-		//ImGui
-		ImGui_ImplGlfwGL3_NewFrame();
 
 		if (useImGuiWindow)	
 		{
@@ -298,9 +299,9 @@ ExampleApp::Run()
 			//ImGui::InputFloat4("Normal", s->getNormal().getVector());
 			//ImGui::InputFloat4("Position", s->getPosition().getVector());
 			//ImGui::ColorEdit3("Color", s->getColor().getVector());
-			ImGui::InputFloat4("Position", o->getReferenceToPosition().getVector());
-			ImGui::SliderFloat4("Rotation", o->getReferenceToRotation().getVector(), 0, 2*3.14159265359);
-			ImGui::SliderFloat4("Scale", o->getReferenceToScale().getVector(), 0.1, 10);
+			//ImGui::InputFloat4("Position", o->getReferenceToPosition().getVector());
+			//ImGui::SliderFloat4("Rotation", o->getReferenceToRotation().getVector(), 0, 2*3.14159265359);
+			//ImGui::SliderFloat4("Scale", o->getReferenceToScale().getVector(), 0.1, 10);
 			
 		}
 		ImGui::Render();

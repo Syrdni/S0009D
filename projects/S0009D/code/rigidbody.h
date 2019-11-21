@@ -1,6 +1,8 @@
 #pragma once
 #include "Vector4D.h"
 #include "Ray.h"
+#include "imgui.h"
+#include "animations/quaternion.h"
 
 class Rigidbody
 {
@@ -22,7 +24,7 @@ class Rigidbody
 
         Matrix4D Drot = Matrix4D(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
 
-        Matrix4D inertiaTensor;
+        Matrix4D inertiaTensorBody;
         Matrix4D inverseInertiaTensor;
 
         Vector4D velocity;
@@ -32,4 +34,11 @@ class Rigidbody
         Vector4D torque;
         Vector4D angularMomentum;
         Vector4D spin;
+        Matrix4D spinMatrix;
+
+        Vector4D forceToAdd;
+        Vector4D posOfForce;
+
+        Quaternion q;
+        Quaternion QRot = Quaternion(0, 0, 0, 1);
 };
