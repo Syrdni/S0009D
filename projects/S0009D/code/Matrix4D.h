@@ -26,8 +26,8 @@ class Matrix4D
 		static Matrix4D inverse(const Matrix4D& inMatrix);
 		static Matrix4D rotVector(const Vector4D& inVector, const float rad);
 		float* getMatrix();
-		static Matrix4D getPositionMatrix(Vector4D& inVector);
-		static Matrix4D getScaleMatrix(Vector4D& invector);
+		static Matrix4D getPositionMatrix(Vector4D const& inVector);
+		static Matrix4D getScaleMatrix(const Vector4D& invector);
 		static Matrix4D lookAt(Vector4D cameraPos, Vector4D target, Vector4D up);
 		static Matrix4D rotationDir(const Vector4D& direction, const Vector4D& base = Vector4D(0, 0, 1, 1));
 
@@ -502,7 +502,7 @@ class Matrix4D
 		return matrix;
 	}
 
-	inline Matrix4D Matrix4D::getPositionMatrix(Vector4D& inVector) {
+	inline Matrix4D Matrix4D::getPositionMatrix(Vector4D const& inVector) {
 		float temparr[16];
 
 		temparr[0] = 1;
@@ -528,7 +528,7 @@ class Matrix4D
 		return Matrix4D(temparr);
 	}
 
-	inline Matrix4D Matrix4D::getScaleMatrix(Vector4D& inVector)
+	inline Matrix4D Matrix4D::getScaleMatrix(const Vector4D& inVector)
 	{
 		float temparr[16];
 

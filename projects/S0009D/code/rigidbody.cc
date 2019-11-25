@@ -1,4 +1,5 @@
 #include "rigidbody.h"
+#include "debug/debugManager.h"
 
 Rigidbody::Rigidbody(){};
 
@@ -19,10 +20,9 @@ Rigidbody::Rigidbody(AABB aabb, float m, Matrix4D& rot, Vector4D& pos)
                                   0, (mass/12.0)*(w2+d2), 0, 0,
                                   0, 0, (mass/12.0)*(w2+h2), 0,
                                   0, 0, 0, 1);
-    //inertiaTensorBody = Matrix4D();
     inverseInertiaTensor = Matrix4D::inverse(inertiaTensorBody);
     position = pos;
-    q = Quaternion::createQuaternion(rot);;
+    q = Quaternion::createQuaternion(rot);
 }
 
 Rigidbody::~Rigidbody(){}
@@ -34,66 +34,62 @@ void Rigidbody::update()
     momentum[3] = 0;
 
     velocity = momentum * (1/mass);
-    position = position + velocity;
+    position = position + velocity * 0.1;
     position[3] = 1;   
 
+    this->spin = this->spin + inverseInertiaTensor * angularMomentum;
+    this->spin[3] = 0;
+    
+    Quaternion spins = Quaternion(spin[0], spin[1], spin[2], spin[3]);
+    Quaternion Qrot = (q * spins) * 0.5;
 
-
-    torque = (posOfForce - aabb.getCenter()).crossProduct(forceToAdd);
-    torque[3] = 1;
-
-    angularMomentum = angularMomentum + torque;
-    angularMomentum[3] = 1;
-
+    q = q + Qrot;
     q.normalize();
     rotation = q.createMatrix();
 
-    inverseInertiaTensor = rotation*Matrix4D::inverse(inertiaTensorBody)*Matrix4D::transpose(rotation);
-    spin = inverseInertiaTensor * angularMomentum;
-    spin[3] = 1;
-    Quaternion Qrot = Quaternion(spin[0], spin[1], spin[2], spin[3]) * q * 0.5;
-    //Matrix4D spinMatrix = Matrix4D(1, -spin[2], spin[1], 0,
-    //                               spin[2], 1, -spin[0], 0,
-    //                               -spin[1], spin[0], 1, 0,
-    //                               0, 0, 0, 1);
-    //Drot = spinMatrix * rotation;
-    Qrot.normalize();
-    q = Qrot;
-    rotation = q.createMatrix();
+    inverseInertiaTensor = rotation * (Matrix4D::inverse(inertiaTensorBody) * Matrix4D::transpose(rotation));
+
+   
+    worldTransform = rotation * Matrix4D::getPositionMatrix(-aabb.getCenter());
+    worldTransform = Matrix4D::getPositionMatrix(position + aabb.getCenter()) * worldTransform;
+    
+    if(forceToAdd.length() > 0){
+        this->lastPosOfForce = Matrix4D::inverse(worldTransform) * posOfForce;
+        this->lastForceToAdd = posOfForce + (Matrix4D::inverse(rotation) * forceToAdd * 100.0f);
+    }
+
+    auto cunt = worldTransform * this->lastPosOfForce;
+    auto cunt2 = worldTransform * this->lastForceToAdd;
+
+    DebugManager::getInstance()->createSingleFrameCube(cunt, 0.1f, 0.1f, 0.1f, {0,1,0,1});
+    DebugManager::getInstance()->createSingleFrameLine(cunt, cunt2, {0,1,1,1});
+
+    DebugManager::getInstance()->createSingleFrameLine({0,0,0,1}, Vector4D(spin[0], spin[1], spin[2], 1) * 100000.0f, {1,1,1,1});
 
     posOfForce = Vector4D(0, 0, 0, 1);
     forceToAdd = Vector4D(0, 0, 0, 1);
+    angularMomentum = {0,0,0,0};
 
     ImGui::InputFloat4("Position", position.getVector());
     ImGui::InputFloat4("momentum", momentum.getVector());
     ImGui::InputFloat4("torque", torque.getVector());
-    ImGui::InputFloat4("angularMomentum", angularMomentum.getVector());
-    ImGui::InputFloat4("spin", spin.getVector());
+    ImGui::InputFloat4("angularMomentum", angularMomentum.getReference());
+    ImGui::InputFloat4("spin", spin.getReference());
     ImGui::InputFloat4("Center", aabb.getCenter().getVector());
-    //ImGui::InputFloat4("QROT", QRot.getVector().getVector());
-    //ImGui::InputFloat4("QDOT", QDot.getVector().getVector());
+
 }
 
 void Rigidbody::applyForce(Vector4D pos, Vector4D forceDirection)
 {
     posOfForce =  pos;
     forceToAdd =  forceDirection;
-    int i = 0;
-}
 
-void Rigidbody::calcRotation(Vector4D pos)
-{
-    //Vector4D spinVector = Vector4D(0, 1, 0 ,1);
-    //Vector4D rt = pos - centerOfMass;
-    //Vector4D R = spinVector.crossProduct(rt);
-    //Vector4D X, Y, Z;
-    //X = spinVector.crossProduct(Vector4D(rotation[0], rotation[1], rotation[2], 1));
-    //Y = spinVector.crossProduct(Vector4D(rotation[4], rotation[5], rotation[6], 1));
-    //Z = spinVector.crossProduct(Vector4D(rotation[8], rotation[9], rotation[10], 1));
-    //Drot = Matrix4D(X[0], X[1], X[2], 0,
-    //                Y[0], Y[1], Y[2], 0,
-    //                Z[0], Z[1], Z[2], 0,
-    //                0, 0, 0, 1);
+    torque = (posOfForce - (position + aabb.getCenter())).crossProduct(forceToAdd);
+    DebugManager::getInstance()->createSingleFrameCube((position + aabb.getCenter()), 0.2, 0.2, 0.2, {1, 0, 0, 1});
+    torque[3] = 0;
+
+    angularMomentum = angularMomentum + torque;
+    angularMomentum[3] = 0;
 }
 
 Matrix4D Rigidbody::getRotation()
@@ -104,4 +100,9 @@ Matrix4D Rigidbody::getRotation()
 Vector4D Rigidbody::getPosition()
 {
     return position;
+}
+
+Vector4D Rigidbody::getCenterPoint()
+{
+    return aabb.getCenter();
 }

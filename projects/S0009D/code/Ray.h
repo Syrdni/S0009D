@@ -17,7 +17,8 @@ struct PointAndDistance
 {
     Vector4D point;
     float distance;
-    PointAndDistance(Vector4D p, float d){point = p; distance = d;};
+    Vector4D normal;
+    PointAndDistance(Vector4D p, float d, Vector4D n) : point(p), distance(d), normal(n) {};
 };
 
 class Ray

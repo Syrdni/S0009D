@@ -110,7 +110,7 @@ ExampleApp::Open()
 			world = world.normalize();
 
 			ray = Ray(cameraPos, world);
-			DebugManager::getInstance()->createLine(ray.getOrigin(), ray.getPoint(1), Vector4D(0, 1, 0, 1));
+			//DebugManager::getInstance()->createLine(ray.getOrigin(), ray.getPoint(1), Vector4D(0, 1, 0, 1));
 
 			float closest = 100000000;
 			for (int i = 0; i < squareVector.size(); i++)
@@ -135,7 +135,10 @@ ExampleApp::Open()
 					{
 						o = &objectVector[i];
 						closest = meshIntersection.distance;
-						o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*10);
+						auto n = -meshIntersection.normal;
+						n[3] = 0;
+						n = o->getReferenceToRigidbody().getRotation() * n;
+						o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*0.01);
 					}
 				}
 			}
@@ -214,7 +217,7 @@ ExampleApp::Open()
 		TextureResource* tr3 = new TextureResource();
 
 		MeshResource* mr = new MeshResource();
-		mr->loadFromOBJFile("dog.obj");
+		mr->loadFromOBJFile("cube.obj");
 
 		MeshResource* mr2 = new MeshResource();
 		mr2->loadFromOBJFile("cat.obj");

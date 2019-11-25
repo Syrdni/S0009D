@@ -11,10 +11,12 @@ class Rigidbody
         Rigidbody(AABB aabb, float m, Matrix4D& rot, Vector4D& pos);
         ~Rigidbody();
         void applyForce(Vector4D pos, Vector4D forceDirection);
-        void calcRotation(Vector4D pos);
         void update();
         Matrix4D getRotation();
         Vector4D getPosition();
+        Vector4D getCenterPoint();
+    
+        Matrix4D worldTransform;
     private:
         AABB aabb;
         float mass;
@@ -38,6 +40,11 @@ class Rigidbody
 
         Vector4D forceToAdd;
         Vector4D posOfForce;
+
+        Vector4D lastPosOfForce;
+        Vector4D lastForceToAdd;
+        
+        
 
         Quaternion q;
         Quaternion QRot = Quaternion(0, 0, 0, 1);

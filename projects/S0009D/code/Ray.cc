@@ -6,6 +6,7 @@ Ray::Ray(Vector4D pos, Vector4D dir)
 {
     this->origin = pos;
     this->direction = dir;
+    dir[3] = 0;
 }
 
 Ray::~Ray(){};
@@ -23,6 +24,7 @@ Vector4D Ray::getOrigin()
 void Ray::setDirection(Vector4D dir)
 {
     this->direction = dir;
+    dir[3] = 0;
 }
 
 Vector4D Ray::getDirection()
@@ -35,18 +37,18 @@ PointAndDistance Ray::intersect(mPlane plane)
     //Check if the ray is parallel to the plane. If that is the case the ray will never hit the plane
     float d = Vector4D::dotProduct(plane.getNormal(), this->direction);
     if (d >= 0)
-        return PointAndDistance(Vector4D(0,0,0,-1), -1);
+        return PointAndDistance(Vector4D(0,0,0,-1), -1, {});
     
     //Calculate t
     float t = Vector4D::dotProduct(plane.getPosition()-this->origin, plane.getNormal()) / d;
 
     if (t < 0)
     {
-        return PointAndDistance(Vector4D(0,0,0,-1), -1);
+        return PointAndDistance(Vector4D(0,0,0,-1), -1, {});
     }
     
     //With t calculated we now can find where the ray is intersected with the plane
-    return PointAndDistance((this->origin + this->direction * t), t);
+    return PointAndDistance((this->origin + this->direction * t), t, plane.getNormal());
 }
 
 PointAndDistance Ray::intersect(AABB aabb)
@@ -95,9 +97,9 @@ PointAndDistance Ray::intersect(AABB aabb)
 
     //Did not intersect with the AABB
     if (txMin > tyMax || tyMin > txMax)
-        return PointAndDistance(Vector4D(0, 0, 0, -1), -1);
+        return PointAndDistance(Vector4D(0, 0, 0, -1), -1, {});
     if (tMin > tzMax || tzMin > tMax)
-        return PointAndDistance(Vector4D(0, 0, 0, -1), -1);
+        return PointAndDistance(Vector4D(0, 0, 0, -1), -1, {});
 
     //Did intersect with the AABB
     if (tzMin > tMin)
@@ -105,11 +107,11 @@ PointAndDistance Ray::intersect(AABB aabb)
     if (tzMax = tMax)
         tMax = tzMax;
 
-    DebugManager::getInstance()->createCube(this->origin + this->direction * tMin, 0.1, 0.1, 0.1, Vector4D(0, 0, 0, 1), false);
-    DebugManager::getInstance()->createCube(this->origin + this->direction * tMax, 0.1, 0.1, 0.1, Vector4D(0, 0, 0, 1), false);      
+    // DebugManager::getInstance()->createCube(this->origin + this->direction * tMin, 0.1, 0.1, 0.1, Vector4D(0, 0, 0, 1), false);
+    // DebugManager::getInstance()->createCube(this->origin + this->direction * tMax, 0.1, 0.1, 0.1, Vector4D(0, 0, 0, 1), false);      
 
     //Return the point closest to the camera
-    return PointAndDistance(this->origin + this->direction * tMin, tMin); 
+    return PointAndDistance(this->origin + this->direction * tMin, tMin, {}); 
 }
 
 Vector4D Ray::getPoint(int i)

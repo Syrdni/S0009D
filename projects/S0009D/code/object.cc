@@ -137,10 +137,16 @@ void Object::draw()
     Matrix4D rotationX = Matrix4D::rotX(rotation[0]);
     Matrix4D rotationY = Matrix4D::rotY(rotation[1]);
     Matrix4D rotationZ = Matrix4D::rotZ(rotation[2]);
-    //totalRotation = (rotationX * rotationY * rotationZ)+rb.getRotation();
     totalRotation = rb.getRotation();
-    graphicsNode.setTransform(viewmatrix * Matrix4D::getPositionMatrix(position) * (totalRotation) * Matrix4D::getScaleMatrix(scale));
-    graphicsNode.setPosition(Matrix4D::getPositionMatrix(position)* Matrix4D::getScaleMatrix(scale) );
+    Vector4D center = rb.getCenterPoint();
+    Vector4D mcenter = center * -1;
+    totalRotation = Matrix4D::getPositionMatrix(center) * totalRotation * Matrix4D::getPositionMatrix(mcenter);
+    // graphicsNode.setTransform(viewmatrix * Matrix4D::getPositionMatrix(position) * totalRotation * Matrix4D::getScaleMatrix(scale));
+    // graphicsNode.setPosition(Matrix4D::getPositionMatrix(position) * totalRotation * Matrix4D::getScaleMatrix(scale));
+
+    graphicsNode.setTransform(viewmatrix * rb.worldTransform);
+    graphicsNode.setPosition(rb.worldTransform);
+
     graphicsNode.draw();
 }
 
@@ -164,7 +170,7 @@ PointAndDistance Object::checkIfRayIntersects(Ray ray)
     Vector4D normal1, normal2, normal3;
 
     //Get the combined matrix of scale and rotation
-    Matrix4D combinedMatrix = totalRotation * Matrix4D::getScaleMatrix(scale);
+    Matrix4D combinedMatrix = rb.worldTransform;// Matrix4D::getPositionMatrix(position) * totalRotation * Matrix4D::getScaleMatrix(scale);
 
     //Get the Vertex and index buffer
     std::vector<Vertex> vertBuffer = graphicsNode.getMeshResource()->getVertexBuffer();
@@ -175,10 +181,10 @@ PointAndDistance Object::checkIfRayIntersects(Ray ray)
 
     //Convert the ray into the localspace of the model
     ray.setOrigin(Vector4D(ray.getOrigin()[0], ray.getOrigin()[1], ray.getOrigin()[2], 1)); //Set 4 coord to 1 or else...
-    ray.setOrigin(Matrix4D::inverse(Matrix4D::getPositionMatrix(position) * combinedMatrix) * ray.getOrigin());
+    ray.setOrigin(Matrix4D::inverse(combinedMatrix) * ray.getOrigin());
 
-    ray.setDirection(Matrix4D::inverse(Matrix4D::getPositionMatrix(position) * combinedMatrix) * ray.getDirection());
-    ray.setDirection(Vector4D(ray.getDirection()[0], ray.getDirection()[1], ray.getDirection()[2], 1)); //Same here
+    ray.setDirection(Matrix4D::inverse(combinedMatrix) * ray.getDirection());
+    ray.setDirection(Vector4D(ray.getDirection()[0], ray.getDirection()[1], ray.getDirection()[2], 0)); //Same here
 
     //Loop through all the triangles
     for (int i = 0; i < indBuffer.size(); i += 3)
@@ -213,19 +219,19 @@ PointAndDistance Object::checkIfRayIntersects(Ray ray)
             Vector4D::dotProduct(normal, v3v2.crossProduct(PV1)) > 0 &&
             Vector4D::dotProduct(normal, v1v3.crossProduct(PV2)) > 0)
             {
-                DebugManager::getInstance()->createCube((Matrix4D::getPositionMatrix(position) * combinedMatrix * temp.point), 0.5, 0.5, 0.5, Vector4D(1, 0, 0, 1));
+                DebugManager::getInstance()->createCube((combinedMatrix * temp.point), 0.5, 0.5, 0.5, Vector4D(1, 0, 0, 1));
                 
                 //Add the intersection point to the vector
-                intersectionPoints.push_back(PointAndDistance(Matrix4D::getPositionMatrix(position) * combinedMatrix * temp.point, temp.distance));
+                intersectionPoints.push_back(PointAndDistance(combinedMatrix * temp.point, temp.distance, temp.normal));
             }
         }  
     }
     //If we didnt intersect with the mesh return with distance of -1
     if (intersectionPoints.size() <= 0)
-        return PointAndDistance(Vector4D(0, 0, 0, -1), -1);
+        return PointAndDistance(Vector4D(0, 0, 0, -1), -1, {});
 
     //Else find the closest point of intersection and return it
-    PointAndDistance closest = PointAndDistance(Vector4D(0, 0, 0, -1), 999999);
+    PointAndDistance closest = PointAndDistance(Vector4D(0, 0, 0, -1), 999999, {});
     for (int i = 0; i < intersectionPoints.size(); i++)
     {
         if (closest.distance > intersectionPoints[i].distance)

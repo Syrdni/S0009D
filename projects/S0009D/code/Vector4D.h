@@ -15,6 +15,11 @@ class Vector4D
 		Vector4D operator*(const float scaler) const;
 		float operator[](const int index) const;
 		float& operator[](const int index);
+		Vector4D operator-()
+		{
+			return {-vector[0], -vector[1], -vector[2], vector[3]};
+		}
+		
 		float length() const;
 		Vector4D normalize() const;
 		float dotProduct(const Vector4D& inVector) const;
