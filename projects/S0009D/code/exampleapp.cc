@@ -14,6 +14,8 @@
 using namespace Display;
 
 DebugManager *DebugManager::instance = 0;
+Vector4D Rigidbody::gravitationDirection = Vector4D(0, 0, 0, 1);
+float Rigidbody::gravidationPower = 0;
 
 namespace Example
 {
@@ -110,7 +112,7 @@ ExampleApp::Open()
 			world = world.normalize();
 
 			ray = Ray(cameraPos, world);
-			//DebugManager::getInstance()->createLine(ray.getOrigin(), ray.getPoint(1), Vector4D(0, 1, 0, 1));
+			DebugManager::getInstance()->createLine(ray.getOrigin(), ray.getPoint(1), Vector4D(0, 1, 0, 1));
 
 			float closest = 100000000;
 			for (int i = 0; i < squareVector.size(); i++)
@@ -124,24 +126,22 @@ ExampleApp::Open()
 			}
 
 			closest = 100000000;
+			PointAndDistance meshIntersection;
 			for (int i = 0; i < objectVector.size(); i++)
 			{
 				PointAndDistance PaD = ray.intersect(objectVector[i].getAABB());
 				//Check if we hit an AABB
 				if(PaD.distance != -1)
 				{
-					PointAndDistance meshIntersection = objectVector[i].checkIfRayIntersects(ray);
+					meshIntersection = objectVector[i].checkIfRayIntersects(ray);
 					if (closest > meshIntersection.distance && meshIntersection.distance != -1)
 					{
 						o = &objectVector[i];
 						closest = meshIntersection.distance;
-						auto n = -meshIntersection.normal;
-						n[3] = 0;
-						n = o->getReferenceToRigidbody().getRotation() * n;
-						o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*0.01);
 					}
 				}
 			}
+			o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*10);
 		}
 	});
 	window->SetMouseMoveFunction([this](float64 posX, float64 posY) {
@@ -217,7 +217,7 @@ ExampleApp::Open()
 		TextureResource* tr3 = new TextureResource();
 
 		MeshResource* mr = new MeshResource();
-		mr->loadFromOBJFile("cube.obj");
+		mr->loadFromOBJFile("dog.obj");
 
 		MeshResource* mr2 = new MeshResource();
 		mr2->loadFromOBJFile("cat.obj");
@@ -232,12 +232,12 @@ ExampleApp::Open()
 
 
 		objectVector.push_back(Object(mr, so, tr, ln, cameraPos, "texture2.jpg"));
-		//objectVector.push_back(Object(mr, so, tr2, ln, cameraPos, "tex.jpg"));
-		//objectVector.push_back(Object(mr, so, tr3, ln, cameraPos, "texture.jpg"));
-		//objectVector.push_back(Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
+		objectVector.push_back(Object(mr, so, tr2, ln, cameraPos, "tex.jpg"));
+		objectVector.push_back(Object(mr, so, tr3, ln, cameraPos, "texture.jpg"));
+		objectVector.push_back(Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
 		o = &objectVector[0];
-		//objectVector[1].getReferenceToPosition().getVector()[0] = 150;
-		//objectVector[2].getReferenceToPosition().getVector()[0] = -150;
+		objectVector[2].getReferenceToPosition().getVector()[0] = -150;
+		objectVector[1].getReferenceToPosition().getVector()[0] = 150;
 
 		//Setup for Dear ImGui context
 		ImGui::CreateContext();
@@ -261,6 +261,7 @@ ExampleApp::Run()
 	bool useImGuiWindow = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	Vector4D pos = Vector4D(0, 0, 0, 1);
+
 	while (this->window->IsOpen())
 	{	
 		this->window->Update();
@@ -268,6 +269,22 @@ ExampleApp::Run()
 		
 		//ImGui
 		ImGui_ImplGlfwGL3_NewFrame();
+		if (useImGuiWindow)	
+		{
+			if(ImGui::Button("Clear debug shapes"))
+			{
+				debugManager->clear();
+				system("clear");
+			}
+			ImGui::Checkbox("Render debugShapes", debugManager->getRenderBool());
+			ImGui::Checkbox("Create debugShapes", debugManager->getCreateShapes());
+			ImGui::SliderFloat("CameraSpeed", &cameraSpeed, 0.01f, 10);	
+			ImGui::InputFloat4("Gravitation direction", Rigidbody::gravitationDirection.getVector());
+			ImGui::InputFloat("Gravitation power", &Rigidbody::gravidationPower);
+			ImGui::Spacing();
+			ImGui::Spacing();		
+			ImGui::Spacing();
+		}
 
 		lookAt = Matrix4D::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		Matrix4D combinedMatrix = perspectiveProjection*lookAt;
@@ -289,24 +306,6 @@ ExampleApp::Run()
 		
 
 
-		if (useImGuiWindow)	
-		{
-			if(ImGui::Button("Clear debug shapes"))
-			{
-				debugManager->clear();
-				system("clear");
-			}
-			ImGui::Checkbox("Render debugShapes", debugManager->getRenderBool());
-			ImGui::Checkbox("Create debugShapes", debugManager->getCreateShapes());
-			ImGui::SliderFloat("CameraSpeed", &cameraSpeed, 0.01f, 10);
-			//ImGui::InputFloat4("Normal", s->getNormal().getVector());
-			//ImGui::InputFloat4("Position", s->getPosition().getVector());
-			//ImGui::ColorEdit3("Color", s->getColor().getVector());
-			//ImGui::InputFloat4("Position", o->getReferenceToPosition().getVector());
-			//ImGui::SliderFloat4("Rotation", o->getReferenceToRotation().getVector(), 0, 2*3.14159265359);
-			//ImGui::SliderFloat4("Scale", o->getReferenceToScale().getVector(), 0.1, 10);
-			
-		}
 		ImGui::Render();
 		glFlush();
 		this->window->SwapBuffers();

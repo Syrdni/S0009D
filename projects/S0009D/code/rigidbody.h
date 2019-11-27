@@ -10,42 +10,58 @@ class Rigidbody
         Rigidbody();
         Rigidbody(AABB aabb, float m, Matrix4D& rot, Vector4D& pos);
         ~Rigidbody();
+
+        //Applies a force in a certain spot. The length of the force vector is the power of the force.
         void applyForce(Vector4D pos, Vector4D forceDirection);
+
         void update();
+
+        //Returns the rotation of the Rigidbody
         Matrix4D getRotation();
-        Vector4D getPosition();
+
+        //Returns the position of the Rigidbody
+        Vector4D& getPosition();
+
+        //Returns the centerpoint of the Rigidbody in localspace
         Vector4D getCenterPoint();
-    
+
+        //The worldTransform
         Matrix4D worldTransform;
+
+        //The direction of the gravitational pull
+        static Vector4D gravitationDirection;
+
+        //The power of the gravitational pull
+        static float gravidationPower;
+
     private:
+        //The aabb taken from the object class
         AABB aabb;
+
+        //The mass of the object
         float mass;
 
+        //Current rotation
         Matrix4D rotation;
+
+        //Current position
         Vector4D position;
 
-        Matrix4D Drot = Matrix4D(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
-
+        
         Matrix4D inertiaTensorBody;
         Matrix4D inverseInertiaTensor;
 
         Vector4D velocity;
         Vector4D momentum;
-        Vector4D dMomentum;
 
         Vector4D torque;
         Vector4D angularMomentum;
         Vector4D spin;
-        Matrix4D spinMatrix;
 
         Vector4D forceToAdd;
         Vector4D posOfForce;
-
-        Vector4D lastPosOfForce;
-        Vector4D lastForceToAdd;
         
-        
-
         Quaternion q;
         Quaternion QRot = Quaternion(0, 0, 0, 1);
+
 };

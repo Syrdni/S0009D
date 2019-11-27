@@ -19,6 +19,7 @@ struct PointAndDistance
     float distance;
     Vector4D normal;
     PointAndDistance(Vector4D p, float d, Vector4D n) : point(p), distance(d), normal(n) {};
+    PointAndDistance() {};
 };
 
 class Ray
@@ -38,5 +39,5 @@ class Ray
     private:;
         Vector4D origin;
         Vector4D direction;
-        float maxDist = 1000;
+        float maxDist = 100;
 };

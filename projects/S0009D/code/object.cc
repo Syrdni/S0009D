@@ -243,7 +243,7 @@ PointAndDistance Object::checkIfRayIntersects(Ray ray)
 
 Vector4D& Object::getReferenceToPosition()
 {
-    return position;
+    return rb.getPosition();
 }
 
 Vector4D& Object::getReferenceToRotation()
