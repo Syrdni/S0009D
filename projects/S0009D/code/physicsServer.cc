@@ -51,17 +51,56 @@ void PhysicsServer::sweep()
         {
             //If it is, then we have hit the end so remove it from the vector
             ptrdiff_t pos = find(temp.begin(), temp.end(), x_axisPoints[i].owner) - temp.begin();
-            temp.erase(temp.begin + pos);
+            temp.erase(temp.begin() + pos);
         }
         //Otherwise, create a objectPair if possible and add the object to the temp list
         else
         {
-            for (int i = 0; i < temp.size(); i++)
+            for (int j = 0; j < temp.size(); j++)
             {
-                objectPairVector.push_back(objectPair(temp[i], x_axisPoints[i].owner));
+                objectPairVector.push_back(objectPair(temp[j], x_axisPoints[i].owner));
             }
             temp.push_back(x_axisPoints[i].owner);
         }
+    }
+
+    //Check the objects that intersected in the x-axis that they intersect in the other axis too
+    //Y-axis
+    for (int i = 0; i < objectPairVector.size(); i++)
+    {
+        if (objectPairVector[i].object1->getReferenceToAABB().minPoint[1] <= objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] &&
+            objectPairVector[i].object1->getReferenceToAABB().minPoint[1] >= objectPairVector[i].object2->getReferenceToAABB().minPoint[1] ||
+            objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] <= objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] &&
+            objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] >= objectPairVector[i].object2->getReferenceToAABB().minPoint[1])
+        {
+            continue;
+        }
+        else
+        {
+            objectPairVector.erase(objectPairVector.begin() + i);
+        }
+    }
+
+    //Z-axis
+    for (int i = 0; i < objectPairVector.size(); i++)
+    {
+        if (objectPairVector[i].object1->getReferenceToAABB().minPoint[2] <= objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] &&
+            objectPairVector[i].object1->getReferenceToAABB().minPoint[2] >= objectPairVector[i].object2->getReferenceToAABB().minPoint[2] ||
+            objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] <= objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] &&
+            objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] >= objectPairVector[i].object2->getReferenceToAABB().minPoint[2])
+        {
+            continue;
+        }
+        else
+        {
+            objectPairVector.erase(objectPairVector.begin() + i);
+        }
+    }
+    
+    for (int i = 0; i < objectPairVector.size(); i++)
+    {
+        objectPairVector[i].object1->colorOnAABB = Vector4D(1, 0, 0, 1);
+        objectPairVector[i].object2->colorOnAABB = Vector4D(1, 0, 0, 1);
     }
     
 

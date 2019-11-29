@@ -69,7 +69,7 @@ void Object::setupFirstAABB(std::vector<Vertex> vertices)
                                 originalAABB.minPoint[1] + (dimentions[1]/2),
                                 originalAABB.minPoint[2] + (dimentions[2]/2),
                                 1);
-    DebugManager::getInstance()->createSingleFrameCube(pos, dimentions[0], dimentions[1], dimentions[2], Vector4D(0, 0, 1, 1), true);
+    //DebugManager::getInstance()->createSingleFrameCube(pos, dimentions[0], dimentions[1], dimentions[2], colorOnAABB, true);
     
 }
 
@@ -118,7 +118,7 @@ void Object::updateAABB()
                                 currentAABB.minPoint[1] + (dimentions[1]/2),
                                 currentAABB.minPoint[2] + (dimentions[2]/2),
                                 1);
-    DebugManager::getInstance()->createSingleFrameCube(pos, dimentions[0], dimentions[1], dimentions[2], Vector4D(0, 0, 1, 1), true);
+    //DebugManager::getInstance()->createSingleFrameCube(pos, dimentions[0], dimentions[1], dimentions[2], colorOnAABB, true);
 }
 
 void Object::draw()
@@ -129,7 +129,8 @@ void Object::draw()
                                 currentAABB.minPoint[1] + (dimentions[1]/2),
                                 currentAABB.minPoint[2] + (dimentions[2]/2),
                                 1);
-    DebugManager::getInstance()->createSingleFrameCube(pos, dimentions[0], dimentions[1], dimentions[2], Vector4D(0, 0, 1, 1), true);
+    DebugManager::getInstance()->createSingleFrameCube(pos, dimentions[0], dimentions[1], dimentions[2], colorOnAABB, true);
+    colorOnAABB = Vector4D(0, 0, 1, 0);
 
 
     Matrix4D rotationX = Matrix4D::rotX(rotation[0]);

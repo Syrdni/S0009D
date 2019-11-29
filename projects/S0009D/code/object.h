@@ -24,6 +24,7 @@ class Object
         Vector4D& getReferenceToScale();
         Rigidbody& getReferenceToRigidbody();
         AABB& getReferenceToAABB();
+        Vector4D colorOnAABB = Vector4D(0, 0, 1, 1);
     private:
         float findTheSmallesCoordinate(float p1, float p2);
         float findTheBiggestCoordinate(float p1, float p2);

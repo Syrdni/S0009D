@@ -141,7 +141,8 @@ ExampleApp::Open()
 					}
 				}
 			}
-			o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*10);
+			if (closest != 100000000)
+				o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*4);
 		}
 	});
 	window->SetMouseMoveFunction([this](float64 posX, float64 posY) {
@@ -234,7 +235,7 @@ ExampleApp::Open()
 		objectVector.push_back(new Object(mr, so, tr, ln, cameraPos, "texture2.jpg"));
 		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg"));
 		objectVector.push_back(new Object(mr, so, tr3, ln, cameraPos, "texture.jpg"));
-		objectVector.push_back(new Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
+		//objectVector.push_back(new Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
 		o = objectVector[0];
 		objectVector[2]->getReferenceToRigidbody().setPosition(Vector4D(-150, 0, 0, 1));
 		objectVector[1]->getReferenceToRigidbody().setPosition(Vector4D(150, 0, 0, 1));
@@ -243,7 +244,7 @@ ExampleApp::Open()
 		physicsServer.addObject(objectVector[0]);
 		physicsServer.addObject(objectVector[1]);
 		physicsServer.addObject(objectVector[2]);
-		physicsServer.addObject(objectVector[3]);
+		//physicsServer.addObject(objectVector[3]);
 
 		//Setup for Dear ImGui context
 		ImGui::CreateContext();
