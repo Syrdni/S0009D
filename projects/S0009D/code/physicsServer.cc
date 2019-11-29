@@ -97,12 +97,53 @@ void PhysicsServer::sweep()
         }
     }
     
+    //Set the color of the aadd to a red color
     for (int i = 0; i < objectPairVector.size(); i++)
     {
         objectPairVector[i].object1->colorOnAABB = Vector4D(1, 0, 0, 1);
         objectPairVector[i].object2->colorOnAABB = Vector4D(1, 0, 0, 1);
     }
     
+    //GJK
+    if (objectPairVector.size() > 0)
+    {
+        GJK(objectPairVector[0]);
+    }
+    
 
     x_axisPoints.clear();
+}
+
+void PhysicsServer::GJK(objectPair op)
+{
+    std::vector<Vector4D> points;
+    Vector4D S = support(op, Vector4D(0, 1, 0, 1));
+    points.push_back(S);
+    Vector4D D = -S;
+    while (true)
+    {
+        Vector4D A = support(op, D);
+        if (A.dotProduct(D) < 0)
+        {
+            break;
+        }
+        points.push_back(A);
+        
+    }
+    
+
+    int t = 0;
+}
+
+Vector4D PhysicsServer::support(objectPair op, Vector4D d)
+{
+    int i = op.object1->indexOfFurthestPoint(d);
+    int j = op.object2->indexOfFurthestPoint(-d);
+
+    return sum(op.object1->getGraphicsNode().getMeshResource()->getVertexBuffer()[i].pos, op.object1->getGraphicsNode().getMeshResource()->getVertexBuffer()[j].pos);
+}
+
+Vector4D PhysicsServer::sum(float a[3], float b[3])
+{
+    return Vector4D(a[0] - b[0], a[1] - b[1], a[2] - b[2], 1);
 }

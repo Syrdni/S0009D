@@ -25,6 +25,8 @@ class Object
         Rigidbody& getReferenceToRigidbody();
         AABB& getReferenceToAABB();
         Vector4D colorOnAABB = Vector4D(0, 0, 1, 1);
+        int indexOfFurthestPoint(Vector4D direction);
+        GraphicsNode getGraphicsNode();
     private:
         float findTheSmallesCoordinate(float p1, float p2);
         float findTheBiggestCoordinate(float p1, float p2);
@@ -41,4 +43,5 @@ class Object
         AABB currentAABB;
 
         Rigidbody rb;
+
 };

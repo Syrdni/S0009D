@@ -9,6 +9,7 @@ class Vector4D
 	public:
 		Vector4D();
 		Vector4D(float a, float b, float c, float d);
+		Vector4D(float abc[3], float d);
 		~Vector4D();
 		Vector4D operator+(const Vector4D& inVector) const;
 		Vector4D operator-(const Vector4D& inVector) const;
@@ -48,6 +49,14 @@ class Vector4D
 		vector[0] = a;
 		vector[1] = b;
 		vector[2] = c;
+		vector[3] = d;//d;
+	}
+
+	inline Vector4D::Vector4D(float abc[3], float d)
+	{
+		vector[0] = abc[0];
+		vector[1] = abc[1];
+		vector[2] = abc[2];
 		vector[3] = d;//d;
 	}
 

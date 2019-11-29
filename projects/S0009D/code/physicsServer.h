@@ -25,8 +25,11 @@ class PhysicsServer
         void addAABB(AABB& aabb);
         void addObject(Object* rb);
         void sweep();
+        void GJK(objectPair op);
 
     private:
         std::vector<Object*> objectVector;
         std::vector<pointAndOwner> x_axisPoints;
+        Vector4D support(objectPair op, Vector4D d);
+        Vector4D sum(float a[3], float b[3]);
 };
