@@ -129,14 +129,14 @@ ExampleApp::Open()
 			PointAndDistance meshIntersection;
 			for (int i = 0; i < objectVector.size(); i++)
 			{
-				PointAndDistance PaD = ray.intersect(objectVector[i].getAABB());
+				PointAndDistance PaD = ray.intersect(objectVector[i]->getAABB());
 				//Check if we hit an AABB
 				if(PaD.distance != -1)
 				{
-					meshIntersection = objectVector[i].checkIfRayIntersects(ray);
+					meshIntersection = objectVector[i]->checkIfRayIntersects(ray);
 					if (closest > meshIntersection.distance && meshIntersection.distance != -1)
 					{
-						o = &objectVector[i];
+						o = objectVector[i];
 						closest = meshIntersection.distance;
 					}
 				}
@@ -231,13 +231,19 @@ ExampleApp::Open()
 			0, 0, 0, 1);
 
 
-		objectVector.push_back(Object(mr, so, tr, ln, cameraPos, "texture2.jpg"));
-		objectVector.push_back(Object(mr, so, tr2, ln, cameraPos, "tex.jpg"));
-		objectVector.push_back(Object(mr, so, tr3, ln, cameraPos, "texture.jpg"));
-		objectVector.push_back(Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
-		o = &objectVector[0];
-		objectVector[2].getReferenceToPosition().getVector()[0] = -150;
-		objectVector[1].getReferenceToPosition().getVector()[0] = 150;
+		objectVector.push_back(new Object(mr, so, tr, ln, cameraPos, "texture2.jpg"));
+		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg"));
+		objectVector.push_back(new Object(mr, so, tr3, ln, cameraPos, "texture.jpg"));
+		objectVector.push_back(new Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
+		o = objectVector[0];
+		objectVector[2]->getReferenceToRigidbody().setPosition(Vector4D(-150, 0, 0, 1));
+		objectVector[1]->getReferenceToRigidbody().setPosition(Vector4D(150, 0, 0, 1));
+
+
+		physicsServer.addObject(objectVector[0]);
+		physicsServer.addObject(objectVector[1]);
+		physicsServer.addObject(objectVector[2]);
+		physicsServer.addObject(objectVector[3]);
 
 		//Setup for Dear ImGui context
 		ImGui::CreateContext();
@@ -246,6 +252,7 @@ ExampleApp::Open()
 
 		//Setup style
 		ImGui::StyleColorsDark();
+
 
 		return true;
 	}
@@ -300,11 +307,11 @@ ExampleApp::Run()
 
 		for (int i = 0; i < objectVector.size(); i++)
 		{
-			objectVector[i].setViewMatrix(combinedMatrix);
-			objectVector[i].update();
+			objectVector[i]->setViewMatrix(combinedMatrix);
+			objectVector[i]->update();
 		}
 		
-
+		physicsServer.sweep();
 
 		ImGui::Render();
 		glFlush();

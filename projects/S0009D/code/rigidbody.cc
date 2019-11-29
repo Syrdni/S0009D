@@ -113,3 +113,8 @@ Vector4D Rigidbody::getCenterPoint()
 {
     return aabb.getCenter();
 }
+
+void Rigidbody::setPosition(Vector4D pos)
+{
+    position = pos;
+}

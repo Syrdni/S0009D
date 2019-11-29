@@ -5,8 +5,6 @@ Object::Object(){}
 Object::Object(MeshResource* mr, ShaderObject* so, TextureResource* tr, LightingNode* ln, Vector4D& cameraPos, std::string texturePath)
 {
     setupGraphicsNode(mr, so, tr, ln, cameraPos, texturePath);
-    //totalRotation = Matrix4D::rotX(2) * Matrix4D::rotY(2);
-    //position = Vector4D(100, 0, 0, 1);
     rb = Rigidbody(originalAABB, 10, totalRotation, getReferenceToPosition());
 }
 
@@ -152,10 +150,10 @@ void Object::draw()
 
 void Object::update()
 {
+    position = rb.getPosition(); 
     updateAABB();
-    rb.update();
     totalRotation = rb.getRotation();
-    position = rb.getPosition();
+    rb.update();
     draw();
 }
 
@@ -261,5 +259,7 @@ Rigidbody& Object::getReferenceToRigidbody()
     return rb;
 }
 
-//Origin med allt
-//Direction med bara rotation
+AABB& Object::getReferenceToAABB()
+{
+    return currentAABB;
+}

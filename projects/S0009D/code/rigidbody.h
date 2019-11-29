@@ -25,6 +25,9 @@ class Rigidbody
         //Returns the centerpoint of the Rigidbody in localspace
         Vector4D getCenterPoint();
 
+        //Set the position
+        void setPosition(Vector4D pos);
+
         //The worldTransform
         Matrix4D worldTransform;
 

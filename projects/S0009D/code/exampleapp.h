@@ -19,6 +19,7 @@
 #include "Ray.h"
 #include "debug/debugManager.h"
 #include "object.h"
+#include "physicsServer.h"
 
 namespace Example
 {
@@ -48,7 +49,7 @@ private:
 	Square* s;
 	Object* o;
 	std::vector<Square> squareVector;
-	std::vector<Object> objectVector;
+	std::vector<Object*> objectVector;
 
 	float cameraSpeed = 5;
 
@@ -72,5 +73,6 @@ private:
 	Vector4D mousePos;
 
 	DebugManager* debugManager = DebugManager::getInstance();
+	PhysicsServer physicsServer;
 };
 } // namespace Example

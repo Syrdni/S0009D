@@ -23,6 +23,7 @@ class Object
         Vector4D& getReferenceToRotation();
         Vector4D& getReferenceToScale();
         Rigidbody& getReferenceToRigidbody();
+        AABB& getReferenceToAABB();
     private:
         float findTheSmallesCoordinate(float p1, float p2);
         float findTheBiggestCoordinate(float p1, float p2);
