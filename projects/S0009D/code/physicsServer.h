@@ -32,4 +32,7 @@ class PhysicsServer
         std::vector<pointAndOwner> x_axisPoints;
         Vector4D support(objectPair op, Vector4D d);
         Vector4D sum(float a[3], float b[3]);
+        Vector4D DoSimplexLine(std::vector<Vector4D>& points);
+        Vector4D DoSimplexTriangle(std::vector<Vector4D>& points);
+        Vector4D DoSimplexTetrahedron(std::vector<Vector4D>& points, bool& oof);
 };

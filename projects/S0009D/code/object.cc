@@ -275,9 +275,10 @@ int Object::indexOfFurthestPoint(Vector4D direction)
     int index = 0;
     std::vector<Vertex> vertexBuffer = graphicsNode.getMeshResource()->getVertexBuffer();
     float maxProduct = direction.dotProduct(Vector4D(vertexBuffer[index].pos, 1));
+    float product = 0;
     for (int i = 1; i < vertexBuffer.size(); i++)
     {
-        float product = direction.dotProduct(Vector4D(vertexBuffer[i].pos, 1));
+        product = direction.dotProduct(Vector4D(vertexBuffer[i].pos, 1));
         if (product > maxProduct)
         {
             maxProduct = product;
