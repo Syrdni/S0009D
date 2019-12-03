@@ -132,11 +132,9 @@ void PhysicsServer::GJK(objectPair op)
     Vector4D D = -S;
 
     bool oof = false;
-    int i = 0;
-
-    while (true)
+    int iterationDepth = 1000;
+    for (int i = 0; i < iterationDepth; i++)
     {
-        i++;
         Vector4D A = support(op, D);
         if (A.dotProduct(D) < 0)
         {
@@ -144,6 +142,12 @@ void PhysicsServer::GJK(objectPair op)
            break;
         }
         points.insert(points.begin(), A);
+        DebugManager::getInstance()->createSingleFrameCube(Vector4D(0, 0, 0, 1), 2, 2, 2, Vector4D(0, 1, 0 ,1));
+        for (int i = 0; i < points.size(); i++)
+        {
+            DebugManager::getInstance()->createSingleFrameCube(points[i], 2, 2, 2, Vector4D(0, 0, 1 ,1));
+        }
+        
 
         if (points.size() == 2)
             D = DoSimplexLine(points);
@@ -154,10 +158,13 @@ void PhysicsServer::GJK(objectPair op)
             D = DoSimplexTetrahedron(points, oof);
             if (oof == true)
             {
+                op.object1->colorOnAABB = Vector4D(0, 1, 0, 1);
+                op.object2->colorOnAABB = Vector4D(0, 1, 0, 1);
                 break;
             }
         }  
     }
+    
     
 
     int t = 0;
@@ -165,10 +172,11 @@ void PhysicsServer::GJK(objectPair op)
 
 Vector4D PhysicsServer::support(objectPair op, Vector4D d)
 {
-    int i = op.object1->indexOfFurthestPoint(d);
-    int j = op.object2->indexOfFurthestPoint(-d);
-
-    return sum(op.object1->getGraphicsNode().getMeshResource()->getVertexBuffer()[i].pos, op.object2->getGraphicsNode().getMeshResource()->getVertexBuffer()[j].pos);
+    //return sum(op.object1->getGraphicsNode().getMeshResource()->getVertexBuffer()[i].pos, op.object2->getGraphicsNode().getMeshResource()->getVertexBuffer()[j].pos);
+    
+    Vector4D ret = (op.object1->indexOfFurthestPoint(d) - op.object2->indexOfFurthestPoint(-d));
+    ret[3] = 1;
+    return ret;
 }
 
 Vector4D PhysicsServer::sum(float a[3], float b[3])
@@ -194,11 +202,11 @@ Vector4D PhysicsServer::DoSimplexLine(std::vector<Vector4D>& points)
 Vector4D PhysicsServer::DoSimplexTriangle(std::vector<Vector4D>& points)
 {
     Vector4D A0 = -points[0];
-    Vector4D AB = points[2] - points[0]; //were 2-0
-    Vector4D AC = points[1] - points[0]; //were 1-0
+    Vector4D AB = points[1] - points[0]; //were 2-0
+    Vector4D AC = points[2] - points[0]; //were 1-0
     Vector4D ABC = (AB).crossProduct(AC);
 
-    if (ABC.crossProduct(AC).dotProduct(A0) > 0)
+    if ((ABC.crossProduct(AC)).dotProduct(A0) > 0)
     {
         if (AC.dotProduct(A0) > 0)
         {
@@ -213,7 +221,7 @@ Vector4D PhysicsServer::DoSimplexTriangle(std::vector<Vector4D>& points)
 
     else
     {
-        if (AB.crossProduct(ABC).dotProduct(A0) > 0)
+        if ((AB.crossProduct(ABC)).dotProduct(A0) > 0)
         {
             //star
         }

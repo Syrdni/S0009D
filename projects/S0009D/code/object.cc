@@ -270,20 +270,25 @@ GraphicsNode Object::getGraphicsNode()
     return graphicsNode;
 }
 
-int Object::indexOfFurthestPoint(Vector4D direction)
+Matrix4D Object::getRotation()
+{
+    return totalRotation;
+}
+
+Vector4D Object::indexOfFurthestPoint(Vector4D direction)
 {
     int index = 0;
     std::vector<Vertex> vertexBuffer = graphicsNode.getMeshResource()->getVertexBuffer();
-    float maxProduct = direction.dotProduct(Vector4D(vertexBuffer[index].pos, 1));
+    float maxProduct = -999999999999999;
     float product = 0;
     for (int i = 1; i < vertexBuffer.size(); i++)
     {
-        product = direction.dotProduct(Vector4D(vertexBuffer[i].pos, 1));
+        product = direction.dotProduct(rb.worldTransform * Vector4D(vertexBuffer[i].pos, 1));
         if (product > maxProduct)
         {
             maxProduct = product;
             index = i;
         }  
     }
-    return index;
+    return rb.worldTransform * Vector4D(vertexBuffer[index].pos, 1);
 }
