@@ -43,7 +43,7 @@ void Rigidbody::update()
     velocity = momentum * (1/mass);
 
     //Calculate the position
-    position = position + velocity;
+    //position = position + velocity;
     position[3] = 1;   
 
     //Calculate the spin vector
@@ -80,6 +80,7 @@ void Rigidbody::update()
     ImGui::PushID(id);
     ImGui::InputFloat4("Position", position.getReference());
     ImGui::InputFloat4("Momentum", momentum.getReference());
+    ImGui::InputFloat4("Spin", spin.getReference());
     ImGui::PopID();
     ImGui::Spacing();
 

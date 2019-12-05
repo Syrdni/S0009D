@@ -70,24 +70,24 @@ ExampleApp::Open()
 		}
 		
 		//Animations
-		if (key == GLFW_KEY_1 && action == GLFW_PRESS)
-			an.loadAnimation(0);
-		if (key == GLFW_KEY_2 && action == GLFW_PRESS)
-			an.loadAnimation(1);
-		if (key == GLFW_KEY_3 && action == GLFW_PRESS)
-			an.loadAnimation(2);
-		if (key == GLFW_KEY_4 && action == GLFW_PRESS)
-			an.loadAnimation(3);
-		if (key == GLFW_KEY_5 && action == GLFW_PRESS)
-			an.loadAnimation(4);
-		if (key == GLFW_KEY_6 && action == GLFW_PRESS)
-			an.loadAnimation(5);
-		if (key == GLFW_KEY_7 && action == GLFW_PRESS)
-			an.loadAnimation(6);
-		if (key == GLFW_KEY_8 && action == GLFW_PRESS)
-			an.loadAnimation(7);
-		if (key == GLFW_KEY_9 && action == GLFW_PRESS)
-			an.loadAnimation(8);
+		//if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+		//	an.loadAnimation(0);
+		//if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+		//	an.loadAnimation(1);
+		//if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+		//	an.loadAnimation(2);
+		//if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+		//	an.loadAnimation(3);
+		//if (key == GLFW_KEY_5 && action == GLFW_PRESS)
+		//	an.loadAnimation(4);
+		//if (key == GLFW_KEY_6 && action == GLFW_PRESS)
+		//	an.loadAnimation(5);
+		//if (key == GLFW_KEY_7 && action == GLFW_PRESS)
+		//	an.loadAnimation(6);
+		//if (key == GLFW_KEY_8 && action == GLFW_PRESS)
+		//	an.loadAnimation(7);
+		//if (key == GLFW_KEY_9 && action == GLFW_PRESS)
+		//	an.loadAnimation(8);
 		
 	});
 	window->SetMousePressFunction([this](int32 key, int32 action, int32 test) {
@@ -142,7 +142,7 @@ ExampleApp::Open()
 				}
 			}
 			if (closest != 100000000)
-				o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*4);
+				o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*0.1);
 		}
 	});
 	window->SetMouseMoveFunction([this](float64 posX, float64 posY) {
@@ -218,7 +218,7 @@ ExampleApp::Open()
 		TextureResource* tr3 = new TextureResource();
 
 		MeshResource* mr = new MeshResource();
-		mr->loadFromOBJFile("dog.obj");
+		mr->loadFromOBJFile("cube.obj");
 
 		MeshResource* mr2 = new MeshResource();
 		mr2->loadFromOBJFile("cat.obj");

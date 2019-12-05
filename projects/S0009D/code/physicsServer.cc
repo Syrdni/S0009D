@@ -68,15 +68,15 @@ void PhysicsServer::sweep()
     //Y-axis
     for (int i = 0; i < objectPairVector.size(); i++)
     {
-        if ((objectPairVector[i].object1->getReferenceToAABB().minPoint[1] < objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] &&
-            objectPairVector[i].object1->getReferenceToAABB().minPoint[1] > objectPairVector[i].object2->getReferenceToAABB().minPoint[1] ||
-            objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] < objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] &&
-            objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] > objectPairVector[i].object2->getReferenceToAABB().minPoint[1]) ||
+        if ((objectPairVector[i].object1->getReferenceToAABB().minPoint[1] <= objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] &&
+            objectPairVector[i].object1->getReferenceToAABB().minPoint[1] >= objectPairVector[i].object2->getReferenceToAABB().minPoint[1] ||
+            objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] <= objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] &&
+            objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] >= objectPairVector[i].object2->getReferenceToAABB().minPoint[1]) ||
 
-           (objectPairVector[i].object2->getReferenceToAABB().minPoint[1] < objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] &&
-            objectPairVector[i].object2->getReferenceToAABB().minPoint[1] > objectPairVector[i].object1->getReferenceToAABB().minPoint[1] ||
-            objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] < objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] &&
-            objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] > objectPairVector[i].object1->getReferenceToAABB().minPoint[1]))
+           (objectPairVector[i].object2->getReferenceToAABB().minPoint[1] <= objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] &&
+            objectPairVector[i].object2->getReferenceToAABB().minPoint[1] >= objectPairVector[i].object1->getReferenceToAABB().minPoint[1] ||
+            objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] <= objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] &&
+            objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] >= objectPairVector[i].object1->getReferenceToAABB().minPoint[1]))
         {
             continue;
         }
@@ -89,15 +89,15 @@ void PhysicsServer::sweep()
     //Z-axis
     for (int i = 0; i < objectPairVector.size(); i++)
     {
-        if (objectPairVector[i].object1->getReferenceToAABB().minPoint[2] < objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] &&
-            objectPairVector[i].object1->getReferenceToAABB().minPoint[2] > objectPairVector[i].object2->getReferenceToAABB().minPoint[2] ||
-            objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] < objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] &&
-            objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] > objectPairVector[i].object2->getReferenceToAABB().minPoint[2] ||
+        if (objectPairVector[i].object1->getReferenceToAABB().minPoint[2] <= objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] &&
+            objectPairVector[i].object1->getReferenceToAABB().minPoint[2] >= objectPairVector[i].object2->getReferenceToAABB().minPoint[2] ||
+            objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] <= objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] &&
+            objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] >= objectPairVector[i].object2->getReferenceToAABB().minPoint[2] ||
 
-           (objectPairVector[i].object2->getReferenceToAABB().minPoint[2] < objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] &&
-            objectPairVector[i].object2->getReferenceToAABB().minPoint[2] > objectPairVector[i].object1->getReferenceToAABB().minPoint[2] ||
-            objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] < objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] &&
-            objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] > objectPairVector[i].object1->getReferenceToAABB().minPoint[2]))
+           (objectPairVector[i].object2->getReferenceToAABB().minPoint[2] <= objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] &&
+            objectPairVector[i].object2->getReferenceToAABB().minPoint[2] >= objectPairVector[i].object1->getReferenceToAABB().minPoint[2] ||
+            objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] <= objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] &&
+            objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] >= objectPairVector[i].object1->getReferenceToAABB().minPoint[2]))
         {
             continue;
         }
@@ -127,27 +127,27 @@ void PhysicsServer::sweep()
 void PhysicsServer::GJK(objectPair op)
 {
     std::vector<Vector4D> points;
-    Vector4D S = support(op, Vector4D(0, 1, 0, 1));
+    Vector4D start = Vector4D(0, -1, 0, 1);
+    Vector4D S = support(op, start);
+
+    if (S.dotProduct(start) < 0)
+        return;
+    
+
     points.push_back(S);
     Vector4D D = -S;
 
     bool oof = false;
-    int iterationDepth = 1000;
+    int iterationDepth = 20;
     for (int i = 0; i < iterationDepth; i++)
     {
         Vector4D A = support(op, D);
         if (A.dotProduct(D) < 0)
         {
            oof = false;
-           break;
+           return;
         }
         points.insert(points.begin(), A);
-        DebugManager::getInstance()->createSingleFrameCube(Vector4D(0, 0, 0, 1), 2, 2, 2, Vector4D(0, 1, 0 ,1));
-        for (int i = 0; i < points.size(); i++)
-        {
-            DebugManager::getInstance()->createSingleFrameCube(points[i], 2, 2, 2, Vector4D(0, 0, 1 ,1));
-        }
-        
 
         if (points.size() == 2)
             D = DoSimplexLine(points);
@@ -165,16 +165,26 @@ void PhysicsServer::GJK(objectPair op)
         }  
     }
     
-    
+    DebugManager::getInstance()->createSingleFrameCube(Vector4D(0, 0, 0, 1), 1, 1, 1, Vector4D(1, 0, 1,1));
+    DebugManager::getInstance()->createSingleFrameCube(points[0], 2, 2, 2, Vector4D(1, 0, 0, 1));
+    DebugManager::getInstance()->createSingleFrameCube(points[1], 2, 2, 2, Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameCube(points[2], 2, 2, 2, Vector4D(0, 0, 1, 1));
+    DebugManager::getInstance()->createSingleFrameCube(points[3], 2, 2, 2, Vector4D(1, 1, 1, 1));
+    DebugManager::getInstance()->createSingleFrameLine(points[0], points[1], Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameLine(points[0], points[2], Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameLine(points[0], points[3], Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameLine(points[1], points[2], Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameLine(points[1], points[3], Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameLine(points[2], points[3], Vector4D(0, 1, 0, 1));
 
     int t = 0;
 }
 
 Vector4D PhysicsServer::support(objectPair op, Vector4D d)
-{
-    //return sum(op.object1->getGraphicsNode().getMeshResource()->getVertexBuffer()[i].pos, op.object2->getGraphicsNode().getMeshResource()->getVertexBuffer()[j].pos);
-    
+{    
     Vector4D ret = (op.object1->indexOfFurthestPoint(d) - op.object2->indexOfFurthestPoint(-d));
+    //DebugManager::getInstance()->createSingleFrameCube(op.object1->indexOfFurthestPoint(d), 2, 2, 2, Vector4D(1, 0, 0, 1));
+    //DebugManager::getInstance()->createSingleFrameCube(op.object2->indexOfFurthestPoint(-d), 2, 2, 2, Vector4D(0, 0, 1, 1));
     ret[3] = 1;
     return ret;
 }
@@ -188,7 +198,7 @@ Vector4D PhysicsServer::DoSimplexLine(std::vector<Vector4D>& points)
 {
     Vector4D A0 = -points[0];
     Vector4D AB = points[1] - points[0];
-    if (AB.dotProduct(A0) > 0)
+    if (AB.dotProduct(A0) > 0.0f)
     {
         return AB.crossProduct(A0).crossProduct(AB);
     }
@@ -206,9 +216,9 @@ Vector4D PhysicsServer::DoSimplexTriangle(std::vector<Vector4D>& points)
     Vector4D AC = points[2] - points[0]; //were 1-0
     Vector4D ABC = (AB).crossProduct(AC);
 
-    if ((ABC.crossProduct(AC)).dotProduct(A0) > 0)
+    if ((ABC.crossProduct(AC)).dotProduct(A0) > 0.0f)
     {
-        if (AC.dotProduct(A0) > 0)
+        if (AC.dotProduct(A0) > 0.0f)
         {
             points = {points[0], points[2]};
             return AC.crossProduct(A0).crossProduct(AC);
@@ -221,13 +231,13 @@ Vector4D PhysicsServer::DoSimplexTriangle(std::vector<Vector4D>& points)
 
     else
     {
-        if ((AB.crossProduct(ABC)).dotProduct(A0) > 0)
+        if ((AB.crossProduct(ABC)).dotProduct(A0) > 0.0f)
         {
             //star
         }
         else
         {
-            if (ABC.dotProduct(A0) > 0)
+            if (ABC.dotProduct(A0) > 0.0f)
             {
                 return ABC;
             }
@@ -240,7 +250,7 @@ Vector4D PhysicsServer::DoSimplexTriangle(std::vector<Vector4D>& points)
     }
     
     //'Star function'
-    if (AB.dotProduct(A0) > 0)
+    if (AB.dotProduct(A0) > 0.0f)
     {
         points = {points[0], points[1]};
         return AB.crossProduct(A0).crossProduct(AB);
@@ -259,21 +269,21 @@ Vector4D PhysicsServer::DoSimplexTetrahedron(std::vector<Vector4D>& points, bool
     Vector4D ADB = (points[3] - points[0]).crossProduct((points[1] - points[0]));
     Vector4D A0 = -points[0];
 
-    if (ABC.dotProduct(A0) > 0)
+    if (ABC.dotProduct(A0) > 0.0f)
     {
         points = {points[0], points[1], points[2]};
         oof = false;
         return ABC;
     }
 
-    if (ACD.dotProduct(A0) > 0)
+    if (ACD.dotProduct(A0) > 0.0f)
     {
         points = {points[0], points[2], points[3]};
         oof = false;
         return ACD;
     }
 
-    if (ADB.dotProduct(A0) > 0)
+    if (ADB.dotProduct(A0) > 0.0f)
     {
         points = {points[0], points[3], points[1]};
         oof = false;
