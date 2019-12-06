@@ -160,17 +160,18 @@ void PhysicsServer::GJK(objectPair op)
             {
                 op.object1->colorOnAABB = Vector4D(0, 1, 0, 1);
                 op.object2->colorOnAABB = Vector4D(0, 1, 0, 1);
-                EPA(points, op);
+                EPAResult r = EPA(points, op);
+                DebugManager::getInstance()->createSingleFrameCube(op.object2->getReferenceToRigidbody().worldTransform * (r.normal*r.distance), 0.2, 0.2, 0.2, Vector4D(1, 1, 0, 1));
                 break;
             }
         }  
     }
     
-    DebugManager::getInstance()->createSingleFrameCube(Vector4D(0, 0, 0, 1), 1, 1, 1, Vector4D(1, 0, 1,1));
-    DebugManager::getInstance()->createSingleFrameCube(points[0], 2, 2, 2, Vector4D(1, 0, 0, 1));
-    DebugManager::getInstance()->createSingleFrameCube(points[1], 2, 2, 2, Vector4D(0, 1, 0, 1));
-    DebugManager::getInstance()->createSingleFrameCube(points[2], 2, 2, 2, Vector4D(0, 0, 1, 1));
-    DebugManager::getInstance()->createSingleFrameCube(points[3], 2, 2, 2, Vector4D(1, 1, 1, 1));
+    DebugManager::getInstance()->createSingleFrameCube(Vector4D(0, 0, 0, 1), 0.1, 0.1, 0.1, Vector4D(1, 0, 1,1));
+    DebugManager::getInstance()->createSingleFrameCube(points[0], 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
+    DebugManager::getInstance()->createSingleFrameCube(points[1], 0.2, 0.2, 0.2, Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameCube(points[2], 0.2, 0.2, 0.2, Vector4D(0, 0, 1, 1));
+    DebugManager::getInstance()->createSingleFrameCube(points[3], 0.2, 0.2, 0.2, Vector4D(1, 1, 1, 1));
     DebugManager::getInstance()->createSingleFrameLine(points[0], points[1], Vector4D(0, 1, 0, 1));
     DebugManager::getInstance()->createSingleFrameLine(points[0], points[2], Vector4D(0, 1, 0, 1));
     DebugManager::getInstance()->createSingleFrameLine(points[0], points[3], Vector4D(0, 1, 0, 1));
@@ -183,145 +184,115 @@ void PhysicsServer::GJK(objectPair op)
 
 EPAResult PhysicsServer::EPA(std::vector<Vector4D> points, objectPair op)
 {
-    //std::vector<Vector4D[4]> faces;
-    //faces.push_back({points[0], points[1], points[2], (points[1] - points[0]).crossProduct(points[2] - points[0]).normalize()});
-    //faces.push_back({points[0], points[2], points[3], (points[2] - points[0]).crossProduct(points[3] - points[0]).normalize()});
-    //faces.push_back({points[0], points[3], points[1], (points[3] - points[0]).crossProduct(points[1] - points[0]).normalize()});
-    //faces.push_back({points[1], points[3], points[2], (points[3] - points[0]).crossProduct(points[2] - points[0]).normalize()});
-//
-    //int num_faces = 4;
-    //int closest_face, min_distance;
-//
-    //for (int i = 0; i < faces.size(); i++)
-    //{
-    //    min_distance = faces[0][0].dotProduct(faces[0][3]);
-    //    closest_face = 0;
-    //    for (int i = 1; i < faces.size(); i++)
-    //    {
-    //        float distance = faces[i][0].dotProduct(faces[i][3]);
-    //        if (distance < min_distance)
-    //        {
-    //            min_distance = distance;
-    //            closest_face = i;
-    //        }
-    //    }
-    //}
-//
-    ////search normal to face that's closest to origin
-    //Vector4D search_direction = faces[closest_face][3];
-    //Vector4D p = support(op, search_direction);
-//
-    //if (p.dotProduct(search_direction) - min_distance < 0.0001)
-    //{
-    //    return EPAResult(p.dotProduct(search_direction), faces[closest_face][3]);
-    //}
-//
-    //std::vector<Vector4D[2]> loose_edges;
-//
-    ////find all triangles that are facing p
-    //for (int i = 0; i < faces.size(); i++)
-    //{
-    //    if (faces[i][3].dotProduct(p-faces[i][0]))
-    //    {
-    //        for (int j = 0; j < 3; j++)
-    //        {
-    //            Vector4D current_edge[2] = {faces[i][j], faces[i][(j+1)%3]};
-    //            bool found_edge = false;
-    //            for (int k = 0; k < loose_edges.size(); i++)
-    //            {
-    //                if(loose_edges[k][1] == current_edge[0] && loose_edges[k][0] == current_edge[1]){
-    //                //Edge is already in the list, remove it
-    //                //THIS ASSUMES EDGE CAN ONLY BE SHARED BY 2 TRIANGLES (which should be true)
-    //                //THIS ALSO ASSUMES SHARED EDGE WILL BE REVERSED IN THE TRIANGLES (which 
-    //                //should be true provided every triangle is wound CCW)
-    //                loose_edges.erase(loose_edges.begin() + k); //with last edge in list
-    //                found_edge = true;
-    //                k=loose_edges.size(); //exit loop because edge can only be shared once
-    //                }
-    //            }//endfor loose_edges
-//
-    //            if (!found_edge)
-    //            {
-    //                loose_edges.push_back({current_edge[0], current_edge[1]});
-    //            }
-    //        }
-    //        //Reconstruct polytope with p added
-    //        for (int i = 0; i < loose_edges.size(); i++)
-    //        {
-    //            faces.push_back({loose_edges[i][0], loose_edges[i][1], p, (loose_edges[i][0] - loose_edges[i][0]).crossProduct(loose_edges[i][0] - p).normalize()});
-    //        }
-    //    }
-    //    return EPAResult(faces[closest_face][0].dotProduct(faces[closest_face][3]), faces[closest_face][3]);
-    //}
-
-
     //points is the simplex from GJK
-    //int i = 0;
-    //while (true)
-    //{
-    //    i++;
-    //    Edge e = findClosestTriangle(points);
-    //    Vector4D p = support(op, e.normal);
-    //    float d = p.dotProduct(e.normal);
-    //    if (d - e.distance < 0.05)
-    //    {
-    //        return EPAResult(d, e.normal);
-    //    }
-    //    else
-    //    {
-    //        points.insert(points.begin() + e.index, p);
-    //    }
-    //}
-
-    return EPAResult(0, Vector4D());
+    std::vector<std::vector<Vector4D>> faces;
+    faces.push_back({points[0], points[1], points[2], (points[1] - points[0]).crossProduct(points[2] - points[0]).normalize()});
+    faces.push_back({points[0], points[2], points[3], (points[2] - points[0]).crossProduct(points[3] - points[0]).normalize()});
+    faces.push_back({points[0], points[3], points[1], (points[3] - points[0]).crossProduct(points[1] - points[0]).normalize()});
+    faces.push_back({points[1], points[3], points[2], (points[3] - points[1]).crossProduct(points[2] - points[1]).normalize()});
+    int i = 0;
+    while (true)
+    {
+        i++;
+        ClosestResult e = findClosestTriangle(faces);
+        Vector4D p = support(op, e.normal);
+        float d = p.dotProduct(e.normal);
+        if (d - e.distance < 0.0001)
+        {
+            return EPAResult(d, e.normal);
+        }
+        else
+        {
+            //rebuild the tetrahedron
+            //points.insert(points.begin() + e.index, p);
+            extendPolytope(faces, p);
+        }
+    }
 }
 
-Edge PhysicsServer::findClosestTriangle(std::vector<Vector4D> points)
+ClosestResult PhysicsServer::findClosestTriangle(std::vector<std::vector<Vector4D>> &faces)
 {
-    Edge closest = Edge();
+    //faces = {faces[0], faces[1], faces[2], faces[3]};
+    ClosestResult closest = ClosestResult();
     closest.distance = FLT_MAX;
-
-    for (int i = 0; i < points.size(); i++)
-    {
-        int j = i+1 == points.size() ? (i + 1) % points.size() : i + 1;
-        int k = i+2 == points.size() ? (i + 2) % points.size() : i + 2;
-        Vector4D e = (points[j] - points[i]).crossProduct(points[k] - points[i]);
-        Vector4D oa = -points[i];
-        //Vector4D n = (e.crossProduct(oa)).crossProduct(e);
-        e = e.normalize();
-
-        float d = points[i].dotProduct(e);
-        if (d < closest.distance)
-        {
-            closest.distance = d;
-            closest.normal = e;
-            closest.index = i;
-        }  
-    }
-    return closest;
+    closest.distance = faces[0][0].dotProduct(faces[0][3]);
+    closest.index = 0;
+    closest.normal = faces[0][3];
     
-    //Edge closest = Edge();
-    //closest.distance = FLT_MAX;
-    //for (int i = 0; i < points.size(); i++)
-    //{
-    //    int j = i+1 == points.size() ? 0 : i + 1;
-    //    Vector4D a = points[i];
-    //    Vector4D b = points[j];
-    //    Vector4D e = b - a;
-    //    e[3] = 1;
-    //    Vector4D oa = a;
-    //    Vector4D n = (e.crossProduct(oa)).crossProduct(e);
-    //    n = n.normalize();
-    //    float d = n.dotProduct(b);
-    //    if (d < closest.distance)
-    //    {
-    //        closest.distance = d;
-    //        closest.normal = n;
-    //        closest.index = j;
-    //    }
-    //}
-    //return closest;
+    for (int i = 1; i < faces.size(); i++)
+    {
+        float distance = faces[i][0].dotProduct(faces[i][3]);
+        if (distance < closest.distance)
+        {
+            closest.distance = distance;
+            closest.index = i;
+            closest.normal = faces[i][3];
+        }        
+    }
 
+    return closest;
+}
+
+void PhysicsServer::extendPolytope(std::vector<std::vector<Vector4D>> &faces, Vector4D p)
+{
+    std::vector<Edge> loose_edges;
+    for (int i = 0; i < faces.size(); i++)
+    {
+        if (faces[i][3].dotProduct(p-faces[i][0]) > 0)
+        {
+            //std::vector<Vector4D> face = {faces[i][0], faces[i][1], faces[i][2]};
+            //faces.erase(faces.begin() + i);
+
+            for (int j = 0; j < 3; j++)
+            {
+
+                std::vector<Vector4D> current_edge = {faces[i][j], faces[i][(j+1)%3]};
+                bool found_edge = false;
+
+                for (int k = 0; k < loose_edges.size(); k++)
+                {
+                    if (current_edge[0] == loose_edges[k].point2 &&
+                        current_edge[1] == loose_edges[k].point1)
+                    {
+                        loose_edges.erase(loose_edges.begin() + k);
+                        found_edge = true;
+                        k = loose_edges.size();
+                    }
+                }
+
+                if (!found_edge)
+                {
+                    Edge e;
+                    e.point1 = current_edge[0];
+                    e.point2 = current_edge[1];
+                    loose_edges.push_back(e);
+                }
+            }
+            faces.erase(faces.begin() + i);
+            i--;
+        }
+    }
+
+    for (int i = 0; i < loose_edges.size(); i++)
+    {
+        faces.push_back({loose_edges[i].point1, loose_edges[i].point2, p, (loose_edges[i].point1 - loose_edges[i].point2).crossProduct(loose_edges[i].point1 - p).normalize()});
+
+        if (faces[faces.size()-1][0].dotProduct(faces[faces.size()-1][3]) + 0.00001 < 0)
+        {
+            Vector4D temp = faces[faces.size()-1][0];
+            faces[faces.size()-1][0] = faces[faces.size()-1][1];
+            faces[faces.size()-1][1] = temp;
+            faces[faces.size()-1][3] = -faces[faces.size()-1][3];
+        }
+    }
+    
+
+    //faces.clear();
+    //for (int i = 0; i < edges.size(); i++)
+    //{
+    //    faces.push_back({edges[i].point1, edges[i].point2, p, (edges[i].point1 - p).crossProduct(edges[i].point2 - p).normalize()});
+    //}
+    
 }
 
 Vector4D PhysicsServer::support(objectPair op, Vector4D d)
@@ -360,50 +331,74 @@ Vector4D PhysicsServer::DoSimplexTriangle(std::vector<Vector4D>& points)
     Vector4D AC = points[2] - points[0]; //were 1-0
     Vector4D ABC = (AB).crossProduct(AC);
 
-    if ((ABC.crossProduct(AC)).dotProduct(A0) > 0.0f)
-    {
-        if (AC.dotProduct(A0) > 0.0f)
-        {
-            points = {points[0], points[2]};
-            return AC.crossProduct(A0).crossProduct(AC);
-        }
-        else
-        {
-            //star
-        } 
-    }
+    Vector4D n = (AB).crossProduct(AC);
 
-    else
+    if (AB.crossProduct(n).dotProduct(A0) > 0)
     {
-        if ((AB.crossProduct(ABC)).dotProduct(A0) > 0.0f)
-        {
-            //star
-        }
-        else
-        {
-            if (ABC.dotProduct(A0) > 0.0f)
-            {
-                return ABC;
-            }
-            else
-            {
-                points = {points[0], points[2], points[1]};
-                return -ABC;
-            }
-        }
-    }
-    
-    //'Star function'
-    if (AB.dotProduct(A0) > 0.0f)
-    {
-        points = {points[0], points[1]};
+        points = {points[1], points[0]};
         return AB.crossProduct(A0).crossProduct(AB);
     }
-    else
+
+    if (n.crossProduct(AC).dotProduct(A0) > 0)
     {
-        points = {points[0]};
-        return A0;
+        points = {points[0], points[2]};
+        return AC.crossProduct(A0).crossProduct(AC);
     }
+
+    if (n.dotProduct(A0)>0)
+    {
+        return n;
+    }
+
+    points = {points[0], points[2], points[1]};
+    return -n;
+    
+    
+
+    //if ((ABC.crossProduct(AC)).dotProduct(A0) > 0.0f)
+    //{
+    //    if (AC.dotProduct(A0) > 0.0f)
+    //    {
+    //        points = {points[0], points[2]};
+    //        return AC.crossProduct(A0).crossProduct(AC);
+    //    }
+    //    else
+    //    {
+    //        //star
+    //    } 
+    //}
+//
+    //else
+    //{
+    //    if ((AB.crossProduct(ABC)).dotProduct(A0) > 0.0f)
+    //    {
+    //        //star
+    //    }
+    //    else
+    //    {
+    //        if (ABC.dotProduct(A0) > 0.0f)
+    //        {
+    //            return ABC;
+    //        }
+    //        else
+    //        {
+    //            points = {points[0], points[2], points[1]};
+    //            return -ABC;
+    //        }
+    //    }
+    //}
+    //
+    ////'Star function'
+    //if (AB.dotProduct(A0) > 0.0f)
+    //{
+    //    points = {points[0], points[1]};
+    //    return AB.crossProduct(A0).crossProduct(AB);
+    //}
+    //else
+    //{
+    //    points = {points[0]};
+    //    return A0;
+    //}
 }
 
 Vector4D PhysicsServer::DoSimplexTetrahedron(std::vector<Vector4D>& points, bool& oof)

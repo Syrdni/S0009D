@@ -16,11 +16,16 @@ struct pointAndOwner
     pointAndOwner(Object* o, float val) : owner(o), point(val) {};
 };
 
-struct Edge
+struct ClosestResult
 {
     float distance;
     Vector4D normal;
     int index;
+};
+
+struct Edge
+{
+    Vector4D point1, point2;
 };
 
 struct Triangle
@@ -49,7 +54,9 @@ class PhysicsServer
     private:
         void GJK(objectPair op);
         EPAResult EPA(std::vector<Vector4D> points, objectPair op);
-        Edge findClosestTriangle(std::vector<Vector4D> points);
+        ClosestResult findClosestTriangle(std::vector<std::vector<Vector4D>> &edges);
+        void extendPolytope(std::vector<std::vector<Vector4D>> &edges, Vector4D p);
+
         std::vector<Object*> objectVector;
         std::vector<pointAndOwner> x_axisPoints;
         Vector4D support(objectPair op, Vector4D d);
