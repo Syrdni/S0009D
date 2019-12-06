@@ -16,6 +16,7 @@ class Vector4D
 		Vector4D operator*(const float scaler) const;
 		float operator[](const int index) const;
 		float& operator[](const int index);
+		bool operator==(const Vector4D& inVector) const;
 		Vector4D operator-()
 		{
 			return {-vector[0], -vector[1], -vector[2], vector[3]};
@@ -103,6 +104,19 @@ class Vector4D
 	///Sets a value from a certain position in the vector.
 	inline float & Vector4D::operator[](const int index) {
 		return vector[index];
+	}
+
+	inline bool Vector4D::operator==(const Vector4D& inVector) const{
+		if (vector[0] == inVector[0] &&
+			vector[1] == inVector[1] &&
+			vector[2] == inVector[2])
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	///Returns the length of the vector.

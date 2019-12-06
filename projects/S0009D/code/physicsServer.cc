@@ -160,6 +160,7 @@ void PhysicsServer::GJK(objectPair op)
             {
                 op.object1->colorOnAABB = Vector4D(0, 1, 0, 1);
                 op.object2->colorOnAABB = Vector4D(0, 1, 0, 1);
+                EPA(points, op);
                 break;
             }
         }  
@@ -178,6 +179,149 @@ void PhysicsServer::GJK(objectPair op)
     DebugManager::getInstance()->createSingleFrameLine(points[2], points[3], Vector4D(0, 1, 0, 1));
 
     int t = 0;
+}
+
+EPAResult PhysicsServer::EPA(std::vector<Vector4D> points, objectPair op)
+{
+    //std::vector<Vector4D[4]> faces;
+    //faces.push_back({points[0], points[1], points[2], (points[1] - points[0]).crossProduct(points[2] - points[0]).normalize()});
+    //faces.push_back({points[0], points[2], points[3], (points[2] - points[0]).crossProduct(points[3] - points[0]).normalize()});
+    //faces.push_back({points[0], points[3], points[1], (points[3] - points[0]).crossProduct(points[1] - points[0]).normalize()});
+    //faces.push_back({points[1], points[3], points[2], (points[3] - points[0]).crossProduct(points[2] - points[0]).normalize()});
+//
+    //int num_faces = 4;
+    //int closest_face, min_distance;
+//
+    //for (int i = 0; i < faces.size(); i++)
+    //{
+    //    min_distance = faces[0][0].dotProduct(faces[0][3]);
+    //    closest_face = 0;
+    //    for (int i = 1; i < faces.size(); i++)
+    //    {
+    //        float distance = faces[i][0].dotProduct(faces[i][3]);
+    //        if (distance < min_distance)
+    //        {
+    //            min_distance = distance;
+    //            closest_face = i;
+    //        }
+    //    }
+    //}
+//
+    ////search normal to face that's closest to origin
+    //Vector4D search_direction = faces[closest_face][3];
+    //Vector4D p = support(op, search_direction);
+//
+    //if (p.dotProduct(search_direction) - min_distance < 0.0001)
+    //{
+    //    return EPAResult(p.dotProduct(search_direction), faces[closest_face][3]);
+    //}
+//
+    //std::vector<Vector4D[2]> loose_edges;
+//
+    ////find all triangles that are facing p
+    //for (int i = 0; i < faces.size(); i++)
+    //{
+    //    if (faces[i][3].dotProduct(p-faces[i][0]))
+    //    {
+    //        for (int j = 0; j < 3; j++)
+    //        {
+    //            Vector4D current_edge[2] = {faces[i][j], faces[i][(j+1)%3]};
+    //            bool found_edge = false;
+    //            for (int k = 0; k < loose_edges.size(); i++)
+    //            {
+    //                if(loose_edges[k][1] == current_edge[0] && loose_edges[k][0] == current_edge[1]){
+    //                //Edge is already in the list, remove it
+    //                //THIS ASSUMES EDGE CAN ONLY BE SHARED BY 2 TRIANGLES (which should be true)
+    //                //THIS ALSO ASSUMES SHARED EDGE WILL BE REVERSED IN THE TRIANGLES (which 
+    //                //should be true provided every triangle is wound CCW)
+    //                loose_edges.erase(loose_edges.begin() + k); //with last edge in list
+    //                found_edge = true;
+    //                k=loose_edges.size(); //exit loop because edge can only be shared once
+    //                }
+    //            }//endfor loose_edges
+//
+    //            if (!found_edge)
+    //            {
+    //                loose_edges.push_back({current_edge[0], current_edge[1]});
+    //            }
+    //        }
+    //        //Reconstruct polytope with p added
+    //        for (int i = 0; i < loose_edges.size(); i++)
+    //        {
+    //            faces.push_back({loose_edges[i][0], loose_edges[i][1], p, (loose_edges[i][0] - loose_edges[i][0]).crossProduct(loose_edges[i][0] - p).normalize()});
+    //        }
+    //    }
+    //    return EPAResult(faces[closest_face][0].dotProduct(faces[closest_face][3]), faces[closest_face][3]);
+    //}
+
+
+    //points is the simplex from GJK
+    //int i = 0;
+    //while (true)
+    //{
+    //    i++;
+    //    Edge e = findClosestTriangle(points);
+    //    Vector4D p = support(op, e.normal);
+    //    float d = p.dotProduct(e.normal);
+    //    if (d - e.distance < 0.05)
+    //    {
+    //        return EPAResult(d, e.normal);
+    //    }
+    //    else
+    //    {
+    //        points.insert(points.begin() + e.index, p);
+    //    }
+    //}
+
+    return EPAResult(0, Vector4D());
+}
+
+Edge PhysicsServer::findClosestTriangle(std::vector<Vector4D> points)
+{
+    Edge closest = Edge();
+    closest.distance = FLT_MAX;
+
+    for (int i = 0; i < points.size(); i++)
+    {
+        int j = i+1 == points.size() ? (i + 1) % points.size() : i + 1;
+        int k = i+2 == points.size() ? (i + 2) % points.size() : i + 2;
+        Vector4D e = (points[j] - points[i]).crossProduct(points[k] - points[i]);
+        Vector4D oa = -points[i];
+        //Vector4D n = (e.crossProduct(oa)).crossProduct(e);
+        e = e.normalize();
+
+        float d = points[i].dotProduct(e);
+        if (d < closest.distance)
+        {
+            closest.distance = d;
+            closest.normal = e;
+            closest.index = i;
+        }  
+    }
+    return closest;
+    
+    //Edge closest = Edge();
+    //closest.distance = FLT_MAX;
+    //for (int i = 0; i < points.size(); i++)
+    //{
+    //    int j = i+1 == points.size() ? 0 : i + 1;
+    //    Vector4D a = points[i];
+    //    Vector4D b = points[j];
+    //    Vector4D e = b - a;
+    //    e[3] = 1;
+    //    Vector4D oa = a;
+    //    Vector4D n = (e.crossProduct(oa)).crossProduct(e);
+    //    n = n.normalize();
+    //    float d = n.dotProduct(b);
+    //    if (d < closest.distance)
+    //    {
+    //        closest.distance = d;
+    //        closest.normal = n;
+    //        closest.index = j;
+    //    }
+    //}
+    //return closest;
+
 }
 
 Vector4D PhysicsServer::support(objectPair op, Vector4D d)

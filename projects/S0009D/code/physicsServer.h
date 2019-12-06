@@ -16,6 +16,26 @@ struct pointAndOwner
     pointAndOwner(Object* o, float val) : owner(o), point(val) {};
 };
 
+struct Edge
+{
+    float distance;
+    Vector4D normal;
+    int index;
+};
+
+struct Triangle
+{
+    Vector4D face[4];
+    Triangle(Vector4D ai, Vector4D bi, Vector4D ci, Vector4D n) : face({ai, bi, ci ,n}) {};
+};
+
+struct EPAResult
+{
+    float distance;
+    Vector4D normal;
+    EPAResult(float d, Vector4D n) : distance(d) , normal(n) {};
+};
+
 class PhysicsServer
 {
     public:
@@ -25,9 +45,11 @@ class PhysicsServer
         void addAABB(AABB& aabb);
         void addObject(Object* rb);
         void sweep();
-        void GJK(objectPair op);
 
     private:
+        void GJK(objectPair op);
+        EPAResult EPA(std::vector<Vector4D> points, objectPair op);
+        Edge findClosestTriangle(std::vector<Vector4D> points);
         std::vector<Object*> objectVector;
         std::vector<pointAndOwner> x_axisPoints;
         Vector4D support(objectPair op, Vector4D d);
