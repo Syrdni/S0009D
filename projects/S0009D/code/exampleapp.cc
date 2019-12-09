@@ -238,7 +238,8 @@ ExampleApp::Open()
 		//objectVector.push_back(new Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
 		o = objectVector[0];
 		objectVector[2]->getReferenceToRigidbody().setPosition(Vector4D(-150, 0, 0, 1));
-		objectVector[1]->getReferenceToRigidbody().setPosition(Vector4D(150, 0, 0, 1));
+		objectVector[1]->getReferenceToRigidbody().setPosition(Vector4D(10, 0, 0, 1));
+		objectVector[0]->getReferenceToRigidbody().setPosition(Vector4D(7.5, 0, 0, 1));
 
 
 		physicsServer.addObject(objectVector[0]);

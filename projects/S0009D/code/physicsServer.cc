@@ -161,7 +161,10 @@ void PhysicsServer::GJK(objectPair op)
                 op.object1->colorOnAABB = Vector4D(0, 1, 0, 1);
                 op.object2->colorOnAABB = Vector4D(0, 1, 0, 1);
                 EPAResult r = EPA(points, op);
-                DebugManager::getInstance()->createSingleFrameCube(op.object2->getReferenceToRigidbody().worldTransform * (r.normal*r.distance), 0.2, 0.2, 0.2, Vector4D(1, 1, 0, 1));
+                Vector4D l1 = op.object1->indexOfFurthestPoint(r.normal);
+                Vector4D l2 = op.object2->indexOfFurthestPoint(-r.normal);
+                //DebugManager::getInstance()->createSingleFrameCube(l1 - (r.normal * r.distance), 0.2, 0.2, 0.2, Vector4D(1, 1, 0, 1));
+                //DebugManager::getInstance()->createSingleFrameCube(l2 - (r.normal * r.distance), 0.2, 0.2, 0.2, Vector4D(0, 1, 1, 1));
                 break;
             }
         }  
@@ -199,6 +202,11 @@ EPAResult PhysicsServer::EPA(std::vector<Vector4D> points, objectPair op)
         float d = p.dotProduct(e.normal);
         if (d - e.distance < 0.0001)
         {
+            float x, y, z;
+            getBarycentric(e.normal * e.distance, faces[e.index][0], faces[e.index][1], faces[e.index][2], x, y, z);
+            Vector4D q = op.object1->indexOfFurthestPoint(e.normal);
+            Vector4D colpoint = q * x + q * y + q * z;
+            DebugManager::getInstance()->createSingleFrameCube(colpoint, 0.2, 0.2, 0.2, Vector4D(1, 1, 0, 1));
             return EPAResult(d, e.normal);
         }
         else
@@ -298,8 +306,6 @@ void PhysicsServer::extendPolytope(std::vector<std::vector<Vector4D>> &faces, Ve
 Vector4D PhysicsServer::support(objectPair op, Vector4D d)
 {    
     Vector4D ret = (op.object1->indexOfFurthestPoint(d) - op.object2->indexOfFurthestPoint(-d));
-    //DebugManager::getInstance()->createSingleFrameCube(op.object1->indexOfFurthestPoint(d), 2, 2, 2, Vector4D(1, 0, 0, 1));
-    //DebugManager::getInstance()->createSingleFrameCube(op.object2->indexOfFurthestPoint(-d), 2, 2, 2, Vector4D(0, 0, 1, 1));
     ret[3] = 1;
     return ret;
 }
@@ -352,53 +358,6 @@ Vector4D PhysicsServer::DoSimplexTriangle(std::vector<Vector4D>& points)
 
     points = {points[0], points[2], points[1]};
     return -n;
-    
-    
-
-    //if ((ABC.crossProduct(AC)).dotProduct(A0) > 0.0f)
-    //{
-    //    if (AC.dotProduct(A0) > 0.0f)
-    //    {
-    //        points = {points[0], points[2]};
-    //        return AC.crossProduct(A0).crossProduct(AC);
-    //    }
-    //    else
-    //    {
-    //        //star
-    //    } 
-    //}
-//
-    //else
-    //{
-    //    if ((AB.crossProduct(ABC)).dotProduct(A0) > 0.0f)
-    //    {
-    //        //star
-    //    }
-    //    else
-    //    {
-    //        if (ABC.dotProduct(A0) > 0.0f)
-    //        {
-    //            return ABC;
-    //        }
-    //        else
-    //        {
-    //            points = {points[0], points[2], points[1]};
-    //            return -ABC;
-    //        }
-    //    }
-    //}
-    //
-    ////'Star function'
-    //if (AB.dotProduct(A0) > 0.0f)
-    //{
-    //    points = {points[0], points[1]};
-    //    return AB.crossProduct(A0).crossProduct(AB);
-    //}
-    //else
-    //{
-    //    points = {points[0]};
-    //    return A0;
-    //}
 }
 
 Vector4D PhysicsServer::DoSimplexTetrahedron(std::vector<Vector4D>& points, bool& oof)
@@ -431,4 +390,18 @@ Vector4D PhysicsServer::DoSimplexTetrahedron(std::vector<Vector4D>& points, bool
 
     oof = true;
     return Vector4D();
+}
+
+void PhysicsServer::getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2, Vector4D vec3, float& p1, float& p2, float& p3)
+{
+	Vector4D temp1 = vec2 - vec1, temp2 = vec3 - vec1, temp3 = point - vec1;
+	float daa = temp1.dotProduct(temp1);
+	float dab = temp1.dotProduct(temp2);
+	float dbb = temp2.dotProduct(temp2);
+	float dca = temp3.dotProduct(temp1);
+	float dcb = temp3.dotProduct(temp2);
+	float denominator = (daa * dbb) - (dab * dab);
+	p2 = (dbb * dca - dab * dcb) / denominator;
+	p3 = (daa * dcb - dab * dca) / denominator;
+	p1 = 1.0f - p2 - p3;
 }

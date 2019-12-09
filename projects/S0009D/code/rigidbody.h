@@ -37,6 +37,9 @@ class Rigidbody
         //The power of the gravitational pull
         static float gravidationPower;
 
+        //Current rotation
+        Matrix4D rotation;
+
     private:
         //The aabb taken from the object class
         AABB aabb;
@@ -44,8 +47,6 @@ class Rigidbody
         //The mass of the object
         float mass;
 
-        //Current rotation
-        Matrix4D rotation;
 
         //Current position
         Vector4D position;

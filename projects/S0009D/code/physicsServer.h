@@ -64,4 +64,5 @@ class PhysicsServer
         Vector4D DoSimplexLine(std::vector<Vector4D>& points);
         Vector4D DoSimplexTriangle(std::vector<Vector4D>& points);
         Vector4D DoSimplexTetrahedron(std::vector<Vector4D>& points, bool& oof);
+        void getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2, Vector4D vec3, float& p1, float& p2, float& p3);
 };

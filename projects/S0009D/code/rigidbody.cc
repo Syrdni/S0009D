@@ -43,7 +43,7 @@ void Rigidbody::update()
     velocity = momentum * (1/mass);
 
     //Calculate the position
-    position = position + velocity;
+    //position = position + velocity;
     position[3] = 1;   
 
     //Calculate the spin vector
