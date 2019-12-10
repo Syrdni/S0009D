@@ -126,23 +126,23 @@ void PhysicsServer::sweep()
 
 void PhysicsServer::GJK(objectPair op)
 {
-    std::vector<Vector4D> points;
+    std::vector<SupportPoint> points;
     Vector4D start = Vector4D(0, -1, 0, 1);
-    Vector4D S = support(op, start);
+    SupportPoint S = support(op, start);
 
-    if (S.dotProduct(start) < 0)
+    if (S.point.dotProduct(start) < 0)
         return;
     
 
     points.push_back(S);
-    Vector4D D = -S;
+    Vector4D D = -S.point;
 
     bool oof = false;
     int iterationDepth = 20;
     for (int i = 0; i < iterationDepth; i++)
     {
-        Vector4D A = support(op, D);
-        if (A.dotProduct(D) < 0)
+        SupportPoint A = support(op, D);
+        if (A.point.dotProduct(D) < 0)
         {
            oof = false;
            return;
@@ -171,49 +171,80 @@ void PhysicsServer::GJK(objectPair op)
     }
     
     DebugManager::getInstance()->createSingleFrameCube(Vector4D(0, 0, 0, 1), 0.1, 0.1, 0.1, Vector4D(1, 0, 1,1));
-    DebugManager::getInstance()->createSingleFrameCube(points[0], 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
-    DebugManager::getInstance()->createSingleFrameCube(points[1], 0.2, 0.2, 0.2, Vector4D(0, 1, 0, 1));
-    DebugManager::getInstance()->createSingleFrameCube(points[2], 0.2, 0.2, 0.2, Vector4D(0, 0, 1, 1));
-    DebugManager::getInstance()->createSingleFrameCube(points[3], 0.2, 0.2, 0.2, Vector4D(1, 1, 1, 1));
-    DebugManager::getInstance()->createSingleFrameLine(points[0], points[1], Vector4D(0, 1, 0, 1));
-    DebugManager::getInstance()->createSingleFrameLine(points[0], points[2], Vector4D(0, 1, 0, 1));
-    DebugManager::getInstance()->createSingleFrameLine(points[0], points[3], Vector4D(0, 1, 0, 1));
-    DebugManager::getInstance()->createSingleFrameLine(points[1], points[2], Vector4D(0, 1, 0, 1));
-    DebugManager::getInstance()->createSingleFrameLine(points[1], points[3], Vector4D(0, 1, 0, 1));
-    DebugManager::getInstance()->createSingleFrameLine(points[2], points[3], Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameCube(points[0].point, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
+    DebugManager::getInstance()->createSingleFrameCube(points[1].point, 0.2, 0.2, 0.2, Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameCube(points[2].point, 0.2, 0.2, 0.2, Vector4D(0, 0, 1, 1));
+    DebugManager::getInstance()->createSingleFrameCube(points[3].point, 0.2, 0.2, 0.2, Vector4D(1, 1, 1, 1));
+    DebugManager::getInstance()->createSingleFrameLine(points[0].point, points[1].point, Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameLine(points[0].point, points[2].point, Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameLine(points[0].point, points[3].point, Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameLine(points[1].point, points[2].point, Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameLine(points[1].point, points[3].point, Vector4D(0, 1, 0, 1));
+    DebugManager::getInstance()->createSingleFrameLine(points[2].point, points[3].point, Vector4D(0, 1, 0, 1));
 
     int t = 0;
 }
 
-EPAResult PhysicsServer::EPA(std::vector<Vector4D> points, objectPair op)
+EPAResult PhysicsServer::EPA(std::vector<SupportPoint> points, objectPair op)
 {
     //points is the simplex from GJK
     std::vector<std::vector<Vector4D>> faces;
-    faces.push_back({points[0], points[1], points[2], (points[1] - points[0]).crossProduct(points[2] - points[0]).normalize()});
-    faces.push_back({points[0], points[2], points[3], (points[2] - points[0]).crossProduct(points[3] - points[0]).normalize()});
-    faces.push_back({points[0], points[3], points[1], (points[3] - points[0]).crossProduct(points[1] - points[0]).normalize()});
-    faces.push_back({points[1], points[3], points[2], (points[3] - points[1]).crossProduct(points[2] - points[1]).normalize()});
+    faces.push_back({points[0].point, points[1].point, points[2].point, (points[1].point - points[0].point).crossProduct(points[2].point - points[0].point).normalize()});
+    faces.push_back({points[0].point, points[2].point, points[3].point, (points[2].point - points[0].point).crossProduct(points[3].point - points[0].point).normalize()});
+    faces.push_back({points[0].point, points[3].point, points[1].point, (points[3].point - points[0].point).crossProduct(points[1].point - points[0].point).normalize()});
+    faces.push_back({points[1].point, points[3].point, points[2].point, (points[3].point - points[1].point).crossProduct(points[2].point - points[1].point).normalize()});
     int i = 0;
     while (true)
     {
         i++;
         ClosestResult e = findClosestTriangle(faces);
-        Vector4D p = support(op, e.normal);
-        float d = p.dotProduct(e.normal);
+        SupportPoint p = support(op, e.normal);
+        points.push_back(p);
+        float d = p.point.dotProduct(e.normal);
         if (d - e.distance < 0.0001)
         {
+            std::vector<SupportPoint> sp;
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < points.size(); j++)
+                {
+                    if (faces[e.index][i] == points[j].point)
+                    {
+                        sp.push_back(points[j]);
+                        break;
+                    }
+                }
+            }
+
+            float u, v, w;
             float x, y, z;
-            getBarycentric(e.normal * e.distance, faces[e.index][0], faces[e.index][1], faces[e.index][2], x, y, z);
-            Vector4D q = op.object1->indexOfFurthestPoint(e.normal);
-            Vector4D colpoint = q * x + q * y + q * z;
-            DebugManager::getInstance()->createSingleFrameCube(colpoint, 0.2, 0.2, 0.2, Vector4D(1, 1, 0, 1));
+            getBarycentric(e.normal, faces[e.index][0], faces[e.index][1], faces[e.index][2], u, v, w);
+
+            Vector4D colpointA = (sp[0].sup_a * u) + (sp[1].sup_a * v) + (sp[2].sup_a * w);
+            colpointA[3] = 1;
+            Vector4D colpointB = (sp[0].sup_b * u) + (sp[1].sup_b * v) + (sp[2].sup_b * w);
+            colpointB[3] = 1;
+
+            //DebugManager::getInstance()->createSingleFrameCube(e.normal * e.distance, 0.2, 0.2, 0.2, Vector4D(1, 1, 0, 1));
+            DebugManager::getInstance()->createSingleFrameCube(colpointA, 0.2, 0.2, 0.2, Vector4D(1, 1, 0, 1));
+            DebugManager::getInstance()->createSingleFrameCube(colpointB, 0.2, 0.2, 0.2, Vector4D(0, 1, 1, 1));
+
+            //DebugManager::getInstance()->createSingleFrameCube(sp[0].sup_a, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
+            //DebugManager::getInstance()->createSingleFrameCube(sp[1].sup_a, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
+            //DebugManager::getInstance()->createSingleFrameCube(sp[2].sup_a, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
+            //DebugManager::getInstance()->createSingleFrameCube(sp[0].sup_b, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
+            //DebugManager::getInstance()->createSingleFrameCube(sp[1].sup_b, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
+            //DebugManager::getInstance()->createSingleFrameCube(sp[2].sup_b, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
+
+
+
             return EPAResult(d, e.normal);
         }
         else
         {
             //rebuild the tetrahedron
             //points.insert(points.begin() + e.index, p);
-            extendPolytope(faces, p);
+            extendPolytope(faces, p.point);
         }
     }
 }
@@ -293,21 +324,15 @@ void PhysicsServer::extendPolytope(std::vector<std::vector<Vector4D>> &faces, Ve
             faces[faces.size()-1][3] = -faces[faces.size()-1][3];
         }
     }
-    
-
-    //faces.clear();
-    //for (int i = 0; i < edges.size(); i++)
-    //{
-    //    faces.push_back({edges[i].point1, edges[i].point2, p, (edges[i].point1 - p).crossProduct(edges[i].point2 - p).normalize()});
-    //}
-    
 }
 
-Vector4D PhysicsServer::support(objectPair op, Vector4D d)
-{    
-    Vector4D ret = (op.object1->indexOfFurthestPoint(d) - op.object2->indexOfFurthestPoint(-d));
+SupportPoint PhysicsServer::support(objectPair op, Vector4D d)
+{   
+    Vector4D sup_a = op.object1->indexOfFurthestPoint(d);
+    Vector4D sup_b = op.object2->indexOfFurthestPoint(-d);
+    Vector4D ret = (sup_a - sup_b);
     ret[3] = 1;
-    return ret;
+    return SupportPoint(ret, sup_a, sup_b);
 }
 
 Vector4D PhysicsServer::sum(float a[3], float b[3])
@@ -315,10 +340,10 @@ Vector4D PhysicsServer::sum(float a[3], float b[3])
     return Vector4D(a[0] - b[0], a[1] - b[1], a[2] - b[2], 1);
 }
 
-Vector4D PhysicsServer::DoSimplexLine(std::vector<Vector4D>& points)
+Vector4D PhysicsServer::DoSimplexLine(std::vector<SupportPoint>& points)
 {
-    Vector4D A0 = -points[0];
-    Vector4D AB = points[1] - points[0];
+    Vector4D A0 = -points[0].point;
+    Vector4D AB = points[1].point - points[0].point;
     if (AB.dotProduct(A0) > 0.0f)
     {
         return AB.crossProduct(A0).crossProduct(AB);
@@ -330,11 +355,11 @@ Vector4D PhysicsServer::DoSimplexLine(std::vector<Vector4D>& points)
     }
 }
 
-Vector4D PhysicsServer::DoSimplexTriangle(std::vector<Vector4D>& points)
+Vector4D PhysicsServer::DoSimplexTriangle(std::vector<SupportPoint>& points)
 {
-    Vector4D A0 = -points[0];
-    Vector4D AB = points[1] - points[0]; //were 2-0
-    Vector4D AC = points[2] - points[0]; //were 1-0
+    Vector4D A0 = -points[0].point;
+    Vector4D AB = points[1].point - points[0].point; //were 2-0
+    Vector4D AC = points[2].point - points[0].point; //were 1-0
     Vector4D ABC = (AB).crossProduct(AC);
 
     Vector4D n = (AB).crossProduct(AC);
@@ -360,12 +385,12 @@ Vector4D PhysicsServer::DoSimplexTriangle(std::vector<Vector4D>& points)
     return -n;
 }
 
-Vector4D PhysicsServer::DoSimplexTetrahedron(std::vector<Vector4D>& points, bool& oof)
+Vector4D PhysicsServer::DoSimplexTetrahedron(std::vector<SupportPoint>& points, bool& oof)
 {
-    Vector4D ABC = (points[1] - points[0]).crossProduct((points[2] - points[0]));
-    Vector4D ACD = (points[2] - points[0]).crossProduct((points[3] - points[0]));
-    Vector4D ADB = (points[3] - points[0]).crossProduct((points[1] - points[0]));
-    Vector4D A0 = -points[0];
+    Vector4D ABC = (points[1].point - points[0].point).crossProduct((points[2].point - points[0].point));
+    Vector4D ACD = (points[2].point - points[0].point).crossProduct((points[3].point - points[0].point));
+    Vector4D ADB = (points[3].point - points[0].point).crossProduct((points[1].point - points[0].point));
+    Vector4D A0 = -points[0].point;
 
     if (ABC.dotProduct(A0) > 0.0f)
     {
@@ -394,14 +419,14 @@ Vector4D PhysicsServer::DoSimplexTetrahedron(std::vector<Vector4D>& points, bool
 
 void PhysicsServer::getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2, Vector4D vec3, float& p1, float& p2, float& p3)
 {
-	Vector4D temp1 = vec2 - vec1, temp2 = vec3 - vec1, temp3 = point - vec1;
-	float daa = temp1.dotProduct(temp1);
-	float dab = temp1.dotProduct(temp2);
-	float dbb = temp2.dotProduct(temp2);
-	float dca = temp3.dotProduct(temp1);
-	float dcb = temp3.dotProduct(temp2);
-	float denominator = (daa * dbb) - (dab * dab);
-	p2 = (dbb * dca - dab * dcb) / denominator;
-	p3 = (daa * dcb - dab * dca) / denominator;
-	p1 = 1.0f - p2 - p3;
+	Vector4D v0 = vec2 - vec1, v1 = vec3 - vec1, v2 = point - vec1;
+     float d00 = v0.dotProduct(v0);
+     float d01 = v0.dotProduct(v1);
+     float d11 = v1.dotProduct(v1);
+     float d20 = v2.dotProduct(v0);
+     float d21 = v2.dotProduct(v1);
+     float denom = d00 * d11 - d01 * d01;
+     p2 = (d11 * d20 - d01 * d21) / denom;
+     p3 = (d00 * d21 - d01 * d20) / denom;
+     p1 = 1.0f - p2 - p3;
 }

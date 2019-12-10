@@ -28,6 +28,12 @@ struct Edge
     Vector4D point1, point2;
 };
 
+struct SupportPoint
+{
+    Vector4D point, sup_a, sup_b;
+    SupportPoint(Vector4D p, Vector4D sa, Vector4D sb) : point(p), sup_a(sa), sup_b(sb) {};
+};
+
 struct Triangle
 {
     Vector4D face[4];
@@ -53,16 +59,16 @@ class PhysicsServer
 
     private:
         void GJK(objectPair op);
-        EPAResult EPA(std::vector<Vector4D> points, objectPair op);
+        EPAResult EPA(std::vector<SupportPoint> points, objectPair op);
         ClosestResult findClosestTriangle(std::vector<std::vector<Vector4D>> &edges);
         void extendPolytope(std::vector<std::vector<Vector4D>> &edges, Vector4D p);
 
         std::vector<Object*> objectVector;
         std::vector<pointAndOwner> x_axisPoints;
-        Vector4D support(objectPair op, Vector4D d);
+        SupportPoint support(objectPair op, Vector4D d);
         Vector4D sum(float a[3], float b[3]);
-        Vector4D DoSimplexLine(std::vector<Vector4D>& points);
-        Vector4D DoSimplexTriangle(std::vector<Vector4D>& points);
-        Vector4D DoSimplexTetrahedron(std::vector<Vector4D>& points, bool& oof);
+        Vector4D DoSimplexLine(std::vector<SupportPoint>& points);
+        Vector4D DoSimplexTriangle(std::vector<SupportPoint>& points);
+        Vector4D DoSimplexTetrahedron(std::vector<SupportPoint>& points, bool& oof);
         void getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2, Vector4D vec3, float& p1, float& p2, float& p3);
 };
