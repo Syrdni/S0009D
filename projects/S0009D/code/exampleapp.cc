@@ -142,7 +142,7 @@ ExampleApp::Open()
 				}
 			}
 			if (closest != 100000000)
-				o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*0.1);
+				o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*10);
 		}
 	});
 	window->SetMouseMoveFunction([this](float64 posX, float64 posY) {

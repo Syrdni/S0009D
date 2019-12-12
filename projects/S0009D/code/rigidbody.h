@@ -3,6 +3,7 @@
 #include "Ray.h"
 #include "imgui.h"
 #include "animations/quaternion.h"
+#include <chrono>
 
 class Rigidbody
 {
@@ -40,7 +41,16 @@ class Rigidbody
         //Current rotation
         Matrix4D rotation;
 
+        Vector4D momentum;
+        
+        Vector4D velocity;
+
+        Vector4D spin;
+        
     private:
+
+        std::chrono::time_point<std::chrono::steady_clock> start;
+
         //The aabb taken from the object class
         AABB aabb;
 
@@ -55,12 +65,9 @@ class Rigidbody
         Matrix4D inertiaTensorBody;
         Matrix4D inverseInertiaTensor;
 
-        Vector4D velocity;
-        Vector4D momentum;
 
         Vector4D torque;
         Vector4D angularMomentum;
-        Vector4D spin;
 
         Vector4D forceToAdd;
         Vector4D posOfForce;

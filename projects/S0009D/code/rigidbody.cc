@@ -5,6 +5,9 @@ Rigidbody::Rigidbody(){};
 
 Rigidbody::Rigidbody(AABB aabb, float m, Matrix4D& rot, Vector4D& pos)
 {
+
+    start = std::chrono::steady_clock::now();
+
     this->aabb = aabb;
     mass = m;
 
@@ -28,6 +31,10 @@ Rigidbody::~Rigidbody(){}
 
 void Rigidbody::update()
 {
+    auto end = std::chrono::steady_clock::now();
+    float elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0;
+    this->start = end;
+
     //Check if we have a gravitational pull
     if (Rigidbody::gravitationDirection.length() > 0)
     {
@@ -43,11 +50,11 @@ void Rigidbody::update()
     velocity = momentum * (1/mass);
 
     //Calculate the position
-    position = position + velocity;
+    position = position + (velocity * elapsed);
     position[3] = 1;   
 
     //Calculate the spin vector
-    this->spin = this->spin + inverseInertiaTensor * angularMomentum;
+    this->spin = this->spin + inverseInertiaTensor * (angularMomentum * elapsed);
     this->spin[3] = 0;
     
     //Convert it to a quaternion so you can do quaternion multiplication

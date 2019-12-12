@@ -117,21 +117,23 @@ void PhysicsServer::sweep()
     //GJK
     if (objectPairVector.size() > 0)
     {
-       GJK(objectPairVector[0]);
+        EPAResult r(0, Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1));
+        GJK(objectPairVector[0], r);
+        //integratorEuler();
     }
     
 
     x_axisPoints.clear();
 }
 
-void PhysicsServer::GJK(objectPair op)
+bool PhysicsServer::GJK(objectPair op, EPAResult &result)
 {
     std::vector<SupportPoint> points;
     Vector4D start = Vector4D(0, -1, 0, 1);
     SupportPoint S = support(op, start);
 
     if (S.point.dotProduct(start) < 0)
-        return;
+        return false;
     
 
     points.push_back(S);
@@ -145,7 +147,7 @@ void PhysicsServer::GJK(objectPair op)
         if (A.point.dotProduct(D) < 0)
         {
            oof = false;
-           return;
+           return false;
         }
         points.insert(points.begin(), A);
 
@@ -161,27 +163,10 @@ void PhysicsServer::GJK(objectPair op)
                 op.object1->colorOnAABB = Vector4D(0, 1, 0, 1);
                 op.object2->colorOnAABB = Vector4D(0, 1, 0, 1);
                 EPAResult r = EPA(points, op);
-                Vector4D l1 = op.object1->indexOfFurthestPoint(r.normal);
-                Vector4D l2 = op.object2->indexOfFurthestPoint(-r.normal);
-                //DebugManager::getInstance()->createSingleFrameCube(l1 - (r.normal * r.distance), 0.2, 0.2, 0.2, Vector4D(1, 1, 0, 1));
-                //DebugManager::getInstance()->createSingleFrameCube(l2 - (r.normal * r.distance), 0.2, 0.2, 0.2, Vector4D(0, 1, 1, 1));
-                break;
+                return true;
             }
         }  
     }
-    
-    DebugManager::getInstance()->createSingleFrameCube(Vector4D(0, 0, 0, 1), 0.1, 0.1, 0.1, Vector4D(1, 0, 1,1));
-    DebugManager::getInstance()->createSingleFrameCube(points[0].point, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
-    DebugManager::getInstance()->createSingleFrameCube(points[1].point, 0.2, 0.2, 0.2, Vector4D(0, 1, 0, 1));
-    DebugManager::getInstance()->createSingleFrameCube(points[2].point, 0.2, 0.2, 0.2, Vector4D(0, 0, 1, 1));
-    DebugManager::getInstance()->createSingleFrameCube(points[3].point, 0.2, 0.2, 0.2, Vector4D(1, 1, 1, 1));
-    DebugManager::getInstance()->createSingleFrameLine(points[0].point, points[1].point, Vector4D(0, 1, 0, 1));
-    DebugManager::getInstance()->createSingleFrameLine(points[0].point, points[2].point, Vector4D(0, 1, 0, 1));
-    DebugManager::getInstance()->createSingleFrameLine(points[0].point, points[3].point, Vector4D(0, 1, 0, 1));
-    DebugManager::getInstance()->createSingleFrameLine(points[1].point, points[2].point, Vector4D(0, 1, 0, 1));
-    DebugManager::getInstance()->createSingleFrameLine(points[1].point, points[3].point, Vector4D(0, 1, 0, 1));
-    DebugManager::getInstance()->createSingleFrameLine(points[2].point, points[3].point, Vector4D(0, 1, 0, 1));
-
     int t = 0;
 }
 
@@ -225,20 +210,10 @@ EPAResult PhysicsServer::EPA(std::vector<SupportPoint> points, objectPair op)
             Vector4D colpointB = (sp[0].sup_b * u) + (sp[1].sup_b * v) + (sp[2].sup_b * w);
             colpointB[3] = 1;
 
-            //DebugManager::getInstance()->createSingleFrameCube(e.normal * e.distance, 0.2, 0.2, 0.2, Vector4D(1, 1, 0, 1));
             DebugManager::getInstance()->createSingleFrameCube(colpointA, 0.2, 0.2, 0.2, Vector4D(1, 1, 0, 1));
             DebugManager::getInstance()->createSingleFrameCube(colpointB, 0.2, 0.2, 0.2, Vector4D(0, 1, 1, 1));
 
-            //DebugManager::getInstance()->createSingleFrameCube(sp[0].sup_a, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
-            //DebugManager::getInstance()->createSingleFrameCube(sp[1].sup_a, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
-            //DebugManager::getInstance()->createSingleFrameCube(sp[2].sup_a, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
-            //DebugManager::getInstance()->createSingleFrameCube(sp[0].sup_b, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
-            //DebugManager::getInstance()->createSingleFrameCube(sp[1].sup_b, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
-            //DebugManager::getInstance()->createSingleFrameCube(sp[2].sup_b, 0.2, 0.2, 0.2, Vector4D(1, 0, 0, 1));
-
-
-
-            return EPAResult(d, e.normal);
+            return EPAResult(d, e.normal, colpointA, colpointB);
         }
         else
         {
@@ -251,7 +226,6 @@ EPAResult PhysicsServer::EPA(std::vector<SupportPoint> points, objectPair op)
 
 ClosestResult PhysicsServer::findClosestTriangle(std::vector<std::vector<Vector4D>> &faces)
 {
-    //faces = {faces[0], faces[1], faces[2], faces[3]};
     ClosestResult closest = ClosestResult();
     closest.distance = FLT_MAX;
     closest.distance = faces[0][0].dotProduct(faces[0][3]);
@@ -428,4 +402,11 @@ void PhysicsServer::getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2,
      p2 = (d11 * d20 - d01 * d21) / denom;
      p3 = (d00 * d21 - d01 * d20) / denom;
      p1 = 1.0f - p2 - p3;
+}
+
+void PhysicsServer::integratorEuler(EPAResult r, objectPair op)
+{
+    //Rigidbody& rb = op.object1->getReferenceToRigidbody();
+    //Vector4D Pa = rb.velocity + rb.spin.crossProduct(rb.momentum - rb.getCenterPoint());
+    //Vector4D Pa = rb.velocity + rb.spin.crossProduct(rb.momentum - rb.getCenterPoint());
 }

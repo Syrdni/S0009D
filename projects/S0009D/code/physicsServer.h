@@ -43,8 +43,8 @@ struct Triangle
 struct EPAResult
 {
     float distance;
-    Vector4D normal;
-    EPAResult(float d, Vector4D n) : distance(d) , normal(n) {};
+    Vector4D normal, PosOfObject1, PosOfObject2;
+    EPAResult(float d, Vector4D n, Vector4D Pos1, Vector4D Pos2) : distance(d) , normal(n), PosOfObject1(Pos1), PosOfObject2(Pos2) {};
 };
 
 class PhysicsServer
@@ -58,7 +58,7 @@ class PhysicsServer
         void sweep();
 
     private:
-        void GJK(objectPair op);
+        bool GJK(objectPair op, EPAResult &result);
         EPAResult EPA(std::vector<SupportPoint> points, objectPair op);
         ClosestResult findClosestTriangle(std::vector<std::vector<Vector4D>> &edges);
         void extendPolytope(std::vector<std::vector<Vector4D>> &edges, Vector4D p);
@@ -71,4 +71,5 @@ class PhysicsServer
         Vector4D DoSimplexTriangle(std::vector<SupportPoint>& points);
         Vector4D DoSimplexTetrahedron(std::vector<SupportPoint>& points, bool& oof);
         void getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2, Vector4D vec3, float& p1, float& p2, float& p3);
+        void integratorEuler(EPAResult results, objectPair op);
 };
