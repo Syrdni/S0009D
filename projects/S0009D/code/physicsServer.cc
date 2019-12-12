@@ -311,7 +311,6 @@ void PhysicsServer::extendPolytope(std::vector<std::vector<Vector4D>> &faces, Ve
             i--;
         }
     }
-
     for (int i = 0; i < loose_edges.size(); i++)
     {
         faces.push_back({loose_edges[i].point1, loose_edges[i].point2, p, (loose_edges[i].point1 - loose_edges[i].point2).crossProduct(loose_edges[i].point1 - p).normalize()});
