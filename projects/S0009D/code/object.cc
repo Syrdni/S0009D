@@ -2,10 +2,10 @@
 
 Object::Object(){}
 
-Object::Object(MeshResource* mr, ShaderObject* so, TextureResource* tr, LightingNode* ln, Vector4D& cameraPos, std::string texturePath)
+Object::Object(MeshResource* mr, ShaderObject* so, TextureResource* tr, LightingNode* ln, Vector4D& cameraPos, std::string texturePath, float mass, bool unmovable)
 {
     setupGraphicsNode(mr, so, tr, ln, cameraPos, texturePath);
-    rb = Rigidbody(originalAABB, 10, totalRotation, getReferenceToPosition());
+    rb = Rigidbody(originalAABB, mass, totalRotation, getReferenceToPosition(), unmovable);
 }
 
 Object::~Object(){}
@@ -83,7 +83,7 @@ void Object::updateAABB()
     std::vector<Vector4D> pointVector;
 
     //Create the combinedMatrix with rotation and scale
-    Matrix4D combinedMatrix = totalRotation * Matrix4D::getScaleMatrix(scale);
+    Matrix4D combinedMatrix = scaleMatrix * totalRotation;
 
     //Apply the matrix to the original AABB and add the new points to the vector
     pointVector.push_back(combinedMatrix * Vector4D(originalAABB.maxPoint[0], originalAABB.maxPoint[1], originalAABB.maxPoint[2], 1));
@@ -143,8 +143,8 @@ void Object::draw()
     // graphicsNode.setTransform(viewmatrix * Matrix4D::getPositionMatrix(position) * totalRotation * Matrix4D::getScaleMatrix(scale));
     // graphicsNode.setPosition(Matrix4D::getPositionMatrix(position) * totalRotation * Matrix4D::getScaleMatrix(scale));
 
-    graphicsNode.setTransform(viewmatrix * rb.worldTransform);
-    graphicsNode.setPosition(rb.worldTransform);
+    graphicsNode.setTransform(viewmatrix * rb.worldTransform * scaleMatrix);
+    graphicsNode.setPosition(rb.worldTransform * scaleMatrix);
 
     graphicsNode.draw();
 }
@@ -165,11 +165,17 @@ AABB Object::getAABB()
 
 PointAndDistance Object::checkIfRayIntersects(Ray ray)
 {
+    if (rb.unmovable)
+    {
+       return PointAndDistance(Vector4D(0, 0, 0, -1), -1, {});
+    }
+    
+
     std::vector<PointAndDistance> intersectionPoints;
     Vector4D normal1, normal2, normal3;
 
     //Get the combined matrix of scale and rotation
-    Matrix4D combinedMatrix = rb.worldTransform;// Matrix4D::getPositionMatrix(position) * totalRotation * Matrix4D::getScaleMatrix(scale);
+    Matrix4D combinedMatrix = scaleMatrix * rb.worldTransform;// Matrix4D::getPositionMatrix(position) * totalRotation * Matrix4D::getScaleMatrix(scale);
 
     //Get the Vertex and index buffer
     std::vector<Vertex> vertBuffer = graphicsNode.getMeshResource()->getVertexBuffer();
@@ -291,5 +297,5 @@ Vector4D Object::indexOfFurthestPoint(Vector4D direction)
             index = i;
         }  
     }
-    return rb.worldTransform * Vector4D(vertexBuffer[index].pos, 1);
+    return rb.worldTransform * scaleMatrix * Vector4D(vertexBuffer[index].pos, 1);
 }

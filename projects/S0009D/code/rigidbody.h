@@ -9,7 +9,7 @@ class Rigidbody
 {
     public:
         Rigidbody();
-        Rigidbody(AABB aabb, float m, Matrix4D& rot, Vector4D& pos);
+        Rigidbody(AABB aabb, float m, Matrix4D& rot, Vector4D& pos, bool unmovable);
         ~Rigidbody();
 
         //Applies a force in a certain spot. The length of the force vector is the power of the force.
@@ -38,6 +38,10 @@ class Rigidbody
         //The power of the gravitational pull
         static float gravidationPower;
 
+        Matrix4D getIITW();
+
+        void Impulse(Vector4D J, Vector4D torque);
+
         //Current rotation
         Matrix4D rotation;
 
@@ -47,15 +51,22 @@ class Rigidbody
 
         Vector4D spin;
         
+        //The mass of the object
+        float mass;
+
+        bool unmovable;
+
+        Vector4D forceToAdd;
+
+        Vector4D angularMomentum;
     private:
+
 
         std::chrono::time_point<std::chrono::steady_clock> start;
 
         //The aabb taken from the object class
         AABB aabb;
 
-        //The mass of the object
-        float mass;
 
 
         //Current position
@@ -67,9 +78,7 @@ class Rigidbody
 
 
         Vector4D torque;
-        Vector4D angularMomentum;
 
-        Vector4D forceToAdd;
         Vector4D posOfForce;
         
         Quaternion q;

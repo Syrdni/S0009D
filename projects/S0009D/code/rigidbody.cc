@@ -3,7 +3,7 @@
 
 Rigidbody::Rigidbody(){};
 
-Rigidbody::Rigidbody(AABB aabb, float m, Matrix4D& rot, Vector4D& pos)
+Rigidbody::Rigidbody(AABB aabb, float m, Matrix4D& rot, Vector4D& pos, bool unmovable)
 {
 
     start = std::chrono::steady_clock::now();
@@ -25,6 +25,15 @@ Rigidbody::Rigidbody(AABB aabb, float m, Matrix4D& rot, Vector4D& pos)
 
     //Convert the rotation to a quaternion
     q = Quaternion::createQuaternion(rot);
+
+    this->unmovable = unmovable;
+    if (unmovable)
+    {
+        inverseInertiaTensor = Matrix4D(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        mass = 0;
+    }
+    
+
 }
 
 Rigidbody::~Rigidbody(){}
@@ -33,10 +42,10 @@ void Rigidbody::update()
 {
     auto end = std::chrono::steady_clock::now();
     float elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0;
-    this->start = end;
+    this->start = end;    
 
     //Check if we have a gravitational pull
-    if (Rigidbody::gravitationDirection.length() > 0)
+    if (Rigidbody::gravitationDirection.length() > 0 && !unmovable)
     {
         applyForce(Matrix4D::getPositionMatrix(position) * aabb.getCenter(), Rigidbody::gravitationDirection * Rigidbody::gravidationPower);
     }
@@ -47,14 +56,15 @@ void Rigidbody::update()
     momentum[3] = 0;
 
     //Calcuclate the velocity
-    velocity = momentum * (1/mass);
+    if (!unmovable)    
+        velocity = momentum * (1/mass);
 
     //Calculate the position
-    position = position + (velocity * elapsed);
+    position = position + (velocity * elapsed); //elapsed
     position[3] = 1;   
 
     //Calculate the spin vector
-    this->spin = this->spin + inverseInertiaTensor * (angularMomentum * elapsed);
+    this->spin = this->spin + inverseInertiaTensor * (angularMomentum * elapsed); //elapsed
     this->spin[3] = 0;
     
     //Convert it to a quaternion so you can do quaternion multiplication
@@ -125,4 +135,17 @@ Vector4D Rigidbody::getCenterPoint()
 void Rigidbody::setPosition(Vector4D pos)
 {
     position = pos;
+}
+
+Matrix4D Rigidbody::getIITW()
+{
+    return inverseInertiaTensor * worldTransform;
+}
+
+void Rigidbody::Impulse(Vector4D J, Vector4D torque)
+{
+    forceToAdd = J;
+
+    torque[3] = 0;
+    //angularMomentum = angularMomentum + torque;
 }

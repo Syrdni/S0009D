@@ -9,7 +9,7 @@ class Object
 {
     public:
         Object();
-        Object(MeshResource* mr, ShaderObject* so, TextureResource* tr, LightingNode* ln, Vector4D& cameraPos, std::string texturePath);
+        Object(MeshResource* mr, ShaderObject* so, TextureResource* tr, LightingNode* ln, Vector4D& cameraPos, std::string texturePath, float mass, bool unmovable);
         ~Object();
         void setupGraphicsNode(MeshResource* mr, ShaderObject* so, TextureResource* tr, LightingNode* ln, Vector4D& cameraPos, std::string texturePath);
         void setViewMatrix(Matrix4D viewmatrix);
@@ -28,6 +28,9 @@ class Object
         Vector4D colorOnAABB = Vector4D(0, 0, 1, 1);
         Vector4D indexOfFurthestPoint(Vector4D direction);
         GraphicsNode getGraphicsNode();
+
+        Matrix4D scaleMatrix;
+
     private:
         float findTheSmallesCoordinate(float p1, float p2);
         float findTheBiggestCoordinate(float p1, float p2);

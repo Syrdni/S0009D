@@ -69,26 +69,6 @@ ExampleApp::Open()
 			cameraPos = cameraPos - (cameraFront.crossProduct(cameraUp).normalize()) * cameraSpeed;
 		}
 		
-		//Animations
-		//if (key == GLFW_KEY_1 && action == GLFW_PRESS)
-		//	an.loadAnimation(0);
-		//if (key == GLFW_KEY_2 && action == GLFW_PRESS)
-		//	an.loadAnimation(1);
-		//if (key == GLFW_KEY_3 && action == GLFW_PRESS)
-		//	an.loadAnimation(2);
-		//if (key == GLFW_KEY_4 && action == GLFW_PRESS)
-		//	an.loadAnimation(3);
-		//if (key == GLFW_KEY_5 && action == GLFW_PRESS)
-		//	an.loadAnimation(4);
-		//if (key == GLFW_KEY_6 && action == GLFW_PRESS)
-		//	an.loadAnimation(5);
-		//if (key == GLFW_KEY_7 && action == GLFW_PRESS)
-		//	an.loadAnimation(6);
-		//if (key == GLFW_KEY_8 && action == GLFW_PRESS)
-		//	an.loadAnimation(7);
-		//if (key == GLFW_KEY_9 && action == GLFW_PRESS)
-		//	an.loadAnimation(8);
-		
 	});
 	window->SetMousePressFunction([this](int32 key, int32 action, int32 test) {
 		if (key == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
@@ -142,7 +122,7 @@ ExampleApp::Open()
 				}
 			}
 			if (closest != 100000000)
-				o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*10);
+				o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*6);
 		}
 	});
 	window->SetMouseMoveFunction([this](float64 posX, float64 posY) {
@@ -232,12 +212,13 @@ ExampleApp::Open()
 			0, 0, 0, 1);
 
 
-		objectVector.push_back(new Object(mr, so, tr, ln, cameraPos, "texture2.jpg"));
-		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg"));
-		objectVector.push_back(new Object(mr, so, tr3, ln, cameraPos, "texture.jpg"));
+		objectVector.push_back(new Object(mr, so, tr, ln, cameraPos, "texture2.jpg", 10, false));
+		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", 10, false));
+		objectVector.push_back(new Object(mr, so, tr3, ln, cameraPos, "texture.jpg", 10, true));
 		//objectVector.push_back(new Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
 		o = objectVector[0];
-		objectVector[2]->getReferenceToRigidbody().setPosition(Vector4D(-150, 0, 0, 1));
+		objectVector[2]->getReferenceToRigidbody().setPosition(Vector4D(0, -10, 0, 1));
+		objectVector[2]->scaleMatrix = Matrix4D::getScaleMatrix(Vector4D(100, 1, 100, 1));
 		objectVector[1]->getReferenceToRigidbody().setPosition(Vector4D(10, 0, 0, 1));
 		objectVector[0]->getReferenceToRigidbody().setPosition(Vector4D(7.5, 0, 0, 1));
 
@@ -270,6 +251,7 @@ ExampleApp::Run()
 	bool useImGuiWindow = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	Vector4D pos = Vector4D(0, 0, 0, 1);
+	bool skip = true;
 
 	while (this->window->IsOpen())
 	{	
@@ -306,6 +288,7 @@ ExampleApp::Run()
 
 		debugManager->drawDebugShapes();
 		debugManager->clearSingleFrameVector();
+
 
 		for (int i = 0; i < objectVector.size(); i++)
 		{

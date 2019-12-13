@@ -83,6 +83,7 @@ void PhysicsServer::sweep()
         else
         {
             objectPairVector.erase(objectPairVector.begin() + i);
+            i--;
         }
     }
 
@@ -104,6 +105,7 @@ void PhysicsServer::sweep()
         else
         {
             objectPairVector.erase(objectPairVector.begin() + i);
+            i--;
         }
     }
     
@@ -117,9 +119,15 @@ void PhysicsServer::sweep()
     //GJK
     if (objectPairVector.size() > 0)
     {
-        EPAResult r(0, Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1));
-        GJK(objectPairVector[0], r);
-        //integratorEuler();
+        //TODO fix so it goes throu every collision and not only one
+        for (int i = 0; i < objectPairVector.size(); i++)
+        {
+            EPAResult r(0, Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1));
+            GJK(objectPairVector[i], r);
+            DebugManager::getInstance()->createSingleFrameLine(r.normal + r.PosOfObject1, r.PosOfObject1 + (r.normal*10), Vector4D(1, 1, 1, 1));
+            response(r, objectPairVector[i]);
+        }
+        
     }
     
 
@@ -162,7 +170,7 @@ bool PhysicsServer::GJK(objectPair op, EPAResult &result)
             {
                 op.object1->colorOnAABB = Vector4D(0, 1, 0, 1);
                 op.object2->colorOnAABB = Vector4D(0, 1, 0, 1);
-                EPAResult r = EPA(points, op);
+                result = EPA(points, op);
                 return true;
             }
         }  
@@ -404,9 +412,51 @@ void PhysicsServer::getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2,
      p1 = 1.0f - p2 - p3;
 }
 
-void PhysicsServer::integratorEuler(EPAResult r, objectPair op)
+void PhysicsServer::response(EPAResult r, objectPair op)
 {
-    //Rigidbody& rb = op.object1->getReferenceToRigidbody();
-    //Vector4D Pa = rb.velocity + rb.spin.crossProduct(rb.momentum - rb.getCenterPoint());
-    //Vector4D Pa = rb.velocity + rb.spin.crossProduct(rb.momentum - rb.getCenterPoint());
+    r.normal = -r.normal;
+    Rigidbody& rb1 = op.object1->getReferenceToRigidbody();
+    Rigidbody& rb2 = op.object2->getReferenceToRigidbody();
+    Vector4D Pa = rb1.velocity + rb1.spin.crossProduct(r.PosOfObject1 - (rb1.worldTransform * op.object1->scaleMatrix)* rb1.getCenterPoint());
+    Vector4D Pb = rb2.velocity + rb2.spin.crossProduct(r.PosOfObject2 - (rb2.worldTransform * op.object2->scaleMatrix)* rb2.getCenterPoint());
+
+    float Vrel = r.normal.dotProduct(Pa - Pb);    
+
+    float b1 = r.normal.dotProduct(rb1.getIITW()*(r.PosOfObject1.crossProduct(r.normal).crossProduct(r.PosOfObject1)));
+    float b2 = r.normal.dotProduct(rb2.getIITW()*(r.PosOfObject2.crossProduct(r.normal).crossProduct(r.PosOfObject2)));
+
+    float M1, M2;
+    if (rb1.unmovable)
+        M1 = 0;
+    else
+        M1 = (1/rb1.mass);
+    
+
+    if (rb2.unmovable)
+        M2 = 0;
+    else
+        M2 =(1/rb2.mass);
+    
+    float temp = Vrel;
+    float J = (-(1+0.01)*temp) / (M1 + M2 + b1 + b2);
+
+    Vector4D Ja = r.normal*J;
+    Vector4D Jb = -r.normal*J;
+
+    Vector4D Ta = (r.PosOfObject1 - (rb1.worldTransform * op.object1->scaleMatrix) * rb1.getCenterPoint()).crossProduct(Ja);
+    Vector4D Tb = (r.PosOfObject2 - (rb2.worldTransform * op.object2->scaleMatrix) * rb2.getCenterPoint()).crossProduct(Jb);
+
+    Ja[3] = 0;
+    Jb[3] = 0;
+
+    if (Vrel < 0)
+    {
+    rb1.momentum = rb1.momentum + Ja;
+    rb2.momentum = rb2.momentum + Jb;
+    }
+
+    rb1.angularMomentum = rb1.angularMomentum + Ta;
+    rb2.angularMomentum = rb2.angularMomentum + Tb;
+    
+
 }
