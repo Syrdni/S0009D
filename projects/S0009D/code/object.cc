@@ -2,10 +2,11 @@
 
 Object::Object(){}
 
-Object::Object(MeshResource* mr, ShaderObject* so, TextureResource* tr, LightingNode* ln, Vector4D& cameraPos, std::string texturePath, float mass, bool unmovable)
+Object::Object(MeshResource* mr, ShaderObject* so, TextureResource* tr, LightingNode* ln, Vector4D& cameraPos, std::string texturePath, Vector4D scale, float mass, bool unmovable)
 {
-    setupGraphicsNode(mr, so, tr, ln, cameraPos, texturePath);
     rb = Rigidbody(originalAABB, mass, totalRotation, getReferenceToPosition(), unmovable);
+    setScaleMatrix(Matrix4D::getScaleMatrix(scale));
+    setupGraphicsNode(mr, so, tr, ln, cameraPos, texturePath);
 }
 
 Object::~Object(){}
@@ -303,4 +304,5 @@ Vector4D Object::indexOfFurthestPoint(Vector4D direction)
 void Object::setScaleMatrix(Matrix4D scale)
 {
     rb.scale = scale;
+    rb.worldTransform = rb.worldTransform * scale;
 }

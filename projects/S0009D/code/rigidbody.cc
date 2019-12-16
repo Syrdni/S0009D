@@ -32,8 +32,6 @@ Rigidbody::Rigidbody(AABB aabb, float m, Matrix4D& rot, Vector4D& pos, bool unmo
         inverseInertiaTensor = Matrix4D(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         mass = 0;
     }
-    
-
 }
 
 Rigidbody::~Rigidbody(){}

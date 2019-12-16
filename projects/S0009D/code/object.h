@@ -9,7 +9,7 @@ class Object
 {
     public:
         Object();
-        Object(MeshResource* mr, ShaderObject* so, TextureResource* tr, LightingNode* ln, Vector4D& cameraPos, std::string texturePath, float mass, bool unmovable);
+        Object(MeshResource* mr, ShaderObject* so, TextureResource* tr, LightingNode* ln, Vector4D& cameraPos, std::string texturePath, Vector4D scale, float mass, bool unmovable);
         ~Object();
         void setupGraphicsNode(MeshResource* mr, ShaderObject* so, TextureResource* tr, LightingNode* ln, Vector4D& cameraPos, std::string texturePath);
         void setViewMatrix(Matrix4D viewmatrix);
