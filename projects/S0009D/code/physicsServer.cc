@@ -414,15 +414,20 @@ void PhysicsServer::getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2,
 
 void PhysicsServer::response(EPAResult r, objectPair op)
 {
+
     Rigidbody& rb1 = op.object1->getReferenceToRigidbody();
     Rigidbody& rb2 = op.object2->getReferenceToRigidbody();
-    Vector4D Pa = rb1.velocity + rb1.spin.crossProduct(r.PosOfObject1 - (rb1.worldTransform* rb1.getCenterPoint()));
-    Vector4D Pb = rb2.velocity + rb2.spin.crossProduct(r.PosOfObject2 - (rb2.worldTransform* rb2.getCenterPoint()));
+
+    auto relativePos1 = r.PosOfObject1 - (rb1.worldTransform * rb1.getCenterPoint());
+    auto relativePos2 = r.PosOfObject2 - (rb2.worldTransform * rb2.getCenterPoint());
+
+    Vector4D Pa = rb1.velocity + rb1.spin.crossProduct(r.PosOfObject1 - (rb1.worldTransform * rb1.getCenterPoint()));
+    Vector4D Pb = rb2.velocity + rb2.spin.crossProduct(r.PosOfObject2 - (rb2.worldTransform * rb2.getCenterPoint()));
 
     float Vrel = r.normal.dotProduct(Pa - Pb);    
 
-    float b1 = r.normal.dotProduct((rb1.getIITW()*(r.PosOfObject1.crossProduct(r.normal))).crossProduct(r.PosOfObject1));
-    float b2 = r.normal.dotProduct((rb2.getIITW()*(r.PosOfObject2.crossProduct(r.normal))).crossProduct(r.PosOfObject2));
+    float b1 = r.normal.dotProduct((rb1.getIITW()*(relativePos1.crossProduct(r.normal))).crossProduct(relativePos1));
+    float b2 = r.normal.dotProduct((rb2.getIITW()*(relativePos2.crossProduct(r.normal))).crossProduct(relativePos2));
     //float b2 = r.normal.dotProduct(rb2.getIITW()*(r.PosOfObject2.crossProduct(r.normal).crossProduct(r.PosOfObject2)));
 
     float M1, M2;
@@ -437,7 +442,7 @@ void PhysicsServer::response(EPAResult r, objectPair op)
     else
         M2 =(1/rb2.mass);
     
-    float J = abs((-(1+0.01)*Vrel) / (M1 + M2 + b1 + b2));
+    float J = (-(1+0.4)*Vrel) / (M1 + M2 + b1 + b2);
 
     Vector4D Ja = r.normal*J;
     Vector4D Jb = -r.normal*J;
@@ -447,19 +452,16 @@ void PhysicsServer::response(EPAResult r, objectPair op)
 
     Ja[3] = 0;
     Jb[3] = 0;
-
-    rb1.applyForce(Ja, r.PosOfObject1);
-    rb2.applyForce(Jb, r.PosOfObject2);
    
-    //if (Vrel > 0)
-    //{
-    //    rb1.momentum = rb1.momentum + Ja;
-    //    rb2.momentum = rb2.momentum + Jb;
-    //}
-//
-    //if (!rb1.unmovable)    
-    //    rb1.angularMomentum = rb1.angularMomentum + Ta;
-//
-    //if (!rb2.unmovable)    
-    //    rb2.angularMomentum = rb2.angularMomentum + Tb;
+    if (Vrel > 0)
+    {
+        rb1.momentum = rb1.momentum + Ja;
+        rb2.momentum = rb2.momentum + Jb;
+    }
+
+    if (!rb1.unmovable)    
+        rb1.angularMomentum = rb1.angularMomentum + Ta;
+
+    if (!rb2.unmovable)    
+        rb2.angularMomentum = rb2.angularMomentum + Tb;
 }

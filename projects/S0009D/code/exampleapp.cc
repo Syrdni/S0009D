@@ -204,7 +204,7 @@ ExampleApp::Open()
 
 
 		objectVector.push_back(new Object(mr, so, tr, ln, cameraPos, "texture2.jpg", 10, false));
-		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", 10, true));
+		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", 10, false));
 		objectVector.push_back(new Object(mr, so, tr3, ln, cameraPos, "texture.jpg", 10, true));
 		//objectVector.push_back(new Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
 		o = objectVector[0];

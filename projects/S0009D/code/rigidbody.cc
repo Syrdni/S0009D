@@ -112,7 +112,7 @@ void Rigidbody::applyForce(Vector4D pos, Vector4D forceDirection)
     
 
     //Add the force to the total this frame
-    //forceToAdd = forceToAdd + forceDirection;
+    forceToAdd = forceToAdd + forceDirection;
 
     //Calculate torque
     torque = (pos - (position + aabb.getCenter())).crossProduct(forceDirection);
