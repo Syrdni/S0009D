@@ -59,6 +59,8 @@ class Rigidbody
         Vector4D forceToAdd;
 
         Vector4D angularMomentum;
+
+        Matrix4D scale;
     private:
 
 

@@ -124,7 +124,7 @@ void PhysicsServer::sweep()
         {
             EPAResult r(0, Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1));
             GJK(objectPairVector[i], r);
-            DebugManager::getInstance()->createSingleFrameLine(r.normal + r.PosOfObject1, r.PosOfObject1 + (r.normal*10), Vector4D(1, 1, 1, 1));
+            DebugManager::getInstance()->createSingleFrameLine(r.PosOfObject1, (r.normal*100), Vector4D(1, 1, 1, 1));
             response(r, objectPairVector[i]);
         }
         
@@ -339,8 +339,8 @@ Vector4D PhysicsServer::DoSimplexLine(std::vector<SupportPoint>& points)
 Vector4D PhysicsServer::DoSimplexTriangle(std::vector<SupportPoint>& points)
 {
     Vector4D A0 = -points[0].point;
-    Vector4D AB = points[1].point - points[0].point; //were 2-0
-    Vector4D AC = points[2].point - points[0].point; //were 1-0
+    Vector4D AB = points[1].point - points[0].point;
+    Vector4D AC = points[2].point - points[0].point;
     Vector4D ABC = (AB).crossProduct(AC);
 
     Vector4D n = (AB).crossProduct(AC);
@@ -414,16 +414,16 @@ void PhysicsServer::getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2,
 
 void PhysicsServer::response(EPAResult r, objectPair op)
 {
-    r.normal = -r.normal;
     Rigidbody& rb1 = op.object1->getReferenceToRigidbody();
     Rigidbody& rb2 = op.object2->getReferenceToRigidbody();
-    Vector4D Pa = rb1.velocity + rb1.spin.crossProduct(r.PosOfObject1 - (rb1.worldTransform * op.object1->scaleMatrix)* rb1.getCenterPoint());
-    Vector4D Pb = rb2.velocity + rb2.spin.crossProduct(r.PosOfObject2 - (rb2.worldTransform * op.object2->scaleMatrix)* rb2.getCenterPoint());
+    Vector4D Pa = rb1.velocity + rb1.spin.crossProduct(r.PosOfObject1 - (rb1.worldTransform* rb1.getCenterPoint()));
+    Vector4D Pb = rb2.velocity + rb2.spin.crossProduct(r.PosOfObject2 - (rb2.worldTransform* rb2.getCenterPoint()));
 
     float Vrel = r.normal.dotProduct(Pa - Pb);    
 
-    float b1 = r.normal.dotProduct(rb1.getIITW()*(r.PosOfObject1.crossProduct(r.normal).crossProduct(r.PosOfObject1)));
-    float b2 = r.normal.dotProduct(rb2.getIITW()*(r.PosOfObject2.crossProduct(r.normal).crossProduct(r.PosOfObject2)));
+    float b1 = r.normal.dotProduct((rb1.getIITW()*(r.PosOfObject1.crossProduct(r.normal))).crossProduct(r.PosOfObject1));
+    float b2 = r.normal.dotProduct((rb2.getIITW()*(r.PosOfObject2.crossProduct(r.normal))).crossProduct(r.PosOfObject2));
+    //float b2 = r.normal.dotProduct(rb2.getIITW()*(r.PosOfObject2.crossProduct(r.normal).crossProduct(r.PosOfObject2)));
 
     float M1, M2;
     if (rb1.unmovable)
@@ -437,26 +437,29 @@ void PhysicsServer::response(EPAResult r, objectPair op)
     else
         M2 =(1/rb2.mass);
     
-    float temp = Vrel;
-    float J = (-(1+0.01)*temp) / (M1 + M2 + b1 + b2);
+    float J = abs((-(1+0.01)*Vrel) / (M1 + M2 + b1 + b2));
 
     Vector4D Ja = r.normal*J;
     Vector4D Jb = -r.normal*J;
 
-    Vector4D Ta = (r.PosOfObject1 - (rb1.worldTransform * op.object1->scaleMatrix) * rb1.getCenterPoint()).crossProduct(Ja);
-    Vector4D Tb = (r.PosOfObject2 - (rb2.worldTransform * op.object2->scaleMatrix) * rb2.getCenterPoint()).crossProduct(Jb);
+    Vector4D Ta = (r.PosOfObject1 - ((rb1.worldTransform) * rb1.getCenterPoint())).crossProduct(Ja);
+    Vector4D Tb = (r.PosOfObject2 - ((rb2.worldTransform) * rb2.getCenterPoint())).crossProduct(Jb);
 
     Ja[3] = 0;
     Jb[3] = 0;
 
-    if (Vrel < 0)
-    {
-    rb1.momentum = rb1.momentum + Ja;
-    rb2.momentum = rb2.momentum + Jb;
-    }
-
-    rb1.angularMomentum = rb1.angularMomentum + Ta;
-    rb2.angularMomentum = rb2.angularMomentum + Tb;
-    
-
+    rb1.applyForce(Ja, r.PosOfObject1);
+    rb2.applyForce(Jb, r.PosOfObject2);
+   
+    //if (Vrel > 0)
+    //{
+    //    rb1.momentum = rb1.momentum + Ja;
+    //    rb2.momentum = rb2.momentum + Jb;
+    //}
+//
+    //if (!rb1.unmovable)    
+    //    rb1.angularMomentum = rb1.angularMomentum + Ta;
+//
+    //if (!rb2.unmovable)    
+    //    rb2.angularMomentum = rb2.angularMomentum + Tb;
 }

@@ -28,7 +28,7 @@ class Object
         Vector4D colorOnAABB = Vector4D(0, 0, 1, 1);
         Vector4D indexOfFurthestPoint(Vector4D direction);
         GraphicsNode getGraphicsNode();
-
+        void setScaleMatrix(Matrix4D scale);
         Matrix4D scaleMatrix;
 
     private:

@@ -87,7 +87,7 @@ void Rigidbody::update()
 
    //Calculate the world transform
     worldTransform = rotation * Matrix4D::getPositionMatrix(-aabb.getCenter());
-    worldTransform = Matrix4D::getPositionMatrix(position + aabb.getCenter()) * worldTransform;
+    worldTransform = Matrix4D::getPositionMatrix(position + aabb.getCenter()) * worldTransform * scale;
 
     //Reset the forces and the angularMomentum
     forceToAdd = Vector4D(0, 0, 0, 1);
@@ -105,15 +105,23 @@ void Rigidbody::update()
 
 void Rigidbody::applyForce(Vector4D pos, Vector4D forceDirection)
 {
+    if (unmovable)
+    {
+        return;
+    }
+    
+
     //Add the force to the total this frame
-    forceToAdd = forceToAdd + forceDirection;
+    //forceToAdd = forceToAdd + forceDirection;
 
     //Calculate torque
     torque = (pos - (position + aabb.getCenter())).crossProduct(forceDirection);
     torque[3] = 0;
 
+    DebugManager::getInstance()->createLine(position, position + torque, {1,0.4,0.2,1});
+
     //Calculate angularMomentum
-    angularMomentum = angularMomentum + torque;
+    angularMomentum = angularMomentum + inverseInertiaTensor * torque;
     angularMomentum[3] = 0;
 }
 
@@ -139,7 +147,7 @@ void Rigidbody::setPosition(Vector4D pos)
 
 Matrix4D Rigidbody::getIITW()
 {
-    return inverseInertiaTensor * worldTransform;
+    return inverseInertiaTensor;
 }
 
 void Rigidbody::Impulse(Vector4D J, Vector4D torque)

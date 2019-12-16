@@ -95,18 +95,8 @@ ExampleApp::Open()
 			DebugManager::getInstance()->createLine(ray.getOrigin(), ray.getPoint(1), Vector4D(0, 1, 0, 1));
 
 			float closest = 100000000;
-			for (int i = 0; i < squareVector.size(); i++)
-			{
-				float distance = squareVector[i].checkIfHit(ray);
-				if (distance != -1 && distance < closest)
-				{
-					closest = distance;
-					s = &squareVector[i];
-				}
-			}
-
-			closest = 100000000;
 			PointAndDistance meshIntersection;
+			PointAndDistance closestIntersection;
 			for (int i = 0; i < objectVector.size(); i++)
 			{
 				PointAndDistance PaD = ray.intersect(objectVector[i]->getAABB());
@@ -118,11 +108,12 @@ ExampleApp::Open()
 					{
 						o = objectVector[i];
 						closest = meshIntersection.distance;
+						closestIntersection = meshIntersection;
 					}
 				}
 			}
 			if (closest != 100000000)
-				o->getReferenceToRigidbody().applyForce(meshIntersection.point, ray.getDirection()*6);
+				o->getReferenceToRigidbody().applyForce(closestIntersection.point, ray.getDirection()*10);
 		}
 	});
 	window->SetMouseMoveFunction([this](float64 posX, float64 posY) {
@@ -213,12 +204,12 @@ ExampleApp::Open()
 
 
 		objectVector.push_back(new Object(mr, so, tr, ln, cameraPos, "texture2.jpg", 10, false));
-		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", 10, false));
+		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", 10, true));
 		objectVector.push_back(new Object(mr, so, tr3, ln, cameraPos, "texture.jpg", 10, true));
 		//objectVector.push_back(new Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
 		o = objectVector[0];
 		objectVector[2]->getReferenceToRigidbody().setPosition(Vector4D(0, -10, 0, 1));
-		objectVector[2]->scaleMatrix = Matrix4D::getScaleMatrix(Vector4D(100, 1, 100, 1));
+		objectVector[2]->setScaleMatrix(Matrix4D::getScaleMatrix(Vector4D(100, 1, 100, 1)));
 		objectVector[1]->getReferenceToRigidbody().setPosition(Vector4D(10, 0, 0, 1));
 		objectVector[0]->getReferenceToRigidbody().setPosition(Vector4D(7.5, 0, 0, 1));
 

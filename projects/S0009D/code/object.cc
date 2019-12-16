@@ -83,7 +83,7 @@ void Object::updateAABB()
     std::vector<Vector4D> pointVector;
 
     //Create the combinedMatrix with rotation and scale
-    Matrix4D combinedMatrix = scaleMatrix * totalRotation;
+    Matrix4D combinedMatrix = totalRotation * rb.scale;
 
     //Apply the matrix to the original AABB and add the new points to the vector
     pointVector.push_back(combinedMatrix * Vector4D(originalAABB.maxPoint[0], originalAABB.maxPoint[1], originalAABB.maxPoint[2], 1));
@@ -143,8 +143,8 @@ void Object::draw()
     // graphicsNode.setTransform(viewmatrix * Matrix4D::getPositionMatrix(position) * totalRotation * Matrix4D::getScaleMatrix(scale));
     // graphicsNode.setPosition(Matrix4D::getPositionMatrix(position) * totalRotation * Matrix4D::getScaleMatrix(scale));
 
-    graphicsNode.setTransform(viewmatrix * rb.worldTransform * scaleMatrix);
-    graphicsNode.setPosition(rb.worldTransform * scaleMatrix);
+    graphicsNode.setTransform(viewmatrix * rb.worldTransform);
+    graphicsNode.setPosition(rb.worldTransform);
 
     graphicsNode.draw();
 }
@@ -152,9 +152,9 @@ void Object::draw()
 void Object::update()
 {
     position = rb.getPosition(); 
-    updateAABB();
     totalRotation = rb.getRotation();
     rb.update();
+    updateAABB();
     draw();
 }
 
@@ -175,7 +175,7 @@ PointAndDistance Object::checkIfRayIntersects(Ray ray)
     Vector4D normal1, normal2, normal3;
 
     //Get the combined matrix of scale and rotation
-    Matrix4D combinedMatrix = scaleMatrix * rb.worldTransform;// Matrix4D::getPositionMatrix(position) * totalRotation * Matrix4D::getScaleMatrix(scale);
+    Matrix4D combinedMatrix = rb.worldTransform;// Matrix4D::getPositionMatrix(position) * totalRotation * Matrix4D::getScaleMatrix(scale);
 
     //Get the Vertex and index buffer
     std::vector<Vertex> vertBuffer = graphicsNode.getMeshResource()->getVertexBuffer();
@@ -297,5 +297,10 @@ Vector4D Object::indexOfFurthestPoint(Vector4D direction)
             index = i;
         }  
     }
-    return rb.worldTransform * scaleMatrix * Vector4D(vertexBuffer[index].pos, 1);
+    return rb.worldTransform * Vector4D(vertexBuffer[index].pos, 1);
+}
+
+void Object::setScaleMatrix(Matrix4D scale)
+{
+    rb.scale = scale;
 }
