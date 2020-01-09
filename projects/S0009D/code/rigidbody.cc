@@ -47,11 +47,10 @@ void Rigidbody::update()
     {
         applyForce(Matrix4D::getPositionMatrix(position) * aabb.getCenter(), Rigidbody::gravitationDirection * Rigidbody::gravidationPower);
     }
-    
 
-    //Calculate the momentum
     momentum = momentum + forceToAdd;
     momentum[3] = 0;
+    
 
     //Calcuclate the velocity
     if (!unmovable)    
@@ -83,7 +82,7 @@ void Rigidbody::update()
     //Calculate a new inverse inertia tensor
     inverseInertiaTensor = rotation * (Matrix4D::inverse(inertiaTensorBody) * Matrix4D::transpose(rotation));
 
-   //Calculate the world transform
+    //Calculate the world transform
     worldTransform = rotation * Matrix4D::getPositionMatrix(-aabb.getCenter());
     worldTransform = Matrix4D::getPositionMatrix(position + aabb.getCenter()) * worldTransform * scale;
 
@@ -113,9 +112,8 @@ void Rigidbody::applyForce(Vector4D pos, Vector4D forceDirection)
     forceToAdd = forceToAdd + forceDirection;
 
     //Calculate torque
-    torque = (pos - (position + aabb.getCenter())).crossProduct(forceDirection);
+    torque = (pos - (worldTransform * aabb.getCenter())).crossProduct(forceDirection);
     torque[3] = 0;
-
     DebugManager::getInstance()->createLine(position, position + torque, {1,0.4,0.2,1});
 
     //Calculate angularMomentum

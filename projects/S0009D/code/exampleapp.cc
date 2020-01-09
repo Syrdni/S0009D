@@ -195,7 +195,7 @@ ExampleApp::Open()
 		mr2->loadFromOBJFile("cat.obj");
 
 		//The point light source
-		ln = new LightingNode(Vector4D(0, 1, 3, 1), Vector4D(1.0f, 1.0f, 1.0f, 1.0f), 1);
+		ln = new LightingNode(Vector4D(0, 100, 3, 1), Vector4D(1.0f, 1.0f, 1.0f, 1.0f), 1);
 
 		position = Matrix4D(1, 0, 0, 0,
 			0, 1, 0, 0,
@@ -203,13 +203,13 @@ ExampleApp::Open()
 			0, 0, 0, 1);
 
 
-		objectVector.push_back(new Object(mr, so, tr, ln, cameraPos, "texture2.jpg", Vector4D(1, 1, 1, 1), 10, false));
-		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(1, 1, 1, 1), 10, true));
-		objectVector.push_back(new Object(mr, so, tr3, ln, cameraPos, "texture.jpg", Vector4D(1, 1, 1, 1), 10, true));
+		objectVector.push_back(new Object(mr, so, tr, ln, cameraPos, "texture2.jpg", Vector4D(1, 2, 1, 1), 10, false));
+		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(1, 1, 1, 1), 10, false));
+		objectVector.push_back(new Object(mr, so, tr3, ln, cameraPos, "texture.jpg", Vector4D(100, 4, 100, 1), 10, true));
 		//objectVector.push_back(new Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
 		o = objectVector[0];
 		objectVector[2]->getReferenceToRigidbody().setPosition(Vector4D(0, -10, 0, 1));
-		objectVector[2]->setScaleMatrix(Matrix4D::getScaleMatrix(Vector4D(100, 1, 100, 1)));
+		//objectVector[2]->setScaleMatrix(Matrix4D::getScaleMatrix(Vector4D(100, 1, 100, 1)));
 		objectVector[1]->getReferenceToRigidbody().setPosition(Vector4D(10, 0, 0, 1));
 		objectVector[0]->getReferenceToRigidbody().setPosition(Vector4D(7.5, 0, 0, 1));
 

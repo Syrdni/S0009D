@@ -124,7 +124,9 @@ void PhysicsServer::sweep()
         {
             EPAResult r(0, Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1));
             GJK(objectPairVector[i], r);
-            DebugManager::getInstance()->createSingleFrameLine(r.PosOfObject1, (r.normal*100), Vector4D(1, 1, 1, 1));
+            DebugManager::getInstance()->createSingleFrameLine(r.PosOfObject1, (r.PosOfObject1 + r.normal.normalize()*10), Vector4D(1, 1, 1, 1));
+            DebugManager::getInstance()->createSingleFrameLine(Vector4D(0,0,0,1), (r.normal), Vector4D(1, 1, 1, 1));
+            DebugManager::getInstance()->createSingleFrameCube(Vector4D(0,0,0,1), 0.1, 0.1, 0.1, Vector4D(1, 1, 0, 1));
             response(r, objectPairVector[i]);
         }
         
@@ -414,21 +416,19 @@ void PhysicsServer::getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2,
 
 void PhysicsServer::response(EPAResult r, objectPair op)
 {
-
     Rigidbody& rb1 = op.object1->getReferenceToRigidbody();
     Rigidbody& rb2 = op.object2->getReferenceToRigidbody();
 
     auto relativePos1 = r.PosOfObject1 - (rb1.worldTransform * rb1.getCenterPoint());
     auto relativePos2 = r.PosOfObject2 - (rb2.worldTransform * rb2.getCenterPoint());
-
+    
     Vector4D Pa = rb1.velocity + rb1.spin.crossProduct(r.PosOfObject1 - (rb1.worldTransform * rb1.getCenterPoint()));
     Vector4D Pb = rb2.velocity + rb2.spin.crossProduct(r.PosOfObject2 - (rb2.worldTransform * rb2.getCenterPoint()));
 
     float Vrel = r.normal.dotProduct(Pa - Pb);    
 
-    float b1 = r.normal.dotProduct((rb1.getIITW()*(relativePos1.crossProduct(r.normal))).crossProduct(relativePos1));
-    float b2 = r.normal.dotProduct((rb2.getIITW()*(relativePos2.crossProduct(r.normal))).crossProduct(relativePos2));
-    //float b2 = r.normal.dotProduct(rb2.getIITW()*(r.PosOfObject2.crossProduct(r.normal).crossProduct(r.PosOfObject2)));
+    float b1 = r.normal.dotProduct(rb1.getIITW()*((relativePos1.crossProduct(r.normal)).crossProduct(relativePos1)));
+    float b2 = r.normal.dotProduct(rb2.getIITW()*((relativePos2.crossProduct(r.normal)).crossProduct(relativePos2)));
 
     float M1, M2;
     if (rb1.unmovable)
@@ -442,7 +442,7 @@ void PhysicsServer::response(EPAResult r, objectPair op)
     else
         M2 =(1/rb2.mass);
     
-    float J = (-(1+0.4)*Vrel) / (M1 + M2 + b1 + b2);
+    float J = (-(1+0.1)*Vrel) / (M1 + M2 + b1 + b2);
 
     Vector4D Ja = r.normal*J;
     Vector4D Jb = -r.normal*J;
@@ -452,12 +452,16 @@ void PhysicsServer::response(EPAResult r, objectPair op)
 
     Ja[3] = 0;
     Jb[3] = 0;
+
+    //if (Vrel > 0)
+    //{
+    //    rb1.applyForce(r.PosOfObject1, Ja*2);
+    //    rb2.applyForce(r.PosOfObject2, Jb*2);
+    //}
+    
    
-    if (Vrel > 0)
-    {
-        rb1.momentum = rb1.momentum + Ja;
-        rb2.momentum = rb2.momentum + Jb;
-    }
+    rb1.momentum = rb1.momentum + Ja;
+    rb2.momentum = rb2.momentum + Jb;
 
     if (!rb1.unmovable)    
         rb1.angularMomentum = rb1.angularMomentum + Ta;

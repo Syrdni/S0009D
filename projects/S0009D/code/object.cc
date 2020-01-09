@@ -4,9 +4,10 @@ Object::Object(){}
 
 Object::Object(MeshResource* mr, ShaderObject* so, TextureResource* tr, LightingNode* ln, Vector4D& cameraPos, std::string texturePath, Vector4D scale, float mass, bool unmovable)
 {
+    this->scale = scale;
+    setupGraphicsNode(mr, so, tr, ln, cameraPos, texturePath);
     rb = Rigidbody(originalAABB, mass, totalRotation, getReferenceToPosition(), unmovable);
     setScaleMatrix(Matrix4D::getScaleMatrix(scale));
-    setupGraphicsNode(mr, so, tr, ln, cameraPos, texturePath);
 }
 
 Object::~Object(){}
@@ -61,6 +62,9 @@ void Object::setupFirstAABB(std::vector<Vertex> vertices)
     originalAABB.maxPoint[1] += position[1];
     originalAABB.maxPoint[2] += position[2];
 
+    originalAABB.maxPoint = Matrix4D::getScaleMatrix(scale) * originalAABB.maxPoint;
+    originalAABB.minPoint = Matrix4D::getScaleMatrix(scale) * originalAABB.minPoint;
+
     //Set current AABB to the original
     currentAABB = originalAABB;
 
@@ -84,7 +88,7 @@ void Object::updateAABB()
     std::vector<Vector4D> pointVector;
 
     //Create the combinedMatrix with rotation and scale
-    Matrix4D combinedMatrix = totalRotation * rb.scale;
+    Matrix4D combinedMatrix = totalRotation;
 
     //Apply the matrix to the original AABB and add the new points to the vector
     pointVector.push_back(combinedMatrix * Vector4D(originalAABB.maxPoint[0], originalAABB.maxPoint[1], originalAABB.maxPoint[2], 1));
