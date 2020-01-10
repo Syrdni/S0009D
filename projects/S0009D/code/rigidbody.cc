@@ -114,7 +114,7 @@ void Rigidbody::applyForce(Vector4D pos, Vector4D forceDirection)
     //Calculate torque
     torque = (pos - (worldTransform * aabb.getCenter())).crossProduct(forceDirection);
     torque[3] = 0;
-    DebugManager::getInstance()->createLine(position, position + torque, {1,0.4,0.2,1});
+    DebugManager::getInstance()->createLine(position, position + forceDirection, {1,0.4,0.2,1});
 
     //Calculate angularMomentum
     angularMomentum = angularMomentum + inverseInertiaTensor * torque;

@@ -92,7 +92,7 @@ ExampleApp::Open()
 			world = world.normalize();
 
 			ray = Ray(cameraPos, world);
-			DebugManager::getInstance()->createLine(ray.getOrigin(), ray.getPoint(1), Vector4D(0, 1, 0, 1));
+			//DebugManager::getInstance()->createLine(ray.getOrigin(), ray.getPoint(1), Vector4D(0, 1, 0, 1));
 
 			float closest = 100000000;
 			PointAndDistance meshIntersection;
@@ -166,7 +166,6 @@ ExampleApp::Open()
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 		glEnable(GL_DEPTH_TEST);
-		
 		//Perspective projection
 		const float n = 0.1f;
 		const float f = 100000.0f;
@@ -280,6 +279,7 @@ ExampleApp::Run()
 		debugManager->drawDebugShapes();
 		debugManager->clearSingleFrameVector();
 
+		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
 		for (int i = 0; i < objectVector.size(); i++)
 		{

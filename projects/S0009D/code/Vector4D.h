@@ -17,6 +17,7 @@ class Vector4D
 		float operator[](const int index) const;
 		float& operator[](const int index);
 		bool operator==(const Vector4D& inVector) const;
+		bool operator!=(const Vector4D& inVector) const;
 		Vector4D operator-()
 		{
 			return {-vector[0], -vector[1], -vector[2], vector[3]};
@@ -116,6 +117,19 @@ class Vector4D
 		else
 		{
 			return false;
+		}
+	}
+
+	inline bool Vector4D::operator!=(const Vector4D& inVector) const{
+		if (vector[0] == inVector[0] &&
+			vector[1] == inVector[1] &&
+			vector[2] == inVector[2])
+		{
+			return false;
+		}
+		else
+		{
+			return true;
 		}
 	}
 

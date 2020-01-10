@@ -134,7 +134,7 @@ void Object::draw()
                                 currentAABB.minPoint[1] + (dimentions[1]/2),
                                 currentAABB.minPoint[2] + (dimentions[2]/2),
                                 1);
-    DebugManager::getInstance()->createSingleFrameCube(pos, dimentions[0], dimentions[1], dimentions[2], colorOnAABB, true);
+    //DebugManager::getInstance()->createSingleFrameCube(pos, dimentions[0], dimentions[1], dimentions[2], colorOnAABB, true);
     colorOnAABB = Vector4D(0, 0, 1, 0);
 
 
@@ -229,7 +229,7 @@ PointAndDistance Object::checkIfRayIntersects(Ray ray)
             Vector4D::dotProduct(normal, v3v2.crossProduct(PV1)) > 0 &&
             Vector4D::dotProduct(normal, v1v3.crossProduct(PV2)) > 0)
             {
-                DebugManager::getInstance()->createCube((combinedMatrix * temp.point), 0.5, 0.5, 0.5, Vector4D(1, 0, 0, 1));
+                //DebugManager::getInstance()->createCube((combinedMatrix * temp.point), 0.5, 0.5, 0.5, Vector4D(1, 0, 0, 1));
                 
                 //Add the intersection point to the vector
                 intersectionPoints.push_back(PointAndDistance(combinedMatrix * temp.point, temp.distance, temp.normal));
