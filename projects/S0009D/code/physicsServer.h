@@ -71,7 +71,7 @@ class PhysicsServer
         Vector4D DoSimplexTriangle(std::vector<SupportPoint>& points);
         Vector4D DoSimplexTetrahedron(std::vector<SupportPoint>& points, bool& oof);
         void getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2, Vector4D vec3, float& p1, float& p2, float& p3);
-        void response(EPAResult results, objectPair op);
+        void response(EPAResult& results, objectPair op);
         void Euler();
         void MidPoint();
         void Runge_Kutta();

@@ -202,21 +202,26 @@ ExampleApp::Open()
 			0, 0, 0, 1);
 
 
-		objectVector.push_back(new Object(mr, so, tr, ln, cameraPos, "texture2.jpg", Vector4D(1, 2, 1, 1), 10, false));
-		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(1, 1, 1, 1), 10, false));
 		objectVector.push_back(new Object(mr, so, tr3, ln, cameraPos, "texture.jpg", Vector4D(100, 4, 100, 1), 10, true));
-		//objectVector.push_back(new Object(mr2, so, tr, ln, cameraPos, "texture2.jpg"));
+		objectVector.push_back(new Object(mr, so, tr, ln, cameraPos, "texture2.jpg", Vector4D(4, 4, 4, 1), 40, false));
+		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(2, 2, 2, 1), 20, false));
+		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(1, 1, 2, 1), 10, false));
+		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(1, 2, 1, 1), 10, false));
+		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(2, 1, 1, 1), 10, false));
+		
 		o = objectVector[0];
-		objectVector[2]->getReferenceToRigidbody().setPosition(Vector4D(0, -10, 0, 1));
-		//objectVector[2]->setScaleMatrix(Matrix4D::getScaleMatrix(Vector4D(100, 1, 100, 1)));
+		objectVector[0]->getReferenceToRigidbody().setPosition(Vector4D(0, -10, 0, 1));
 		objectVector[1]->getReferenceToRigidbody().setPosition(Vector4D(10, 0, 0, 1));
-		objectVector[0]->getReferenceToRigidbody().setPosition(Vector4D(7.5, 0, 0, 1));
+		objectVector[2]->getReferenceToRigidbody().setPosition(Vector4D(10, 10, 0, 1));
+		objectVector[3]->getReferenceToRigidbody().setPosition(Vector4D(7, 14, 0, 1));
+		objectVector[4]->getReferenceToRigidbody().setPosition(Vector4D(10, 16, 2, 1));
+		objectVector[5]->getReferenceToRigidbody().setPosition(Vector4D(12, 14, -1, 1));
 
 
-		physicsServer.addObject(objectVector[0]);
-		physicsServer.addObject(objectVector[1]);
-		physicsServer.addObject(objectVector[2]);
-		//physicsServer.addObject(objectVector[3]);
+		for (int i = 0; i < objectVector.size(); i++)
+		{
+			physicsServer.addObject(objectVector[i]);
+		}
 
 		//Setup for Dear ImGui context
 		ImGui::CreateContext();
@@ -279,7 +284,7 @@ ExampleApp::Run()
 		debugManager->drawDebugShapes();
 		debugManager->clearSingleFrameVector();
 
-		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
 		for (int i = 0; i < objectVector.size(); i++)
 		{

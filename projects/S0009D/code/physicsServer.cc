@@ -125,9 +125,9 @@ void PhysicsServer::sweep()
         {
             EPAResult r(0, Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1));
             GJK(objectPairVector[i], r);
-            //DebugManager::getInstance()->createSingleFrameLine(r.PosOfObject1, (r.PosOfObject1 + r.normal.normalize()*10), Vector4D(1, 1, 1, 1));
-            //DebugManager::getInstance()->createSingleFrameLine(Vector4D(0,0,0,1), (r.normal), Vector4D(1, 1, 1, 1));
-            //DebugManager::getInstance()->createSingleFrameCube(Vector4D(0,0,0,1), 0.1, 0.1, 0.1, Vector4D(1, 1, 0, 1));
+            DebugManager::getInstance()->createSingleFrameLine(r.PosOfObject1, (r.PosOfObject1 + r.normal.normalize()*10), Vector4D(1, 1, 1, 1));
+            DebugManager::getInstance()->createSingleFrameCube(r.PosOfObject1, 0.1, 0.1, 0.1, Vector4D(1, 0, 0, 1));
+            DebugManager::getInstance()->createSingleFrameCube(r.PosOfObject2, 0.1, 0.1, 0.1, Vector4D(0, 1, 0, 1));
             response(r, objectPairVector[i]);
         }
         
@@ -225,7 +225,11 @@ EPAResult PhysicsServer::EPA(std::vector<SupportPoint> points, objectPair op)
             //DebugManager::getInstance()->createSingleFrameCube(colpointB, 0.2, 0.2, 0.2, Vector4D(0, 1, 1, 1));
 
             e.normal[3] = 0;
-            assert(e.normal != Vector4D(0, 0, 0, 0));
+            if (e.normal == Vector4D(0, 0, 0, 0))
+            {
+                int i = 0;
+            }
+            
             return EPAResult(d, e.normal, colpointA, colpointB);
         }
         else
@@ -266,9 +270,9 @@ void PhysicsServer::extendPolytope(std::vector<std::vector<Vector4D>> &faces, Ve
     {
         if (faces[i][3].dotProduct(p-faces[i][0]) > 0)
         {
+            //Add loose edges to list
             for (int j = 0; j < 3; j++)
             {
-
                 std::vector<Vector4D> current_edge = {faces[i][j], faces[i][(j+1)%3]};
                 bool found_edge = false;
 
@@ -295,6 +299,8 @@ void PhysicsServer::extendPolytope(std::vector<std::vector<Vector4D>> &faces, Ve
             i--;
         }
     }
+
+    //Reconstruct polytope with the new point added.
     for (int i = 0; i < loose_edges.size(); i++)
     {
         faces.push_back({loose_edges[i].point1, loose_edges[i].point2, p, (loose_edges[i].point1 - loose_edges[i].point2).crossProduct(loose_edges[i].point1 - p).normalize()});
@@ -414,7 +420,7 @@ void PhysicsServer::getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2,
      p1 = 1.0f - p2 - p3;
 }
 
-void PhysicsServer::response(EPAResult r, objectPair op)
+void PhysicsServer::response(EPAResult& r, objectPair op)
 {
     Rigidbody& rb1 = op.object1->getReferenceToRigidbody();
     Rigidbody& rb2 = op.object2->getReferenceToRigidbody();
@@ -453,8 +459,6 @@ void PhysicsServer::response(EPAResult r, objectPair op)
     
     float J = (-(1+0.1)*Vrel) / (M1 + M2 + b1 + b2);
 
-    assert(r.normal != Vector4D(0, 0, 0, 1));
-
     Vector4D Ja = r.normal*J;
     Vector4D Jb = -r.normal*J;
 
@@ -464,12 +468,24 @@ void PhysicsServer::response(EPAResult r, objectPair op)
     Ja[3] = 0;
     Jb[3] = 0;
 
+    if (!rb1.unmovable) 
+        rb1.setPosition(rb1.getPosition() + (-r.normal * r.distance * 0.5));
+    if (!rb2.unmovable)
+        rb2.setPosition(rb2.getPosition() + (r.normal * r.distance * 0.5));
+
     //if (Vrel > 0)
     //{
-        rb1.applyForce(r.PosOfObject1, Ja);
-        rb2.applyForce(r.PosOfObject2, Jb);
+        rb1.momentum = rb1.momentum + Ja;
+        rb2.momentum = rb2.momentum + Jb;
     //}
-    
+    if (!rb1.unmovable)    
+        rb1.angularMomentum = rb1.angularMomentum + Ta;
+    if (!rb2.unmovable)    
+        rb2.angularMomentum = rb2.angularMomentum + Tb;
+
+
+    //rb1.applyForce(r.PosOfObject1, Ja);
+    //rb2.applyForce(r.PosOfObject2, Jb);
    
     //rb1.momentum = rb1.momentum + Ja;
     //rb2.momentum = rb2.momentum + Jb;
