@@ -126,9 +126,9 @@ void PhysicsServer::sweep()
             EPAResult r(0, Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1));
             if (GJK(objectPairVector[i], r))
             {
-                //DebugManager::getInstance()->createSingleFrameLine(r.PosOfObject1, (r.PosOfObject1 + r.normal.normalize()*10), Vector4D(1, 1, 1, 1));
-                //DebugManager::getInstance()->createSingleFrameCube(r.PosOfObject1, 0.1, 0.1, 0.1, Vector4D(1, 0, 0, 1));
-                //DebugManager::getInstance()->createSingleFrameCube(r.PosOfObject2, 0.1, 0.1, 0.1, Vector4D(0, 1, 0, 1));
+                DebugManager::getInstance()->createSingleFrameLine(r.PosOfObject1, (r.PosOfObject1 + r.normal.normalize()*10), Vector4D(1, 1, 1, 1));
+                DebugManager::getInstance()->createSingleFrameCube(r.PosOfObject1, 0.1, 0.1, 0.1, Vector4D(1, 0, 0, 1));
+                DebugManager::getInstance()->createSingleFrameCube(r.PosOfObject2, 0.1, 0.1, 0.1, Vector4D(0, 1, 0, 1));
                 //std::cout << r.distance << std::endl;
                 if (r.distance > 0.02)
                     response(r, objectPairVector[i]);

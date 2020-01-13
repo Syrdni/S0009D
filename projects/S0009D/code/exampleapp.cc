@@ -213,7 +213,7 @@ ExampleApp::Open()
 		objectVector[0]->getReferenceToRigidbody().setPosition(Vector4D(0, -20, 0, 1));
 		objectVector[1]->getReferenceToRigidbody().setPosition(Vector4D(10, 2, 0, 1));
 		objectVector[2]->getReferenceToRigidbody().setPosition(Vector4D(10, 10, 0, 1));
-		objectVector[3]->getReferenceToRigidbody().setPosition(Vector4D(7, 20, 1, 1));
+		objectVector[3]->getReferenceToRigidbody().setPosition(Vector4D(8, 20, 1, 1));
 		objectVector[4]->getReferenceToRigidbody().setPosition(Vector4D(10, 16, 2, 1));
 		objectVector[5]->getReferenceToRigidbody().setPosition(Vector4D(12, 14, -1, 1));
 

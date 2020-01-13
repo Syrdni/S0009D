@@ -65,7 +65,7 @@ void Rigidbody::update()
     this->spin[3] = 0;
     
     //Convert it to a quaternion so you can do quaternion multiplication
-    Quaternion spins = Quaternion(spin[0], spin[1], spin[2], spin[3]);
+    Quaternion spins = Quaternion(spin[0], spin[1], spin[2], spin[3]);    
 
     //Calculate DQ
     Quaternion DQ = (spins * q) * 0.5;
@@ -86,18 +86,18 @@ void Rigidbody::update()
     worldTransform = rotation * Matrix4D::getPositionMatrix(-aabb.getCenter());
     worldTransform = Matrix4D::getPositionMatrix(position + aabb.getCenter()) * worldTransform * scale;
 
-    //Reset the forces and the angularMomentum
-    forceToAdd = Vector4D(0, 0, 0, 1);
-    angularMomentum = {0,0,0,0};
 
     intptr_t id = reinterpret_cast<intptr_t>(this);
     ImGui::PushID(id);
     ImGui::InputFloat4("Position", position.getReference());
-    ImGui::InputFloat4("Momentum", momentum.getReference());
+    ImGui::InputFloat4("angularMomentum", angularMomentum.getReference());
     ImGui::InputFloat4("Spin", spin.getReference());
     ImGui::PopID();
     ImGui::Spacing();
 
+    //Reset the forces and the angularMomentum
+    forceToAdd = Vector4D(0, 0, 0, 1);
+    angularMomentum = {0,0,0,0};
 }
 
 void Rigidbody::applyForce(Vector4D pos, Vector4D forceDirection)
