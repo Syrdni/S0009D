@@ -69,15 +69,15 @@ void PhysicsServer::sweep()
     //Y-axis
     for (int i = 0; i < objectPairVector.size(); i++)
     {
-        if ((objectPairVector[i].object1->getReferenceToAABB().minPoint[1] <= objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] &&
-            objectPairVector[i].object1->getReferenceToAABB().minPoint[1] >= objectPairVector[i].object2->getReferenceToAABB().minPoint[1] ||
-            objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] <= objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] &&
-            objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] >= objectPairVector[i].object2->getReferenceToAABB().minPoint[1]) ||
+        if ((objectPairVector[i].object1->getReferenceToAABB().minPoint[1] < objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] &&
+            objectPairVector[i].object1->getReferenceToAABB().minPoint[1] > objectPairVector[i].object2->getReferenceToAABB().minPoint[1] ||
+            objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] < objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] &&
+            objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] > objectPairVector[i].object2->getReferenceToAABB().minPoint[1]) ||
 
-           (objectPairVector[i].object2->getReferenceToAABB().minPoint[1] <= objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] &&
-            objectPairVector[i].object2->getReferenceToAABB().minPoint[1] >= objectPairVector[i].object1->getReferenceToAABB().minPoint[1] ||
-            objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] <= objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] &&
-            objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] >= objectPairVector[i].object1->getReferenceToAABB().minPoint[1]))
+           (objectPairVector[i].object2->getReferenceToAABB().minPoint[1] < objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] &&
+            objectPairVector[i].object2->getReferenceToAABB().minPoint[1] > objectPairVector[i].object1->getReferenceToAABB().minPoint[1] ||
+            objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] < objectPairVector[i].object1->getReferenceToAABB().maxPoint[1] &&
+            objectPairVector[i].object2->getReferenceToAABB().maxPoint[1] > objectPairVector[i].object1->getReferenceToAABB().minPoint[1]))
         {
             continue;
         }
@@ -91,15 +91,15 @@ void PhysicsServer::sweep()
     //Z-axis
     for (int i = 0; i < objectPairVector.size(); i++)
     {
-        if (objectPairVector[i].object1->getReferenceToAABB().minPoint[2] <= objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] &&
-            objectPairVector[i].object1->getReferenceToAABB().minPoint[2] >= objectPairVector[i].object2->getReferenceToAABB().minPoint[2] ||
-            objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] <= objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] &&
-            objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] >= objectPairVector[i].object2->getReferenceToAABB().minPoint[2] ||
+        if (objectPairVector[i].object1->getReferenceToAABB().minPoint[2] < objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] &&
+            objectPairVector[i].object1->getReferenceToAABB().minPoint[2] > objectPairVector[i].object2->getReferenceToAABB().minPoint[2] ||
+            objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] < objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] &&
+            objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] > objectPairVector[i].object2->getReferenceToAABB().minPoint[2] ||
 
-           (objectPairVector[i].object2->getReferenceToAABB().minPoint[2] <= objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] &&
-            objectPairVector[i].object2->getReferenceToAABB().minPoint[2] >= objectPairVector[i].object1->getReferenceToAABB().minPoint[2] ||
-            objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] <= objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] &&
-            objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] >= objectPairVector[i].object1->getReferenceToAABB().minPoint[2]))
+           (objectPairVector[i].object2->getReferenceToAABB().minPoint[2] < objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] &&
+            objectPairVector[i].object2->getReferenceToAABB().minPoint[2] > objectPairVector[i].object1->getReferenceToAABB().minPoint[2] ||
+            objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] < objectPairVector[i].object1->getReferenceToAABB().maxPoint[2] &&
+            objectPairVector[i].object2->getReferenceToAABB().maxPoint[2] > objectPairVector[i].object1->getReferenceToAABB().minPoint[2]))
         {
             continue;
         }
@@ -124,11 +124,15 @@ void PhysicsServer::sweep()
         for (int i = 0; i < objectPairVector.size(); i++)
         {
             EPAResult r(0, Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1), Vector4D(0, 0, 0, 1));
-            GJK(objectPairVector[i], r);
-            DebugManager::getInstance()->createSingleFrameLine(r.PosOfObject1, (r.PosOfObject1 + r.normal.normalize()*10), Vector4D(1, 1, 1, 1));
-            DebugManager::getInstance()->createSingleFrameCube(r.PosOfObject1, 0.1, 0.1, 0.1, Vector4D(1, 0, 0, 1));
-            DebugManager::getInstance()->createSingleFrameCube(r.PosOfObject2, 0.1, 0.1, 0.1, Vector4D(0, 1, 0, 1));
-            response(r, objectPairVector[i]);
+            if (GJK(objectPairVector[i], r))
+            {
+                //DebugManager::getInstance()->createSingleFrameLine(r.PosOfObject1, (r.PosOfObject1 + r.normal.normalize()*10), Vector4D(1, 1, 1, 1));
+                //DebugManager::getInstance()->createSingleFrameCube(r.PosOfObject1, 0.1, 0.1, 0.1, Vector4D(1, 0, 0, 1));
+                //DebugManager::getInstance()->createSingleFrameCube(r.PosOfObject2, 0.1, 0.1, 0.1, Vector4D(0, 1, 0, 1));
+                //std::cout << r.distance << std::endl;
+                if (r.distance > 0.02)
+                    response(r, objectPairVector[i]);
+            }
         }
         
     }
@@ -189,10 +193,10 @@ EPAResult PhysicsServer::EPA(std::vector<SupportPoint> points, objectPair op)
     faces.push_back({points[0].point, points[2].point, points[3].point, (points[2].point - points[0].point).crossProduct(points[3].point - points[0].point).normalize()});
     faces.push_back({points[0].point, points[3].point, points[1].point, (points[3].point - points[0].point).crossProduct(points[1].point - points[0].point).normalize()});
     faces.push_back({points[1].point, points[3].point, points[2].point, (points[3].point - points[1].point).crossProduct(points[2].point - points[1].point).normalize()});
-    int i = 0;
-    while (true)
+    int iteration = 0;
+    while (iteration < 20)
     {
-        i++;
+        iteration++;
         ClosestResult e = findClosestTriangle(faces);
         SupportPoint p = support(op, e.normal);
         points.push_back(p);
@@ -468,10 +472,18 @@ void PhysicsServer::response(EPAResult& r, objectPair op)
     Ja[3] = 0;
     Jb[3] = 0;
 
+    float totalmass = rb1.mass + rb2.mass;
+
+    float mp2 = (rb1.mass / totalmass) != 0 ? (rb1.mass / totalmass) : 1;
+    float mp1 = (rb2.mass / totalmass) != 0 ? (rb2.mass / totalmass) : 1;
+
+    float biasDistance1 = (r.distance * mp1) + 0.005;
+    float biasDistance2 = (r.distance * mp2) + 0.005;
+
     if (!rb1.unmovable) 
-        rb1.setPosition(rb1.getPosition() + (-r.normal * r.distance * 0.5));
+        rb1.setPosition(rb1.getPosition() + (-r.normal * biasDistance1));
     if (!rb2.unmovable)
-        rb2.setPosition(rb2.getPosition() + (r.normal * r.distance * 0.5));
+        rb2.setPosition(rb2.getPosition() + (r.normal * biasDistance2));
 
     //if (Vrel > 0)
     //{

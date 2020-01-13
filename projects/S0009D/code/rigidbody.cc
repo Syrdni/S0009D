@@ -45,7 +45,7 @@ void Rigidbody::update()
     //Check if we have a gravitational pull
     if (Rigidbody::gravitationDirection.length() > 0 && !unmovable)
     {
-        applyForce(Matrix4D::getPositionMatrix(position) * aabb.getCenter(), Rigidbody::gravitationDirection * Rigidbody::gravidationPower);
+        applyForce(Matrix4D::getPositionMatrix(position) * aabb.getCenter(), Rigidbody::gravitationDirection * Rigidbody::gravidationPower * (mass/10));
     }
 
     momentum = momentum + forceToAdd;
