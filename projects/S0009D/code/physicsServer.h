@@ -47,6 +47,16 @@ struct EPAResult
     EPAResult(float d, Vector4D n, Vector4D Pos1, Vector4D Pos2) : distance(d) , normal(n), PosOfObject1(Pos1), PosOfObject2(Pos2) {};
 };
 
+struct CollisionStruct
+{
+    Vector4D PosA, PosB;
+    Vector4D VelA, VelB;
+    Matrix4D RotationA, RotationB;
+    Vector4D SpinA, SpinB;
+    Vector4D colPointA, colPointB;
+    Matrix4D worldTransformA, worldTransformB;
+};
+
 class PhysicsServer
 {
     public:
@@ -72,7 +82,7 @@ class PhysicsServer
         Vector4D DoSimplexTetrahedron(std::vector<SupportPoint>& points, bool& oof);
         void getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2, Vector4D vec3, float& p1, float& p2, float& p3);
         void response(EPAResult& results, objectPair op);
-        void Euler();
+        CollisionStruct Euler(Rigidbody rb1, Rigidbody rb2, float depth, Vector4D colpoint1, Vector4D colpoint2, float epsilon);
         void MidPoint();
         void Runge_Kutta();
 };

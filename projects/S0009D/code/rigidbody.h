@@ -61,6 +61,7 @@ class Rigidbody
         Vector4D angularMomentum;
 
         Matrix4D scale;
+        Quaternion q;
     private:
 
 
@@ -69,21 +70,15 @@ class Rigidbody
         //The aabb taken from the object class
         AABB aabb;
 
-
-
         //Current position
         Vector4D position;
 
-        
         Matrix4D inertiaTensorBody;
         Matrix4D inverseInertiaTensor;
-
 
         Vector4D torque;
 
         Vector4D posOfForce;
         
-        Quaternion q;
         Quaternion QRot = Quaternion(0, 0, 0, 1);
-
 };

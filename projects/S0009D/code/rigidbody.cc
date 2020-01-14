@@ -56,12 +56,14 @@ void Rigidbody::update()
     if (!unmovable)    
         velocity = momentum * (1/mass);
 
+
+
     //Calculate the position
-    position = position + (velocity * elapsed); //elapsed
+    position = position + (velocity * elapsed); //elapsed //Integrator?
     position[3] = 1;   
 
     //Calculate the spin vector
-    this->spin = this->spin + inverseInertiaTensor * (angularMomentum * elapsed); //elapsed
+    this->spin = this->spin + inverseInertiaTensor * (angularMomentum * elapsed); //elapsed //Integrator?
     this->spin[3] = 0;
     
     //Convert it to a quaternion so you can do quaternion multiplication
@@ -85,7 +87,6 @@ void Rigidbody::update()
     //Calculate the world transform
     worldTransform = rotation * Matrix4D::getPositionMatrix(-aabb.getCenter());
     worldTransform = Matrix4D::getPositionMatrix(position + aabb.getCenter()) * worldTransform * scale;
-
 
     intptr_t id = reinterpret_cast<intptr_t>(this);
     ImGui::PushID(id);

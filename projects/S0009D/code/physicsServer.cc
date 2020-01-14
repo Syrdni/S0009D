@@ -429,11 +429,13 @@ void PhysicsServer::response(EPAResult& r, objectPair op)
     Rigidbody& rb1 = op.object1->getReferenceToRigidbody();
     Rigidbody& rb2 = op.object2->getReferenceToRigidbody();
 
-    auto relativePos1 = r.PosOfObject1 - (rb1.worldTransform * rb1.getCenterPoint());
-    auto relativePos2 = r.PosOfObject2 - (rb2.worldTransform * rb2.getCenterPoint());
+    CollisionStruct cs = Euler(rb1, rb2, r.distance, r.PosOfObject1, r.PosOfObject2, 0.0002);
     
-    Vector4D Pa = rb1.velocity + rb1.spin.crossProduct(r.PosOfObject1 - (rb1.worldTransform * rb1.getCenterPoint()));
-    Vector4D Pb = rb2.velocity + rb2.spin.crossProduct(r.PosOfObject2 - (rb2.worldTransform * rb2.getCenterPoint()));
+    auto relativePos1 = cs.colPointA - (cs.worldTransformA * rb1.getCenterPoint());
+    auto relativePos2 = cs.colPointB - (cs.worldTransformB * rb2.getCenterPoint());
+    
+    Vector4D Pa = cs.VelA + cs.SpinA.crossProduct(relativePos1);
+    Vector4D Pb = cs.VelB + cs.SpinB.crossProduct(relativePos2);
 
     float Vrel = r.normal.dotProduct(Pa - Pb);    
 
@@ -466,8 +468,8 @@ void PhysicsServer::response(EPAResult& r, objectPair op)
     Vector4D Ja = r.normal*J;
     Vector4D Jb = -r.normal*J;
 
-    Vector4D Ta = (r.PosOfObject1 - ((rb1.worldTransform) * rb1.getCenterPoint())).crossProduct(Ja);
-    Vector4D Tb = (r.PosOfObject2 - ((rb2.worldTransform) * rb2.getCenterPoint())).crossProduct(Jb);
+    Vector4D Ta = (relativePos1).crossProduct(Ja);
+    Vector4D Tb = (relativePos2).crossProduct(Jb);
 
     Ja[3] = 0;
     Jb[3] = 0;
@@ -485,11 +487,9 @@ void PhysicsServer::response(EPAResult& r, objectPair op)
     if (!rb2.unmovable)
         rb2.setPosition(rb2.getPosition() + (r.normal * biasDistance2));
 
-    //if (Vrel > 0)
-    //{
-        rb1.momentum = rb1.momentum + Ja;
-        rb2.momentum = rb2.momentum + Jb;
-    //}
+    rb1.momentum = rb1.momentum + Ja;
+    rb2.momentum = rb2.momentum + Jb;
+    
     if (!rb1.unmovable)    
         rb1.angularMomentum = rb1.angularMomentum + Ta;
     if (!rb2.unmovable)    
@@ -498,12 +498,69 @@ void PhysicsServer::response(EPAResult& r, objectPair op)
 
     //rb1.applyForce(r.PosOfObject1, Ja);
     //rb2.applyForce(r.PosOfObject2, Jb);
-   
     //rb1.momentum = rb1.momentum + Ja;
     //rb2.momentum = rb2.momentum + Jb;
     //if (!rb1.unmovable)    
     //    rb1.angularMomentum = rb1.angularMomentum + Ta;
-//
     //if (!rb2.unmovable)    
     //    rb2.angularMomentum = rb2.angularMomentum + Tb;
+}
+
+CollisionStruct PhysicsServer::Euler(Rigidbody rbA, Rigidbody rbB, float depth, Vector4D colpoint1, Vector4D colpoint2, float epsilon)
+{
+    //Gather all information needed for the integrator
+    CollisionStruct cs;
+    cs.PosA = rbA.getPosition();
+    cs.PosB = rbB.getPosition();
+    cs.VelA = rbA.velocity;
+    cs.VelB = rbB.velocity;
+    cs.RotationA = rbA.getRotation();
+    cs.RotationB = rbB.getRotation();
+    cs.SpinA = rbA.spin;
+    cs.SpinB = rbB.spin;
+    cs.worldTransformA = rbA.worldTransform;
+    cs.worldTransformB = rbB.worldTransform;
+
+    Vector4D pointA = colpoint1, pointB = colpoint1;
+    Quaternion qA = rbA.q, qB = rbB.q;
+
+    //Integrate
+    while ((pointA - pointB).length() < depth)
+    {
+        if (!rbA.unmovable)
+        {
+            pointA = Matrix4D::inverse(cs.worldTransformA) * pointA;
+
+            cs.VelA = cs.VelA - (rbA.gravitationDirection * rbA.gravidationPower * epsilon);
+            cs.PosA = cs.PosA + -cs.VelA * epsilon;
+            cs.SpinA = rbA.getIITW() * (-rbA.angularMomentum * epsilon);
+            Quaternion spins = Quaternion(cs.SpinA[0], cs.SpinA[1], cs.SpinA[2], cs.SpinA[3]);    
+            Quaternion DQ = (spins * qA) * 0.5;
+            qA = qA + DQ;
+            qA.normalize();
+            cs.RotationA = qA.createMatrix();
+            cs.worldTransformA = Matrix4D::getPositionMatrix(cs.PosA) * cs.RotationA * rbA.scale;
+
+            pointA = cs.worldTransformA * pointA;
+        }
+        if (!rbB.unmovable)
+        {
+            pointB = Matrix4D::inverse(cs.worldTransformB) * pointB;
+
+            cs.VelB = cs.VelB - (rbB.gravitationDirection * rbB.gravidationPower * epsilon);
+            cs.PosB = cs.PosB + -cs.VelB * epsilon;
+            cs.SpinB = rbB.getIITW() * (-rbB.angularMomentum * epsilon);
+            Quaternion spins = Quaternion(cs.SpinB[0], cs.SpinB[1], cs.SpinB[2], cs.SpinB[3]);    
+            Quaternion DQ = (spins * qB) * 0.5;
+            qB = qB + DQ;
+            qB.normalize();
+            cs.RotationB = qB.createMatrix();
+            cs.worldTransformB = Matrix4D::getPositionMatrix(cs.PosB) * cs.RotationB * rbB.scale;
+
+            pointB = cs.worldTransformB * pointB;
+        }        
+    }
+    cs.colPointA = pointA;
+    cs.colPointB = pointB;
+    return cs;
 }
