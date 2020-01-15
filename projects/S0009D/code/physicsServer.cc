@@ -8,7 +8,7 @@ bool comp(Object* o1, Object* o2)
 
 PhysicsServer::PhysicsServer()
 {
-
+    start = std::chrono::steady_clock::now();
 }
 
 PhysicsServer::~PhysicsServer()
@@ -19,6 +19,8 @@ PhysicsServer::~PhysicsServer()
 void PhysicsServer::update()
 {
     sweep();
+    end = std::chrono::steady_clock::now();
+    this->start = end;    
 }
 
 void PhysicsServer::addObject(Object* rb)
@@ -426,13 +428,38 @@ void PhysicsServer::getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2,
 
 void PhysicsServer::response(EPAResult& r, objectPair op)
 {
+    end = std::chrono::steady_clock::now();
+    float elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() / 1000.0;
+    //this->start = end;    
+
     Rigidbody& rb1 = op.object1->getReferenceToRigidbody();
     Rigidbody& rb2 = op.object2->getReferenceToRigidbody();
 
-    CollisionStruct cs = Euler(rb1, rb2, r.distance, r.PosOfObject1, r.PosOfObject2, 0.0002);
+    //Gather all information needed for the integrator
+    CollisionStruct csi;
+    csi.PosA = rb1.getPosition();
+    csi.PosB = rb2.getPosition();
+    csi.VelA = rb1.velocity;
+    csi.VelB = rb2.velocity;
+    csi.RotationA = rb1.q;
+    csi.RotationB = rb2.q;
+    csi.SpinA = rb1.spin;
+    csi.SpinB = rb2.spin;
+    csi.worldTransformA = rb1.worldTransform;
+    csi.worldTransformB = rb2.worldTransform;
+    csi.unmovabaleA = rb1.unmovable;
+    csi.unmovabaleB = rb2.unmovable;
+    csi.RA = rb1;
+    csi.RB = rb2;
+
+    //CollisionStruct cs = csi;
+
+    //CollisionStruct cs = Euler(csi, r.distance, r.PosOfObject1, r.PosOfObject2, 0.0002);
+    //CollisionStruct cs = MidPoint(csi, r.distance, r.PosOfObject1, r.PosOfObject2, elapsed);
+    CollisionStruct cs = Runge_Kutta(csi, r.distance, r.PosOfObject1, r.PosOfObject2, 0.0002);
     
-    auto relativePos1 = cs.colPointA - (cs.worldTransformA * rb1.getCenterPoint());
-    auto relativePos2 = cs.colPointB - (cs.worldTransformB * rb2.getCenterPoint());
+    auto relativePos1 = r.PosOfObject1 - (cs.worldTransformA * rb1.getCenterPoint());
+    auto relativePos2 = r.PosOfObject2 - (cs.worldTransformB * rb2.getCenterPoint());
     
     Vector4D Pa = cs.VelA + cs.SpinA.crossProduct(relativePos1);
     Vector4D Pb = cs.VelB + cs.SpinB.crossProduct(relativePos2);
@@ -506,56 +533,44 @@ void PhysicsServer::response(EPAResult& r, objectPair op)
     //    rb2.angularMomentum = rb2.angularMomentum + Tb;
 }
 
-CollisionStruct PhysicsServer::Euler(Rigidbody rbA, Rigidbody rbB, float depth, Vector4D colpoint1, Vector4D colpoint2, float epsilon)
+CollisionStruct PhysicsServer::Euler(CollisionStruct cs, float depth, Vector4D colpoint1, Vector4D colpoint2, float epsilon)
 {
-    //Gather all information needed for the integrator
-    CollisionStruct cs;
-    cs.PosA = rbA.getPosition();
-    cs.PosB = rbB.getPosition();
-    cs.VelA = rbA.velocity;
-    cs.VelB = rbB.velocity;
-    cs.RotationA = rbA.getRotation();
-    cs.RotationB = rbB.getRotation();
-    cs.SpinA = rbA.spin;
-    cs.SpinB = rbB.spin;
-    cs.worldTransformA = rbA.worldTransform;
-    cs.worldTransformB = rbB.worldTransform;
-
-    Vector4D pointA = colpoint1, pointB = colpoint1;
-    Quaternion qA = rbA.q, qB = rbB.q;
+    Vector4D pointA = colpoint1, pointB = colpoint2;
+    Rigidbody rbA = cs.RA; Rigidbody rbB = cs.RB;
+    //Quaternion qA = Quaternion::createQuaternion(cs.RotationA), qB = Quaternion::createQuaternion(cs.RotationB);
 
     //Integrate
     while ((pointA - pointB).length() < depth)
     {
-        if (!rbA.unmovable)
+        if (!cs.unmovabaleA)
         {
             pointA = Matrix4D::inverse(cs.worldTransformA) * pointA;
 
             cs.VelA = cs.VelA - (rbA.gravitationDirection * rbA.gravidationPower * epsilon);
             cs.PosA = cs.PosA + -cs.VelA * epsilon;
-            cs.SpinA = rbA.getIITW() * (-rbA.angularMomentum * epsilon);
-            Quaternion spins = Quaternion(cs.SpinA[0], cs.SpinA[1], cs.SpinA[2], cs.SpinA[3]);    
-            Quaternion DQ = (spins * qA) * 0.5;
-            qA = qA + DQ;
-            qA.normalize();
-            cs.RotationA = qA.createMatrix();
-            cs.worldTransformA = Matrix4D::getPositionMatrix(cs.PosA) * cs.RotationA * rbA.scale;
+            Vector4D tempspin = rbA.getIITW() * (-rbA.angularMomentum * epsilon);
+            Quaternion spins = Quaternion(tempspin[0], tempspin[1], tempspin[2], tempspin[3]);    
+            Quaternion DQ = (spins *  cs.RotationA) * 0.5;
+            cs.RotationA =  cs.RotationA + DQ;
+            cs.RotationA.normalize();
+            //cs.RotationA = qA.createMatrix();
+            cs.worldTransformA = Matrix4D::getPositionMatrix(cs.PosA) * cs.RotationA.createMatrix() * rbA.scale;
 
             pointA = cs.worldTransformA * pointA;
         }
-        if (!rbB.unmovable)
+        if (!cs.unmovabaleB)
         {
             pointB = Matrix4D::inverse(cs.worldTransformB) * pointB;
 
             cs.VelB = cs.VelB - (rbB.gravitationDirection * rbB.gravidationPower * epsilon);
             cs.PosB = cs.PosB + -cs.VelB * epsilon;
-            cs.SpinB = rbB.getIITW() * (-rbB.angularMomentum * epsilon);
-            Quaternion spins = Quaternion(cs.SpinB[0], cs.SpinB[1], cs.SpinB[2], cs.SpinB[3]);    
-            Quaternion DQ = (spins * qB) * 0.5;
-            qB = qB + DQ;
-            qB.normalize();
-            cs.RotationB = qB.createMatrix();
-            cs.worldTransformB = Matrix4D::getPositionMatrix(cs.PosB) * cs.RotationB * rbB.scale;
+            Vector4D tempspin = rbB.getIITW() * (-rbB.angularMomentum * epsilon);
+            Quaternion spins = Quaternion(tempspin[0], tempspin[1], tempspin[2], tempspin[3]);    
+            Quaternion DQ = (spins * cs.RotationB) * 0.5;
+            cs.RotationB = cs.RotationB + DQ;
+            cs.RotationB.normalize();
+            //cs.RotationB = qB.createMatrix();
+            cs.worldTransformB = Matrix4D::getPositionMatrix(cs.PosB) * cs.RotationB.createMatrix() * rbB.scale;
 
             pointB = cs.worldTransformB * pointB;
         }        
@@ -563,4 +578,22 @@ CollisionStruct PhysicsServer::Euler(Rigidbody rbA, Rigidbody rbB, float depth, 
     cs.colPointA = pointA;
     cs.colPointB = pointB;
     return cs;
+}
+
+CollisionStruct PhysicsServer::MidPoint(CollisionStruct cs, float depth, Vector4D colpoint1, Vector4D colpoint2, float epsilon)
+{
+    CollisionStruct DeltaCS = Euler(cs, depth, colpoint1, colpoint2, epsilon);
+    CollisionStruct cs2 = (DeltaCS - cs) * epsilon;
+    CollisionStruct Mid = Euler(cs + (cs2*0.5), depth, colpoint1, colpoint2, epsilon/2);
+    CollisionStruct rcs = cs + (Mid - cs) * epsilon;
+    return rcs;
+}
+
+CollisionStruct PhysicsServer::Runge_Kutta(CollisionStruct cs, float depth, Vector4D colpoint1, Vector4D colpoint2, float epsilon)
+{
+    CollisionStruct w1 = (Euler(cs, depth, colpoint1, colpoint2, epsilon)-cs)*epsilon;
+    CollisionStruct w2 = (Euler(cs + (w1/2), depth, colpoint1, colpoint2, epsilon/2)-cs)*epsilon;
+    CollisionStruct w3 = (Euler(cs + (w2/2), depth, colpoint1, colpoint2, epsilon/2)-cs)*epsilon;
+    CollisionStruct w4 = (Euler(cs + w3, depth, colpoint1, colpoint2, epsilon)-cs)*epsilon;
+    return cs + (w1/6) + (w2/3) + (w3/3) + (w4/6);
 }

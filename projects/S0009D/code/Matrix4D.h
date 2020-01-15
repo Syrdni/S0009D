@@ -15,6 +15,7 @@ class Matrix4D
 		Matrix4D operator*(const Matrix4D& inMatrix) const;
 		Matrix4D operator*(const float scaler) const;
 		Matrix4D operator+(const Matrix4D& inMatrix) const;
+		Matrix4D operator-(const Matrix4D& inMatrix) const;
 		float operator[](const int index) const;
 		float& operator[](const int index);
 		static Matrix4D transpose(const Matrix4D& inMatrix);
@@ -197,6 +198,29 @@ class Matrix4D
 		temparr[13] = matrix[13] + inMatrix.matrix[13];
 		temparr[14] = matrix[14] + inMatrix.matrix[14];
 		temparr[15] = matrix[15] + inMatrix.matrix[15];
+
+		return Matrix4D(temparr);
+	}
+
+	inline Matrix4D Matrix4D::operator-(const Matrix4D& inMatrix) const {
+		float temparr[16];
+
+		temparr[0] = matrix[0] - inMatrix.matrix[0];
+		temparr[1] = matrix[1] - inMatrix.matrix[1];
+		temparr[2] = matrix[2] - inMatrix.matrix[2];
+		temparr[3] = matrix[3] - inMatrix.matrix[3];
+		temparr[4] = matrix[4] - inMatrix.matrix[4];
+		temparr[5] = matrix[5] - inMatrix.matrix[5];
+		temparr[6] = matrix[6] - inMatrix.matrix[6];
+		temparr[7] = matrix[7] - inMatrix.matrix[7];
+		temparr[8] = matrix[8] - inMatrix.matrix[8];
+		temparr[9] = matrix[9] - inMatrix.matrix[9];
+		temparr[10] = matrix[10] - inMatrix.matrix[10];
+		temparr[11] = matrix[11] - inMatrix.matrix[11];
+		temparr[12] = matrix[12] - inMatrix.matrix[12];
+		temparr[13] = matrix[13] - inMatrix.matrix[13];
+		temparr[14] = matrix[14] - inMatrix.matrix[14];
+		temparr[15] = matrix[15] - inMatrix.matrix[15];
 
 		return Matrix4D(temparr);
 	}

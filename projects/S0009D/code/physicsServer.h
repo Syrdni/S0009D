@@ -49,12 +49,98 @@ struct EPAResult
 
 struct CollisionStruct
 {
+    Rigidbody RA, RB;
     Vector4D PosA, PosB;
     Vector4D VelA, VelB;
-    Matrix4D RotationA, RotationB;
+    Quaternion RotationA, RotationB;
     Vector4D SpinA, SpinB;
     Vector4D colPointA, colPointB;
     Matrix4D worldTransformA, worldTransformB;
+    bool unmovabaleA, unmovabaleB;
+
+    CollisionStruct operator/(const float& other){
+        CollisionStruct cs;
+        cs.PosA = PosA * (1/other);
+        cs.PosB = PosB * (1/other);
+        cs.VelA = VelA * (1/other);
+        cs.VelB = VelB * (1/other);
+        cs.SpinA = SpinA;
+        cs.SpinB = SpinB;
+        cs.RotationA = RotationA * (1/other);
+        cs.RotationB = RotationB * (1/other);
+        cs.colPointA = colPointA * (1/other);
+        cs.colPointB = colPointB * (1/other);
+        cs.worldTransformA = Matrix4D::getPositionMatrix(cs.PosA) * cs.RotationA.createMatrix() * cs.RA.scale;
+        cs.worldTransformB = Matrix4D::getPositionMatrix(cs.PosB) * cs.RotationB.createMatrix() * cs.RB.scale;
+        cs.PosA[3] = 1;
+        cs.PosB[3] = 1;
+        cs.VelA[3] = 0;
+        cs.VelB[3] = 0;
+        return cs;
+    }
+
+    CollisionStruct operator*(const float& other){
+        CollisionStruct cs;
+        cs.PosA = PosA * other;
+        cs.PosB = PosB * other;
+        cs.VelA = VelA * other;
+        cs.VelB = VelB * other;
+        cs.SpinA = SpinA;
+        cs.SpinB = SpinB;
+        cs.RotationA = RotationA * other;
+        cs.RotationB = RotationB * other;
+        cs.colPointA = colPointA * other;
+        cs.colPointB = colPointB * other;
+        cs.worldTransformA = Matrix4D::getPositionMatrix(cs.PosA) * cs.RotationA.createMatrix() * cs.RA.scale;
+        cs.worldTransformB = Matrix4D::getPositionMatrix(cs.PosB) * cs.RotationB.createMatrix() * cs.RB.scale;
+        cs.PosA[3] = 1;
+        cs.PosB[3] = 1;
+        cs.VelA[3] = 0;
+        cs.VelB[3] = 0;
+        return cs;
+    }
+
+        CollisionStruct operator+(const CollisionStruct& other){
+        CollisionStruct cs;
+        cs.PosA = PosA + other.PosA;
+        cs.PosB = PosB + other.PosB;
+        cs.VelA = VelA + other.VelA;
+        cs.VelB = VelB + other.VelB;
+        cs.SpinA = other.SpinA;
+        cs.SpinB = other.SpinB;
+        cs.RotationA = RotationA + other.RotationA;
+        cs.RotationB = RotationB + other.RotationB;
+        cs.colPointA = colPointA + other.colPointA;
+        cs.colPointB = colPointB + other.colPointB;
+        cs.worldTransformA = Matrix4D::getPositionMatrix(cs.PosA) * cs.RotationA.createMatrix() * cs.RA.scale;
+        cs.worldTransformB = Matrix4D::getPositionMatrix(cs.PosB) * cs.RotationB.createMatrix() * cs.RB.scale;
+        cs.PosA[3] = 1;
+        cs.PosB[3] = 1;
+        cs.VelA[3] = 0;
+        cs.VelB[3] = 0;
+        return cs;
+    }
+
+    CollisionStruct operator-(const CollisionStruct& other){
+        CollisionStruct cs;
+        cs.PosA = PosA - other.PosA;
+        cs.PosB = PosB - other.PosB;
+        cs.VelA = VelA - other.VelA;
+        cs.VelB = VelB - other.VelB;
+        cs.SpinA = other.SpinA;
+        cs.SpinB = other.SpinB;
+        cs.RotationA = RotationA - other.RotationA;
+        cs.RotationB = RotationB - other.RotationB;
+        cs.colPointA = colPointA - other.colPointA;
+        cs.colPointB = colPointB - other.colPointB;
+        cs.worldTransformA = Matrix4D::getPositionMatrix(cs.PosA) * cs.RotationA.createMatrix() * cs.RA.scale;
+        cs.worldTransformB = Matrix4D::getPositionMatrix(cs.PosB) * cs.RotationB.createMatrix() * cs.RB.scale;
+        cs.PosA[3] = 1;
+        cs.PosB[3] = 1;
+        cs.VelA[3] = 0;
+        cs.VelB[3] = 0;
+        return cs;
+    }
 };
 
 class PhysicsServer
@@ -73,6 +159,9 @@ class PhysicsServer
         ClosestResult findClosestTriangle(std::vector<std::vector<Vector4D>> &edges);
         void extendPolytope(std::vector<std::vector<Vector4D>> &edges, Vector4D p);
 
+        std::chrono::time_point<std::chrono::steady_clock> start;
+        std::chrono::time_point<std::chrono::steady_clock> end;
+
         std::vector<Object*> objectVector;
         std::vector<pointAndOwner> x_axisPoints;
         SupportPoint support(objectPair op, Vector4D d);
@@ -82,7 +171,7 @@ class PhysicsServer
         Vector4D DoSimplexTetrahedron(std::vector<SupportPoint>& points, bool& oof);
         void getBarycentric(Vector4D point, Vector4D vec1, Vector4D vec2, Vector4D vec3, float& p1, float& p2, float& p3);
         void response(EPAResult& results, objectPair op);
-        CollisionStruct Euler(Rigidbody rb1, Rigidbody rb2, float depth, Vector4D colpoint1, Vector4D colpoint2, float epsilon);
-        void MidPoint();
-        void Runge_Kutta();
+        CollisionStruct Euler(CollisionStruct cs, float depth, Vector4D colpoint1, Vector4D colpoint2, float epsilon);
+        CollisionStruct MidPoint(CollisionStruct cs, float depth, Vector4D colpoint1, Vector4D colpoint2, float epsilon);
+        CollisionStruct Runge_Kutta(CollisionStruct cs, float depth, Vector4D colpoint1, Vector4D colpoint2, float epsilon);
 };

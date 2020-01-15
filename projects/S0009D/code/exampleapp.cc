@@ -204,18 +204,18 @@ ExampleApp::Open()
 
 		objectVector.push_back(new Object(mr, so, tr3, ln, cameraPos, "texture.jpg", Vector4D(100, 4, 100, 1), 10, true));
 		objectVector.push_back(new Object(mr, so, tr, ln, cameraPos, "texture2.jpg", Vector4D(4, 4, 4, 1), 100, false));
-		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(2, 2, 2, 1), 40, false));
-		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(1, 1, 2, 1), 5, false));
-		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(1, 2, 1, 1), 5, false));
-		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(2, 1, 1, 1), 5, false));
+		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(3, 3, 3, 1), 40, false));
+		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(2, 2, 2, 1), 20, false));
+		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(2, 2, 2, 1), 20, false));
+		objectVector.push_back(new Object(mr, so, tr2, ln, cameraPos, "tex.jpg", Vector4D(2, 2, 2, 1), 20, false));
 		
 		o = objectVector[0];
 		objectVector[0]->getReferenceToRigidbody().setPosition(Vector4D(0, -20, 0, 1));
 		objectVector[1]->getReferenceToRigidbody().setPosition(Vector4D(10, 2, 0, 1));
 		objectVector[2]->getReferenceToRigidbody().setPosition(Vector4D(10, 10, 0, 1));
-		objectVector[3]->getReferenceToRigidbody().setPosition(Vector4D(8, 20, 1, 1));
-		objectVector[4]->getReferenceToRigidbody().setPosition(Vector4D(10, 16, 2, 1));
-		objectVector[5]->getReferenceToRigidbody().setPosition(Vector4D(12, 14, -1, 1));
+		objectVector[3]->getReferenceToRigidbody().setPosition(Vector4D(8, 25, 1, 1));
+		objectVector[4]->getReferenceToRigidbody().setPosition(Vector4D(10, 22, 2, 1));
+		objectVector[5]->getReferenceToRigidbody().setPosition(Vector4D(12, 16, -1, 1));
 
 
 		for (int i = 0; i < objectVector.size(); i++)
@@ -292,7 +292,7 @@ ExampleApp::Run()
 			objectVector[i]->update();
 		}
 		
-		physicsServer.sweep();
+		physicsServer.update();
 
 		ImGui::Render();
 		glFlush();
